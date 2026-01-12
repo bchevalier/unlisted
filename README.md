@@ -50,6 +50,10 @@ You decide:
 
 ## How it works (high level)
 
+**Terminology**
+- **Keepers** are door owners (previously referred to as Hosts).
+- **Knockers** are people who submit requests through a door.
+
 ### 1. You create a Knokio door
 You get:
 - a shareable link (e.g. `knokio.io/u/you`)
@@ -73,7 +77,7 @@ Serious requests can require structure.
 ---
 
 ### 3. Someone knocks
-A requester:
+A Knocker:
 - emails your Knokio address **or**
 - fills the form
 

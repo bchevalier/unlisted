@@ -1,7 +1,7 @@
-# Requester Experience
+# Knocker Experience
 
 ## Objective
-Provide clarity to requesters without creating conversations.
+Provide clarity to knockers without creating conversations.
 
 ## Scope
 - Tokenized status page
@@ -9,7 +9,7 @@ Provide clarity to requesters without creating conversations.
 - Decline/expiry messaging
 
 ## Constraints
-- No accounts for requesters
+- No accounts for knockers
 - No ability to reply
 - No notifications beyond email
 
@@ -18,6 +18,6 @@ Provide clarity to requesters without creating conversations.
 - Status rendering
 
 ## Acceptance Criteria
-- Requesters can track outcome
+- Knockers can track outcome
 - Contact only shown on accept
 - Silence is clearly explained

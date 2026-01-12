@@ -1,11 +1,11 @@
-# UX Flow — Host Account Creation
+# UX Flow — Keeper Account Creation
 
 ## Objective
-Allow a user to create a Knokio account and become a Host with minimal friction,
+Allow a user to create a Knokio account and become a Keeper with minimal friction,
 while clearly explaining what Knokio does and does not do.
 
 ## Actors
-- User (future Host)
+- User (future Keeper)
 - Knokio system
 
 ## Preconditions
@@ -24,7 +24,7 @@ while clearly explaining what Knokio does and does not do.
    - magic link
 4. System creates:
    - User account
-   - Default Host profile
+   - Default Keeper profile
    - One default Door (generic, no form)
 5. User is redirected to onboarding screen
 

@@ -1,23 +1,23 @@
-# UX Flow — Requester Contact via Form (Optional Payment)
+# UX Flow — Knocker Contact via Form (Optional Payment)
 
 ## Objective
-Allow a Requester to submit a structured request via a form,
-with optional direct payment when required by the Host.
+Allow a Knocker to submit a structured request via a form,
+with optional direct payment when required by the Keeper.
 
 ## Actors
-- Requester
+- Knocker
 - Knokio system
-- Host
+- Keeper
 - Payment provider (Stripe)
 
 ## Preconditions
-- Host has a form-based door
-- Requester has access to the door URL or email escalation link
+- Keeper has a form-based door
+- Knocker has access to the door URL or email escalation link
 
 ## Flow Steps
 
-1. Requester opens the door link
-2. Requester selects the relevant category
+1. Knocker opens the door link
+2. Knocker selects the relevant category
 3. System displays the form:
    - Required fields
    - Optional explanation text
@@ -26,25 +26,25 @@ with optional direct payment when required by the Host.
 ---
 
 ### Case A — Free Request
-4. Requester fills in the form
-5. Requester submits
+4. Knocker fills in the form
+5. Knocker submits
 6. System creates a `pending` request
-7. Host is notified
+7. Keeper is notified
 
 ---
 
 ### Case B — Paid Request
-4. Requester fills in the form
-5. Requester proceeds to payment
+4. Knocker fills in the form
+5. Knocker proceeds to payment
 6. Payment is authorized (not captured)
 7. System creates a `pending` request
-8. Host is notified
+8. Keeper is notified
 
 ---
 
-### Host Decision
-9. Host reviews the request
-10. Host chooses:
+### Keeper Decision
+9. Keeper reviews the request
+10. Keeper chooses:
     - Accept → payment is captured, contact revealed
     - Decline / Ignore → payment is released, request expires
 
@@ -57,9 +57,9 @@ with optional direct payment when required by the Host.
 
 ## Edge Cases
 - Payment authorization fails → request not created
-- Host never responds → request expires, no charge
+- Keeper never responds → request expires, no charge
 
 ## Acceptance Criteria
-- Requester understands what they’re paying for
-- No payment is captured without Host acceptance
+- Knocker understands what they’re paying for
+- No payment is captured without Keeper acceptance
 - Flow feels fair and transparent to both sides

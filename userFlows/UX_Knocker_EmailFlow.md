@@ -1,21 +1,21 @@
-# UX Flow — Requester Contact via Email
+# UX Flow — Knocker Contact via Email
 
 ## Objective
-Allow a Requester to contact a Host using an email-shaped interaction,
+Allow a Knocker to contact a Keeper using an email-shaped interaction,
 while preserving Knokio’s rules and structure.
 
 ## Actors
-- Requester
+- Knocker
 - Knokio system
-- Host
+- Keeper
 
 ## Preconditions
-- Host has an email-enabled door
-- Requester has the email handle (e.g. `host@knokio.io`)
+- Keeper has an email-enabled door
+- Knocker has the email handle (e.g. `keeper@knokio.io`)
 
 ## Flow Steps
 
-1. Requester sends an email to `host@knokio.io`
+1. Knocker sends an email to `keeper@knokio.io`
 2. Knokio receives the email via inbound proxy
 3. System parses:
    - Sender email
@@ -27,8 +27,8 @@ while preserving Knokio’s rules and structure.
 
 ### Case A — Door has no required fields
 5. System creates a `pending` request
-6. Host receives a “New request” notification
-7. Requester receives no immediate reply
+6. Keeper receives a “New request” notification
+7. Knocker receives no immediate reply
 
 ---
 
@@ -36,12 +36,12 @@ while preserving Knokio’s rules and structure.
 5. System sends an automatic reply:
    - Explains that more information is required
    - Provides a one-time form link
-6. Requester completes the form
+6. Knocker completes the form
 7. System creates a `pending` request
 
 ---
 
-## What the Requester Experiences
+## What the Knocker Experiences
 - No conversation thread
 - No back-and-forth
 - Clear expectation that silence is possible
@@ -54,4 +54,4 @@ while preserving Knokio’s rules and structure.
 ## Acceptance Criteria
 - Email reliably becomes a request
 - Required fields are never bypassed
-- Requester is guided politely, not blocked
+- Knocker is guided politely, not blocked

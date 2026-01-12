@@ -12,7 +12,7 @@ Tasks should be checked only when implemented and verified.
 
 - [ ] Initialize repository (TypeScript, linting, formatting)
 - [ ] Configure environment variables and secrets management
-- [ ] Set up hosting environment
+- [ ] Set up deployment environment
 - [ ] Provision managed PostgreSQL database
 - [ ] Configure database migration tooling
 - [ ] Set up basic authentication (signup, login, sessions)
@@ -93,14 +93,14 @@ Tasks should be checked only when implemented and verified.
 
 ---
 
-## 6. Requester Experience
+## 6. Knocker Experience
 
 - [ ] Generate secure request access tokens
-- [ ] Create requester status page (`/r/:token`)
+- [ ] Create knocker status page (`/r/:token`)
 - [ ] Display current request state
 - [ ] Display contact details on acceptance
 - [ ] Display declined / expired states with clear messaging
-- [ ] Prevent requester replies or threading
+- [ ] Prevent knocker replies or threading
 
 ---
 

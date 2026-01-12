@@ -8,7 +8,7 @@ This feature establishes the baseline environment required for all other feature
 ## Scope
 - Repository initialization
 - Environment configuration
-- Hosting
+- Deployment
 - Database provisioning
 - Authentication
 
