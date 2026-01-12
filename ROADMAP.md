@@ -10,7 +10,7 @@ Tasks should be checked only when implemented and verified.
 
 ## 0. Project Foundations
 
-- [ ] Initialize repository (TypeScript, linting, formatting)
+- [x] Initialize repository (TypeScript, linting, formatting)
 - [ ] Configure environment variables and secrets management
 - [ ] Set up deployment environment
 - [ ] Provision managed PostgreSQL database
