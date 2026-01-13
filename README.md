@@ -160,8 +160,20 @@ This repository currently focuses on **Knokio (Direct)** only.
 
 Networked features and routing are intentionally out of scope until the core door works reliably.
 
+## Environment configuration
+
+Knokio relies on a `.env.local` file for local testing while the `.env.example` file documents the required keys (see `lib/env.ts`). The loader enforces `APP_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET` (32+ chars), and `DATABASE_URL` before the server starts. Don’t commit secrets—use the same keys in your deployment provider (Render supports encrypted variables and starts at $0 before you scale).
+
+## Deployment environment
+
+Render provides a $0 starter tier that scales linearly as traffic grows. The `render.yaml` blueprint sets up the web service with required env vars and a production build. Create a Render service from this repo, then add the same secrets defined in `.env.example`.
+
+## Database provisioning
+
+Managed PostgreSQL is required. The default recommendation is Neon for a $0 starter tier with linear scaling and pooled connections. See `docs/Database.md`.
+
 ---
 
 ## License
 
-TBD
+ TBD

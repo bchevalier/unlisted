@@ -11,9 +11,9 @@ Tasks should be checked only when implemented and verified.
 ## 0. Project Foundations
 
 - [x] Initialize repository (TypeScript, linting, formatting)
-- [ ] Configure environment variables and secrets management
-- [ ] Set up deployment environment
-- [ ] Provision managed PostgreSQL database
+- [x] Configure environment variables and secrets management
+- [x] Set up deployment environment
+- [x] Provision managed PostgreSQL database
 - [ ] Configure database migration tooling
 - [ ] Set up basic authentication (signup, login, sessions)
 

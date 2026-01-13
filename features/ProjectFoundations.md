@@ -44,5 +44,5 @@ This feature establishes the baseline environment required for all other feature
 - Auth: Auth.js (NextAuth) with email + password credentials, Argon2 hashing, and a PostgreSQL adapter; sessions stored in DB (no JWT-only auth).
 - Validation: Zod for shared client/server validation of auth forms and API payloads.
 - Secrets/config: `.env.local` for dev, platform-managed secrets for prod; no secrets in repo.
-- Deployment: Vercel for web app hosting; separate managed Postgres; use preview deployments for PRs.
+- Deployment: Render web service + Postgres free tier for initial adoption, auto-deploy from git, scales linearly with usage so costs start at $0.
 - Tooling: ESLint + Prettier, TypeScript build checks in CI; basic health check endpoint.
