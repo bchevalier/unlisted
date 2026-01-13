@@ -162,11 +162,18 @@ Networked features and routing are intentionally out of scope until the core doo
 
 ## Environment configuration
 
-Knokio relies on a `.env.local` file for local testing while the `.env.example` file documents the required keys (see `lib/env.ts`). The loader enforces `APP_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET` (32+ chars), and `DATABASE_URL` before the server starts. Don’t commit secrets—use the same keys in your deployment provider (Render supports encrypted variables and starts at $0 before you scale).
+Knokio relies on a `.env.local` file for local testing while the `.env.example` file documents the required keys (see `lib/env.ts`). The loader enforces `APP_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET` (32+ chars), `DATABASE_URL` (pooled), and `DIRECT_URL` (non-pooled, for migrations). Don’t commit secrets—use the same keys in your deployment provider (Render supports encrypted variables and starts at $0 before you scale).
 
 ## Deployment environment
 
 Render provides a $0 starter tier that scales linearly as traffic grows. The `render.yaml` blueprint sets up the web service with required env vars and a production build. Create a Render service from this repo, then add the same secrets defined in `.env.example`.
+
+### Render Blueprint (recommended)
+
+- In Render: New → Blueprint, select this repo and deploy from `render.yaml`.
+- Set env vars in the created service: `APP_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, `DATABASE_URL` (and keep `NODE_ENV=production`).
+- Use Neon pooled for `DATABASE_URL` and non-pooled for `DIRECT_URL`.
+- If you previously created a non-blueprint Web Service, delete it (or ignore it) to avoid Render using its default `yarn install; yarn build` pipeline.
 
 ## Database provisioning
 

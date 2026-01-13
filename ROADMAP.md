@@ -14,8 +14,8 @@ Tasks should be checked only when implemented and verified.
 - [x] Configure environment variables and secrets management
 - [x] Set up deployment environment
 - [x] Provision managed PostgreSQL database
-- [ ] Configure database migration tooling
-- [ ] Set up basic authentication (signup, login, sessions)
+- [x] Configure database migration tooling
+- [x] Set up basic authentication (signup, login, sessions)
 
 ---
 

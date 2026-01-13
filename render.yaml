@@ -4,7 +4,7 @@ services:
     env: node
     plan: free
     region: oregon
-    buildCommand: npm install --include=dev && npm run build
+    buildCommand: npm ci --include=dev && npm run build
     startCommand: npm run start
     autoDeploy: true
     envVars:
@@ -17,4 +17,6 @@ services:
       - key: NEXTAUTH_SECRET
         sync: false
       - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
         sync: false
