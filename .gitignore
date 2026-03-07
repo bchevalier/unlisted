@@ -4,3 +4,8 @@ dist
 out
 .env.local
 .env.*.local
+
+# OpenClaw workspace-private files (keys, memory, local state)
+.openclaw/
+memory/
+MEMORY.md
