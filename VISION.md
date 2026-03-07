@@ -20,6 +20,25 @@ Together, they form a bigger goal:
 
 ---
 
+## Concept image — “The right knock opens the right door”
+
+```mermaid
+flowchart LR
+  K1[Knock: brand partnership] --> D1[Door: business inquiries]
+  K2[Knock: urgent legal request] --> D2[Door: legal priority]
+  K3[Knock: AI task needing human uniqueness] --> D3[Door: verified human task]
+
+  D1 -->|policy match| O1[Door opens]
+  D2 -->|policy match| O2[Door opens]
+  D3 -->|policy match| O3[Door opens]
+
+  X[Wrong / low-intent knock] --> F[Filtered, declined, or silent close]
+```
+
+**Principle:** there is a right door for every legitimate knock — and no obligation to open the wrong one.
+
+---
+
 ## Why now
 
 The old contact model (email, DMs, forms) was built for human-to-human communication at human speed.
