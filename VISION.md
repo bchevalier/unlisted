@@ -2,7 +2,20 @@
 
 ## One-line vision
 
-**Knokio is the private reachability layer for the AI era:** a system where **anyone can reach anyone** (human or agent) through structured, consent-based doors.
+**Knokio is the consent-based coordination layer for the AI era:** protect human attention as a scarce resource (**Knokio Direct**) and compress global reach to one intentional hop (**Knokio Reach**) so anyone can reach anyone (human or agent) on clear terms.
+
+---
+
+## The unifying idea
+
+Knokio combines two big ideas into one system:
+
+1. **Attention protection** — humans should stay reachable without being overwhelmed.
+2. **Reach compression** — finding and reaching the right person or agent should move from many hops to one structured request.
+
+Together, they form a bigger goal:
+
+> **Turn chaotic outreach into intentional coordination at planetary scale.**
 
 ---
 
@@ -13,10 +26,40 @@ The old contact model (email, DMs, forms) was built for human-to-human communica
 That model breaks when:
 - inbound volume explodes,
 - AI agents generate outreach at machine speed,
-- humans become harder to reach without being overwhelmed,
+- attention becomes humans’ most scarce operational resource,
 - and high-value work depends on uniquely human capabilities.
 
 As automation grows, many tasks will be handled by AI systems. But AI still needs humans for things machines cannot independently provide or verify.
+
+---
+
+## Two product pillars
+
+### 1) Knokio Direct — solve attention scarcity
+
+Knokio Direct is the filtered messaging layer.
+
+It lets people stay reachable while protecting focus through:
+- structured inbound requests,
+- policy-based filtering,
+- caps and rate limits,
+- explicit accept/decline/silence outcomes,
+- and controlled identity/contact reveal.
+
+**Outcome:** better signal-to-noise and less cognitive tax from inbound.
+
+### 2) Knokio Reach — solve global coordination distance
+
+Knokio Reach is the connection and routing layer.
+
+It simplifies search and routing so the right requester can reach the right human/agent in one step, with policy and trust constraints.
+
+Ambition:
+- **crush the classic “6 degrees of separation” problem** for practical coordination,
+- move from fragile social hop-chains to direct, structured, permissioned reachability,
+- support cross-boundary human↔human, human↔agent, and agent↔agent requests.
+
+**Outcome:** the world becomes operationally closer without becoming noisy or unsafe.
 
 ---
 
@@ -59,12 +102,12 @@ Knokio supports four first-class flows:
 
 ## Product principles
 
-- **Privacy-first by default** — no public inboxes, no open contact graph
+- **Privacy-first by default** — no public inboxes, no uncontrolled exposure
 - **Consent over access** — every route is policy-gated
 - **Structured intent over chat noise** — requests, not threads
 - **Programmable trust** — verifiable identity, claims, and permissions
 - **Silence is valid** — no social pressure to reply
-- **No discovery by default** — explicit links, explicit intent
+- **Discoverability is explicit** — search/reach is opt-in and policy-bound
 
 ---
 
@@ -104,15 +147,16 @@ To fully support agent workflows, Knokio should add:
 - structured inbound requests
 - filtering, limits, forward/decline/auto-reply
 
-### Phase 2: Agent Reach
+### Phase 2: Knokio Reach + Agent Reachability
+- opt-in discoverability and routing
 - agent identities and auth
 - AI↔human and AI↔AI request contracts
 - policy + attestations + auditable handoffs
 
 ### Phase 3: Networked Knokio
-- interoperable routing between doors
+- interoperable routing between doors and ecosystems
 - richer trust primitives and reputation signals (privacy-preserving)
-- marketplace-like utility **without** becoming a social feed or public directory
+- marketplace-like utility **without** becoming a social feed or spam channel
 
 ---
 
@@ -122,6 +166,7 @@ To fully support agent workflows, Knokio should add:
 - faster decision latency (accept/decline)
 - lower contact-detail exposure rate
 - successful completion rate for human-unique tasks requested by agents
+- reduced path length from requester to qualified human/agent
 - trust and safety incidents kept low as machine traffic scales
 
 ---
@@ -129,10 +174,22 @@ To fully support agent workflows, Knokio should add:
 ## Guardrails (non-negotiable)
 
 - no surveillance-style identity graph
-- no public scraping/discovery of people
+- no uncontrolled public scraping of people
 - no dark patterns to force response
 - no uncontrolled agent spam
 - no hidden delegation without attribution
+
+---
+
+## Conclusion
+
+Knokio’s long-term mission is to make global coordination both **closer** and **calmer**:
+- **closer**, by collapsing multi-hop outreach toward one-step intentional reach,
+- **calmer**, by defending human attention through filtered, policy-based inbound.
+
+That is the unifying idea from start to finish:
+
+> **A universal, consent-based coordination layer where attention is protected, reach is compressed, and human uniqueness stays central in an AI-driven world.**
 
 ---
 
