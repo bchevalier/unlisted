@@ -2,20 +2,21 @@
 
 ## One-line vision
 
-**Knokio is the consent-based coordination layer for the AI era:** protect human attention as a scarce resource (**Knokio Direct**) and compress global reach to one intentional hop (**Knokio Reach**) so anyone can reach anyone (human or agent) on clear terms.
+**Knokio is the consent-based coordination layer for the AI era:** protect human attention as a scarce resource (**Knokio Direct**), compress global reach to one intentional hop (**Knokio Reach**), and preserve anonymity by making people reachable **without being searchable or exposing private contact info**.
 
 ---
 
 ## The unifying idea
 
-Knokio combines two big ideas into one system:
+Knokio combines three big ideas into one system:
 
 1. **Attention protection** — humans should stay reachable without being overwhelmed.
 2. **Reach compression** — finding and reaching the right person or agent should move from many hops to one structured request.
+3. **Anonymity by design** — be reachable without being publicly searchable and without disclosing private contact details.
 
 Together, they form a bigger goal:
 
-> **Turn chaotic outreach into intentional coordination at planetary scale.**
+> **Turn chaotic outreach into intentional coordination at planetary scale — while protecting attention and privacy by default.**
 
 ---
 
@@ -27,13 +28,14 @@ That model breaks when:
 - inbound volume explodes,
 - AI agents generate outreach at machine speed,
 - attention becomes humans’ most scarce operational resource,
+- public searchability creates privacy and safety risk,
 - and high-value work depends on uniquely human capabilities.
 
 As automation grows, many tasks will be handled by AI systems. But AI still needs humans for things machines cannot independently provide or verify.
 
 ---
 
-## Two product pillars
+## Three product pillars
 
 ### 1) Knokio Direct — solve attention scarcity
 
@@ -60,6 +62,18 @@ Ambition:
 - support cross-boundary human↔human, human↔agent, and agent↔agent requests.
 
 **Outcome:** the world becomes operationally closer without becoming noisy or unsafe.
+
+### 3) Anonymity layer — solve exposure risk
+
+Knokio should let users be available **without becoming indexable targets**.
+
+Core behavior:
+- reachable via doors/requests, not exposed personal inboxes,
+- no public contact-detail disclosure by default,
+- no uncontrolled people search/scraping,
+- selective reveal only after consented workflow states.
+
+**Outcome:** high reachability with materially lower privacy and safety risk.
 
 ---
 
@@ -107,7 +121,7 @@ Knokio supports four first-class flows:
 - **Structured intent over chat noise** — requests, not threads
 - **Programmable trust** — verifiable identity, claims, and permissions
 - **Silence is valid** — no social pressure to reply
-- **Discoverability is explicit** — search/reach is opt-in and policy-bound
+- **Reachable without searchable** — discoverability is explicit, opt-in, and policy-bound
 
 ---
 
@@ -183,13 +197,14 @@ To fully support agent workflows, Knokio should add:
 
 ## Conclusion
 
-Knokio’s long-term mission is to make global coordination both **closer** and **calmer**:
+Knokio’s long-term mission is to make global coordination:
 - **closer**, by collapsing multi-hop outreach toward one-step intentional reach,
-- **calmer**, by defending human attention through filtered, policy-based inbound.
+- **calmer**, by defending human attention through filtered, policy-based inbound,
+- **safer/private**, by making people reachable without making them searchable or exposing private contact details.
 
 That is the unifying idea from start to finish:
 
-> **A universal, consent-based coordination layer where attention is protected, reach is compressed, and human uniqueness stays central in an AI-driven world.**
+> **A universal, consent-based coordination layer where attention is protected, reach is compressed, anonymity is preserved, and human uniqueness stays central in an AI-driven world.**
 
 ---
 
