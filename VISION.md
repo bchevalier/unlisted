@@ -20,7 +20,7 @@ Together, they form a bigger goal:
 
 ---
 
-**Principle:** *The right knock opens the right door — and every legitimate knock has a door, without forcing you to open the wrong one.*
+**Principle:** *The right knock opens the right door — and every legitimate knock has a door.*
 
 ---
 
