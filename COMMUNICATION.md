@@ -8,6 +8,7 @@ Every external message should reinforce the same core story:
 2. **Increase ROI of attention time** (better outcomes per unit attention)
 3. **Break the 6-degrees wall** (one-step intentional reach)
 4. **Enable human uniqueness in an AI economy** (location/ownership/credentials/connections/judgment)
+5. **Protect privacy by design** (reachable without being searchable; private contact info stays hidden)
 
 ---
 
@@ -17,6 +18,8 @@ Every external message should reinforce the same core story:
 
 - Knokio Direct protects attention with filtered messaging.
 - Knokio Reach compresses global coordination to one intentional hop.
+- Knokio keeps people reachable without making them publicly searchable.
+- Knokio profiles are not publicly browsable directories, and private contact details are not exposed by default.
 - Together, they let humans and AI agents reach each other on clear, consent-based terms.
 
 ---
@@ -26,12 +29,14 @@ Every external message should reinforce the same core story:
 ### Primary promise
 - “Stay reachable without being overwhelmed.”
 - “Reach the right human or agent in one structured step.”
+- “Be reachable without exposing your private contact details.”
 
 ### Supporting claims
 - Better signal-to-noise
 - Faster decision and routing
 - Less exposure, more control
 - Safer and auditable coordination
+- Private-by-default visibility (no open profile browsing)
 
 ### Proof style
 - before/after metrics
@@ -43,19 +48,19 @@ Every external message should reinforce the same core story:
 ## Audience-specific framing
 
 ### Creators / influencers
-- Emphasize inbound filtering and time protection
-- CTA: “Replace your public email/DM with a Knokio door.”
+- Emphasize inbound filtering, time protection, and privacy from mass scraping
+- CTA: “Replace your public email/DM with a private Knokio door.”
 
 ### Agent builders / AI startups
-- Emphasize hiring humans for unique tasks at scale
+- Emphasize hiring humans for unique tasks at scale with policy + privacy controls
 - CTA: “Integrate Knokio Reach to route agent requests with policy + auditability.”
 
 ### Safety and advocacy orgs
-- Emphasize noise/threat filtering and operator protection
+- Emphasize noise/threat filtering, operator protection, and privacy safeguards
 - CTA: “Deploy structured inbound with moderation controls and escalation paths.”
 
 ### Expat / cross-border communities
-- Emphasize faster trusted coordination across distance
+- Emphasize faster trusted coordination across distance without exposing personal details publicly
 - CTA: “Use Knokio to find and reach the right people in one step.”
 
 ---
@@ -68,12 +73,15 @@ Every external message should reinforce the same core story:
 - “consent-based reachability”
 - “one-hop intentional coordination”
 - “human uniqueness in the AI era”
+- “reachable without being searchable”
+- “no public profile browsing by default”
 
 ### Avoid
 - hype-first AI buzzwords without operational meaning
 - “social network” framing
 - “open directory / public graph” framing
 - claims that imply uncontrolled surveillance or scraping
+- wording that suggests private profiles/contact details are publicly visible
 
 ---
 
@@ -98,6 +106,7 @@ Preferred structure for most content:
 - “From noisy outreach to intentional coordination.”
 - “Reach anyone on terms that respect everyone.”
 - “Human uniqueness, agent speed, consent by default.”
+- “Reachable without searchable.”
 
 ---
 
@@ -106,11 +115,14 @@ Preferred structure for most content:
 ### “Is this a marketplace or social network?”
 No. Knokio is a consent and routing layer, not a feed or public directory.
 
+### “Can people browse my profile or see my private contact details?”
+Not by default. Knokio is private-by-design: no open profile browsing, and private contact details are only revealed through consented workflows.
+
 ### “Won’t AI agents spam humans?”
 Not by default. Knokio enforces policy gates, auth, and rate constraints.
 
 ### “Why not just use email/DM?”
-Email/DM maximizes volume; Knokio optimizes intentionality and outcome quality.
+Email/DM maximizes volume; Knokio optimizes intentionality, privacy, and outcome quality.
 
 ### “Can this replace introductions?”
 It complements them by reducing hop count with explicit, structured requests.
@@ -131,5 +143,6 @@ Before shipping any message, verify:
 - Does it mention noise reduction or attention ROI?
 - Does it connect to one-hop reach / 6-degrees compression?
 - Does it preserve consent/privacy positioning?
+- Does it clearly state that profiles are not publicly browsable by default?
 - Does it highlight human uniqueness in the AI loop?
 - Is the CTA clear and audience-specific?
