@@ -180,6 +180,7 @@ export {
   rotateWebhookSecret,
   listDeliveries,
   dispatchWebhookEvent,
+  pingWebhook,
   ReachWebhookCreateSchema,
   ReachWebhookUpdateSchema,
 } from './webhooks';

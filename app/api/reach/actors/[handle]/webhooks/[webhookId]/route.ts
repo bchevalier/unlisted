@@ -24,6 +24,7 @@ import {
   deleteWebhook,
   rotateWebhookSecret,
   listDeliveries,
+  pingWebhook,
   ReachWebhookUpdateSchema,
 } from '../../../../../../../lib/reach/webhooks';
 
@@ -162,8 +163,13 @@ export async function POST(
       return Response.json({ ok: true, secret: result.secret });
     }
 
+    if (action === 'ping') {
+      const result = await pingWebhook(resolved.webhookId);
+      return Response.json({ ok: true, ping: result });
+    }
+
     return Response.json(
-      { ok: false, error: 'Unknown action. Supported: rotate-secret' },
+      { ok: false, error: 'Unknown action. Supported: rotate-secret, ping' },
       { status: 400 },
     );
   } catch (error) {

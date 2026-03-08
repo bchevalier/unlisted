@@ -24,8 +24,6 @@
 import crypto from 'node:crypto';
 import { db } from '../db';
 import type { ReachContractEventActor, ReachContractEventType } from './contracts';
-// TODO: re-enable when webhook dispatch is wired into routing
-// import { dispatchWebhookEvent } from './webhooks';
 
 // ---------------------------------------------------------------------------
 // Types

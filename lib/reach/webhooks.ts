@@ -459,6 +459,87 @@ async function deliverToWebhook(
 }
 
 // ---------------------------------------------------------------------------
+// Test / Ping
+// ---------------------------------------------------------------------------
+
+/**
+ * Send a test ping to a webhook endpoint to verify it's reachable.
+ *
+ * Sends a synthetic `ping` event that contains no real contract data.
+ * The webhook should respond with 2xx. Records no delivery log.
+ *
+ * @param webhookId - the webhook to ping
+ * @returns ping result with status code and latency
+ */
+export async function pingWebhook(webhookId: string): Promise<{
+  success: boolean;
+  statusCode?: number;
+  latencyMs: number;
+  error?: string;
+}> {
+  const webhook = await db.reachWebhook.findUnique({
+    where: { id: webhookId },
+    select: { id: true, url: true, secretHash: true, isActive: true },
+  });
+
+  if (!webhook) throw new ReachError('Webhook not found', 'WEBHOOK_NOT_FOUND', 404);
+
+  const payload = {
+    event: 'ping',
+    webhookId: webhook.id,
+    timestamp: new Date().toISOString(),
+    message: 'This is a test ping from Knokio Reach. No action required.',
+  };
+
+  const body = JSON.stringify(payload);
+
+  let signature: string | undefined;
+  if (webhook.secretHash) {
+    signature = crypto
+      .createHmac('sha256', webhook.secretHash)
+      .update(body)
+      .digest('hex');
+  }
+
+  const start = Date.now();
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), WEBHOOK_TIMEOUT_MS);
+
+    const response = await fetch(webhook.url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Knokio-Reach/1.0',
+        'X-Knokio-Event': 'ping',
+        'X-Knokio-Webhook-Id': webhook.id,
+        ...(signature ? { 'X-Knokio-Signature': signature } : {}),
+      },
+      body,
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+    const latencyMs = Date.now() - start;
+
+    return {
+      success: response.ok,
+      statusCode: response.status,
+      latencyMs,
+      error: response.ok ? undefined : `HTTP ${response.status}`,
+    };
+  } catch (err) {
+    const latencyMs = Date.now() - start;
+    return {
+      success: false,
+      latencyMs,
+      error: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 

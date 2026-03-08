@@ -37,6 +37,7 @@ import {
   rotateWebhookSecret,
   dispatchWebhookEvent,
   listDeliveries,
+  pingWebhook,
 } from './webhooks';
 
 // ---------------------------------------------------------------------------
@@ -330,6 +331,107 @@ describe('dispatchWebhookEvent', () => {
 
     const fetchCall = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
     expect(fetchCall[1].headers['X-Knokio-Signature']).toBeDefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: Ping
+// ---------------------------------------------------------------------------
+
+describe('pingWebhook', () => {
+  let originalFetch: typeof globalThis.fetch;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    originalFetch = globalThis.fetch;
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  it('returns success on 200 response', async () => {
+    mockFns.reachWebhook.findUnique.mockResolvedValue({
+      id: 'wh-1',
+      url: 'https://example.com/hook',
+      secretHash: null,
+      isActive: true,
+    });
+
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+    }) as unknown as typeof fetch;
+
+    const result = await pingWebhook('wh-1');
+    expect(result.success).toBe(true);
+    expect(result.statusCode).toBe(200);
+    expect(result.latencyMs).toBeGreaterThanOrEqual(0);
+
+    const fetchCall = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(fetchCall[1].headers['X-Knokio-Event']).toBe('ping');
+  });
+
+  it('returns failure on non-2xx response', async () => {
+    mockFns.reachWebhook.findUnique.mockResolvedValue({
+      id: 'wh-1',
+      url: 'https://example.com/hook',
+      secretHash: null,
+      isActive: true,
+    });
+
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 503,
+    }) as unknown as typeof fetch;
+
+    const result = await pingWebhook('wh-1');
+    expect(result.success).toBe(false);
+    expect(result.statusCode).toBe(503);
+    expect(result.error).toBe('HTTP 503');
+  });
+
+  it('returns failure on network error', async () => {
+    mockFns.reachWebhook.findUnique.mockResolvedValue({
+      id: 'wh-1',
+      url: 'https://example.com/hook',
+      secretHash: null,
+      isActive: true,
+    });
+
+    globalThis.fetch = vi.fn().mockRejectedValue(
+      new Error('Connection refused'),
+    ) as unknown as typeof fetch;
+
+    const result = await pingWebhook('wh-1');
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('Connection refused');
+    expect(result.latencyMs).toBeGreaterThanOrEqual(0);
+  });
+
+  it('includes HMAC signature when webhook has secretHash', async () => {
+    mockFns.reachWebhook.findUnique.mockResolvedValue({
+      id: 'wh-1',
+      url: 'https://example.com/hook',
+      secretHash: 'mysecret',
+      isActive: true,
+    });
+
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+    }) as unknown as typeof fetch;
+
+    await pingWebhook('wh-1');
+
+    const fetchCall = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(fetchCall[1].headers['X-Knokio-Signature']).toBeDefined();
+  });
+
+  it('throws when webhook not found', async () => {
+    mockFns.reachWebhook.findUnique.mockResolvedValue(null);
+
+    await expect(pingWebhook('missing')).rejects.toThrow('Webhook not found');
   });
 });
 
