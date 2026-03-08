@@ -81,23 +81,26 @@ Run multiple acquisition lanes simultaneously, while keeping product scope disci
 
 ---
 
-### Lane C — AI Agent economy (Reach)
-**Who:** AI agents, agent operators, automation agencies, AI-native startups.
+### Lane C — AI agents + org systems (Reach as system tool)
+**Who:** AI agents, agent operators, automation agencies, AI-native startups, ops teams in organizations.
 
-**Problem:** Agents can generate tasks but fail at the final mile requiring human uniqueness.
+**Problem:** Agents and org workflows generate tasks but fail at the final mile requiring human uniqueness.
 
-**Message:** Use Knokio Reach to hire humans by policy, not random outreach.
+**Message:** Knokio Reach is an infrastructure/system tool: requests are policy-routed automatically to the right human or agent, without human admin intervention in normal flow.
 
 **Offer:**
-- agent-ready request contracts
+- API-first request contracts
+- policy engine for automatic routing (no manual dispatcher by default)
 - human routing for unique capabilities
 - audit trail + completion receipts
 - privacy-preserving reachability controls
+- optional human override/escalation for policy exceptions only
 
 **Primary channels:**
 - API/docs-driven growth
 - integrations and partner launches
 - direct outreach to agent builders
+- ops tooling partnerships (helpdesk/workflow/orchestration ecosystems)
 
 ---
 
@@ -182,7 +185,7 @@ If Direct KPIs regress, shift allocation back to Direct immediately.
 - Recruit 10 design partners across Direct-heavy lanes (A/B)
 
 ### Phase 2 (31–60 days): Reach controlled alpha
-- Start Reach pilots with selected AI operators and expat cohorts (C/D)
+- Start Reach pilots with selected AI operators, org ops teams, and expat cohorts (C/D)
 - Keep Reach behind explicit stage controls (alpha/limited beta)
 - Publish trust posture docs + privacy guarantees in GTM assets
 
@@ -196,7 +199,7 @@ If Direct KPIs regress, shift allocation back to Direct immediately.
 ## Packaging and pricing direction (initial)
 
 - **Direct plan:** inbound filtering + attention protection + privacy controls
-- **Reach plan:** routing + agent requests + verified completion
+- **Reach plan:** system-tool routing + agent/org requests + verified completion
 - **Org/Safety plan:** moderation governance + audit + escalation requirements
 
 ---
