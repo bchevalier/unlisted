@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 type RequestActionsProps = {
   requestId: string;
-  status: 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'EXPIRED';
+  status: 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'EXPIRED' | 'AWAITING_COMPLETION';
 };
 
 export function RequestActions({ requestId, status }: RequestActionsProps) {

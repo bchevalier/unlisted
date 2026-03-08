@@ -53,7 +53,11 @@ export default async function RequestStatusPage({ params }: RequestStatusPagePro
       <p>Submitted: {new Date(request.createdAt).toLocaleString()}</p>
       <p>Door: {request.door.displayName}</p>
 
-      {canReveal ? (
+      {request.status === 'AWAITING_COMPLETION' ? (
+        <p>
+          This request is awaiting additional information. Please check your email for a completion link.
+        </p>
+      ) : canReveal ? (
         <p>
           Contact detail: <strong>{request.door.settings?.revealValue ?? '(not configured)'}</strong>
         </p>

@@ -557,7 +557,37 @@ const emailCompletionSchema = z.object({
   fields: z.record(z.string(), z.string()).default({})
 });
 
-export async function getRequestForCompletion(completionToken: string) {
+type CompletionLookupResult =
+  | null
+  | { status: 'expired'; reason: 'already_completed' | 'token_expired' }
+  | {
+      status: 'ready';
+      request: {
+        senderName: string | null;
+        senderEmail: string | null;
+        title: string | null;
+        message: string;
+        door: {
+          slug: string;
+          displayName: string;
+          headline: string | null;
+          categories: Array<{
+            key: string;
+            label: string;
+            description: string | null;
+            fields: Array<{
+              key: string;
+              label: string;
+              type: 'TEXT' | 'TEXTAREA' | 'NUMBER' | 'URL' | 'EMAIL';
+              required: boolean;
+              placeholder: string | null;
+            }>;
+          }>;
+        };
+      };
+    };
+
+export async function getRequestForCompletion(completionToken: string): Promise<CompletionLookupResult> {
   const request = await db.request.findUnique({
     where: { completionToken },
     select: {
@@ -602,15 +632,15 @@ export async function getRequestForCompletion(completionToken: string) {
   }
 
   if (request.status !== RequestStatus.AWAITING_COMPLETION) {
-    return { expired: true, reason: 'already_completed' as const };
+    return { status: 'expired', reason: 'already_completed' };
   }
 
   if (request.completionExpiresAt && request.completionExpiresAt < new Date()) {
-    return { expired: true, reason: 'token_expired' as const };
+    return { status: 'expired', reason: 'token_expired' };
   }
 
   return {
-    expired: false,
+    status: 'ready',
     request: {
       senderName: request.senderName,
       senderEmail: request.senderEmail,

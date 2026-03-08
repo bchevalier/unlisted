@@ -18,13 +18,14 @@ type DirectInboxPageProps = {
 const STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: '', label: 'All' },
   { value: 'PENDING', label: 'Pending' },
+  { value: 'AWAITING_COMPLETION', label: 'Awaiting completion' },
   { value: 'ACCEPTED', label: 'Accepted' },
   { value: 'DECLINED', label: 'Declined' },
   { value: 'EXPIRED', label: 'Expired' }
 ];
 
 function isValidStatus(value: string): value is RequestStatus {
-  return ['PENDING', 'ACCEPTED', 'DECLINED', 'EXPIRED'].includes(value);
+  return ['PENDING', 'ACCEPTED', 'DECLINED', 'EXPIRED', 'AWAITING_COMPLETION'].includes(value);
 }
 
 export default async function DirectInboxPage({ searchParams }: DirectInboxPageProps) {
