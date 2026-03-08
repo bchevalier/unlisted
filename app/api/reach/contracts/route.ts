@@ -4,6 +4,20 @@
  *
  * Auth required. Supports ?actorId= to list contracts for an org the caller
  * is a member of (requires CONTRACT_READ on that org).
+ *
+ * GET query params:
+ *   - role:          initiator | target | both (default: both)
+ *   - status:        contract status filter
+ *   - type:          contract type filter (HUMAN_HUMAN, AI_HUMAN, etc.)
+ *   - createdAfter:  ISO date — only contracts created after this time
+ *   - createdBefore: ISO date — only contracts created before this time
+ *   - search:        keyword search on purpose field (case-insensitive)
+ *   - sortBy:        createdAt | updatedAt (default: createdAt)
+ *   - sortOrder:     asc | desc (default: desc)
+ *   - escalated:     true — list only escalated contracts pending review
+ *   - actorId:       list contracts for this actor (org delegation)
+ *   - limit:         max results (1–100, default 50)
+ *   - offset:        pagination offset (default 0)
  */
 
 import { ZodError } from 'zod';
@@ -16,6 +30,7 @@ import {
   unauthorizedResponse,
 } from '../../../../lib/reach/auth';
 import { resolveAuthz, requirePermission } from '../../../../lib/reach/permissions';
+import type { ListContractsOptions } from '../../../../lib/reach/service';
 
 export async function POST(request: Request) {
   const blocked = reachDisabledResponse();
@@ -70,11 +85,9 @@ export async function GET(request: Request) {
 
   try {
     const url = new URL(request.url);
-    const role = (url.searchParams.get('role') as 'initiator' | 'target' | 'both') || 'both';
-    const status = url.searchParams.get('status') as ReachContractStatus | null;
     const escalated = url.searchParams.get('escalated') === 'true';
-    const limit = Math.min(parseInt(url.searchParams.get('limit') || '50', 10), 100);
-    const offset = Math.max(parseInt(url.searchParams.get('offset') || '0', 10), 0);
+    const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit') || '50', 10) || 50, 1), 100);
+    const offset = Math.max(parseInt(url.searchParams.get('offset') || '0', 10) || 0, 0);
 
     // If ?actorId is provided, list contracts for that actor (org delegation).
     const forActorId = url.searchParams.get('actorId') || auth.actorId;
@@ -95,13 +108,41 @@ export async function GET(request: Request) {
       });
     }
 
-    const { contracts, totalCount } = await listContracts(
-      forActorId,
-      role,
-      status || undefined,
+    // Build query options from URL params.
+    const opts: ListContractsOptions = {
+      role: (url.searchParams.get('role') as 'initiator' | 'target' | 'both') || 'both',
       limit,
       offset,
-    );
+    };
+
+    const status = url.searchParams.get('status');
+    if (status) opts.status = status as ReachContractStatus;
+
+    const type = url.searchParams.get('type');
+    if (type) opts.type = type;
+
+    const createdAfter = url.searchParams.get('createdAfter');
+    if (createdAfter) {
+      const d = new Date(createdAfter);
+      if (!isNaN(d.getTime())) opts.createdAfter = d;
+    }
+
+    const createdBefore = url.searchParams.get('createdBefore');
+    if (createdBefore) {
+      const d = new Date(createdBefore);
+      if (!isNaN(d.getTime())) opts.createdBefore = d;
+    }
+
+    const search = url.searchParams.get('search');
+    if (search) opts.search = search;
+
+    const sortBy = url.searchParams.get('sortBy');
+    if (sortBy === 'createdAt' || sortBy === 'updatedAt') opts.sortBy = sortBy;
+
+    const sortOrder = url.searchParams.get('sortOrder');
+    if (sortOrder === 'asc' || sortOrder === 'desc') opts.sortOrder = sortOrder;
+
+    const { contracts, totalCount } = await listContracts(forActorId, opts);
 
     return Response.json({
       ok: true,

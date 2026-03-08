@@ -139,6 +139,69 @@ export async function getActorByUserId(userId: string) {
   return db.reachActor.findUnique({ where: { userId } });
 }
 
+/**
+ * Query options for listing actors.
+ */
+export interface ListActorsOptions {
+  type?: string;
+  search?: string;
+  includeInactive?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+/**
+ * List actors with optional filtering by type, search (handle/displayName),
+ * and active status. Returns actors + totalCount for pagination.
+ *
+ * The search parameter matches against handle or displayName (case-insensitive).
+ */
+export async function listActors(options: ListActorsOptions = {}) {
+  const effectiveLimit = Math.min(Math.max(options.limit ?? 50, 1), 100);
+  const effectiveOffset = Math.max(options.offset ?? 0, 0);
+
+  const where: Record<string, unknown> = {};
+
+  if (!options.includeInactive) {
+    where.isActive = true;
+  }
+
+  if (options.type) {
+    where.type = options.type;
+  }
+
+  if (options.search && options.search.trim().length > 0) {
+    const term = options.search.trim();
+    where.OR = [
+      { handle: { contains: term, mode: 'insensitive' } },
+      { displayName: { contains: term, mode: 'insensitive' } },
+    ];
+  }
+
+  const [actors, totalCount] = await Promise.all([
+    db.reachActor.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: effectiveLimit,
+      skip: effectiveOffset,
+      select: {
+        id: true,
+        type: true,
+        handle: true,
+        displayName: true,
+        isActive: true,
+        capabilities: true,
+        endpoint: true,
+        agentMeta: true,
+        createdAt: true,
+      },
+    }),
+    db.reachActor.count({ where }),
+  ]);
+
+  return { actors, totalCount };
+}
+
 export async function deactivateActor(actorId: string) {
   return db.reachActor.update({
     where: { id: actorId },
@@ -740,29 +803,81 @@ export async function getContract(contractId: string) {
 }
 
 /**
+ * Query options for listing contracts beyond the basic filters.
+ */
+export interface ListContractsOptions {
+  role?: 'initiator' | 'target' | 'both';
+  status?: ReachContractStatus;
+  type?: string;
+  createdAfter?: Date;
+  createdBefore?: Date;
+  search?: string;
+  sortBy?: 'createdAt' | 'updatedAt';
+  sortOrder?: 'asc' | 'desc';
+  limit?: number;
+  offset?: number;
+}
+
+/**
  * List contracts for an actor (as initiator or target).
  * Returns contracts + totalCount for proper client-side pagination.
+ *
+ * Supports filtering by status, contract type, date range, and purpose keyword search.
  */
 export async function listContracts(
   actorId: string,
-  role: 'initiator' | 'target' | 'both' = 'both',
+  roleOrOptions?: 'initiator' | 'target' | 'both' | ListContractsOptions,
   status?: ReachContractStatus,
   limit = 50,
   offset = 0,
 ) {
+  // Normalize arguments: support both legacy positional and options object.
+  let opts: ListContractsOptions;
+  if (typeof roleOrOptions === 'object' && roleOrOptions !== null) {
+    opts = roleOrOptions;
+  } else {
+    opts = {
+      role: roleOrOptions ?? 'both',
+      status,
+      limit,
+      offset,
+    };
+  }
+
+  const role = opts.role ?? 'both';
+  const effectiveLimit = Math.min(Math.max(opts.limit ?? 50, 1), 100);
+  const effectiveOffset = Math.max(opts.offset ?? 0, 0);
+
   const where: Record<string, unknown> = {};
   if (role === 'initiator') where.initiatorId = actorId;
   else if (role === 'target') where.targetId = actorId;
   else where.OR = [{ initiatorId: actorId }, { targetId: actorId }];
 
-  if (status) where.status = status;
+  if (opts.status) where.status = opts.status;
+  if (opts.type) where.type = opts.type;
+
+  // Date range filters.
+  if (opts.createdAfter || opts.createdBefore) {
+    const createdAtFilter: Record<string, Date> = {};
+    if (opts.createdAfter) createdAtFilter.gte = opts.createdAfter;
+    if (opts.createdBefore) createdAtFilter.lte = opts.createdBefore;
+    where.createdAt = createdAtFilter;
+  }
+
+  // Purpose keyword search (case-insensitive contains).
+  if (opts.search && opts.search.trim().length > 0) {
+    where.purpose = { contains: opts.search.trim(), mode: 'insensitive' };
+  }
+
+  const sortBy = opts.sortBy ?? 'createdAt';
+  const sortOrder = opts.sortOrder ?? 'desc';
 
   const [contracts, totalCount] = await Promise.all([
     db.reachContract.findMany({
       where,
-      orderBy: { createdAt: 'desc' },
-      take: limit,
-      skip: offset,
+      orderBy: { [sortBy]: sortOrder },
+      take: effectiveLimit,
+      skip: effectiveOffset,
       include: {
         initiator: { select: { id: true, handle: true, displayName: true, type: true } },
         target: { select: { id: true, handle: true, displayName: true, type: true } },

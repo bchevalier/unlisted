@@ -57,6 +57,7 @@ export {
   createActor,
   getActorByHandle,
   getActorByUserId,
+  listActors,
   deactivateActor,
   updateActor,
   rotateApiKey,
@@ -91,13 +92,18 @@ export {
   ReachError,
 } from './service';
 
-export type { ReachActorUpdate } from './service';
+export type { ReachActorUpdate, ListContractsOptions, ListActorsOptions } from './service';
 
 export {
   authenticateReachRequest,
   reachDisabledResponse,
   unauthorizedResponse,
 } from './auth';
+
+export {
+  canAccessContract,
+  resolveContractEventActor,
+} from './access';
 
 export type { ReachAuthResult } from './auth';
 

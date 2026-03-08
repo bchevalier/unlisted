@@ -12,14 +12,14 @@
 
 import { z, ZodError } from 'zod';
 import { REACH_CONTRACT_STATUSES } from '../../../../../../lib/reach/contracts';
-import type { ReachContractStatus, ReachContractEventActor } from '../../../../../../lib/reach/contracts';
+import type { ReachContractStatus } from '../../../../../../lib/reach/contracts';
 import { transitionContract, getContract, ReachError } from '../../../../../../lib/reach';
 import {
   authenticateReachRequest,
   reachDisabledResponse,
   unauthorizedResponse,
 } from '../../../../../../lib/reach/auth';
-import { resolveAuthz, hasPermission } from '../../../../../../lib/reach/permissions';
+import { resolveContractEventActor } from '../../../../../../lib/reach/access';
 
 const TransitionSchema = z.object({
   status: z.enum(REACH_CONTRACT_STATUSES),
@@ -45,7 +45,7 @@ export async function POST(
   }
 
   // Determine event actor role: check direct party match, then org membership.
-  const eventActor = await resolveEventActor(auth, contract.initiatorId, contract.targetId);
+  const eventActor = await resolveContractEventActor(auth, contract.initiatorId, contract.targetId);
   if (!eventActor) {
     return Response.json({ ok: false, error: 'Forbidden' }, { status: 403 });
   }
@@ -78,32 +78,4 @@ export async function POST(
     console.error('[reach/contracts/transition POST]', error);
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
-}
-
-/**
- * Resolve the event actor label for audit trail purposes.
- * Returns INITIATOR or TARGET based on direct match or org membership with CONTRACT_ACT.
- */
-async function resolveEventActor(
-  auth: { actorId: string; actorType: string; userId: string | null },
-  initiatorId: string,
-  targetId: string,
-): Promise<ReachContractEventActor | null> {
-  // Direct match.
-  if (auth.actorId === initiatorId) return 'INITIATOR';
-  if (auth.actorId === targetId) return 'TARGET';
-
-  // Org membership on initiator side.
-  const initiatorAuthz = await resolveAuthz(auth, initiatorId);
-  if (initiatorAuthz && hasPermission(initiatorAuthz, 'CONTRACT_ACT')) {
-    return 'INITIATOR';
-  }
-
-  // Org membership on target side.
-  const targetAuthz = await resolveAuthz(auth, targetId);
-  if (targetAuthz && hasPermission(targetAuthz, 'CONTRACT_ACT')) {
-    return 'TARGET';
-  }
-
-  return null;
 }

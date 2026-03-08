@@ -78,7 +78,7 @@ import {
   fulfillContract,
   deactivateActorWithCascade,
   expireStaleContracts,
-  ReachError,
+  // ReachError used implicitly via .rejects.toThrow assertions
 } from './service';
 
 // ---------------------------------------------------------------------------

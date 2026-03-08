@@ -1,15 +1,28 @@
 /**
  * POST /api/reach/actors — Register a new Reach actor.
+ * GET  /api/reach/actors — List actors (auth required).
  *
  * For human users: requires keeper session; links actor to user.
  * For headless actors: no auth required (returns API key on creation).
+ *
+ * GET query params:
+ *   - type:     filter by actor type (HUMAN, AI_AGENT, ORGANIZATION)
+ *   - search:   keyword search on handle or displayName (case-insensitive)
+ *   - inactive: include inactive actors (default: false)
+ *   - limit:    max results (1–100, default 50)
+ *   - offset:   pagination offset (default 0)
  */
 
 import { ZodError } from 'zod';
 import { createActor, ReachError } from '../../../../lib/reach';
+import { listActors } from '../../../../lib/reach/service';
 import { ReachActorCreateSchema } from '../../../../lib/reach/contracts';
 import { getKeeperSessionFromRequest } from '../../../../lib/keeper-auth';
-import { reachDisabledResponse } from '../../../../lib/reach/auth';
+import {
+  authenticateReachRequest,
+  reachDisabledResponse,
+  unauthorizedResponse,
+} from '../../../../lib/reach/auth';
 
 export async function POST(request: Request) {
   const blocked = reachDisabledResponse();
@@ -67,6 +80,41 @@ export async function POST(request: Request) {
       );
     }
     console.error('[reach/actors POST]', error);
+    return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function GET(request: Request) {
+  const blocked = reachDisabledResponse();
+  if (blocked) return blocked;
+
+  const auth = await authenticateReachRequest(request);
+  if (!auth) return unauthorizedResponse();
+
+  try {
+    const url = new URL(request.url);
+    const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit') || '50', 10) || 50, 1), 100);
+    const offset = Math.max(parseInt(url.searchParams.get('offset') || '0', 10) || 0, 0);
+
+    const type = url.searchParams.get('type') ?? undefined;
+    const search = url.searchParams.get('search') ?? undefined;
+    const includeInactive = url.searchParams.get('inactive') === 'true';
+
+    const { actors, totalCount } = await listActors({
+      type,
+      search,
+      includeInactive,
+      limit,
+      offset,
+    });
+
+    return Response.json({
+      ok: true,
+      actors,
+      pagination: { totalCount, limit, offset },
+    });
+  } catch (error) {
+    console.error('[reach/actors GET]', error);
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

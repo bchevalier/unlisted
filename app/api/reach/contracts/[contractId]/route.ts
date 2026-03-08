@@ -11,7 +11,7 @@ import {
   reachDisabledResponse,
   unauthorizedResponse,
 } from '../../../../../lib/reach/auth';
-import { resolveAuthz, hasPermission } from '../../../../../lib/reach/permissions';
+import { canAccessContract } from '../../../../../lib/reach/access';
 
 export async function GET(
   request: Request,
@@ -30,47 +30,16 @@ export async function GET(
     return Response.json({ ok: false, error: 'Contract not found' }, { status: 404 });
   }
 
-  // Check access: direct party match OR org membership on either side.
-  const canAccess = await canAccessContract(
+  const hasAccess = await canAccessContract(
     auth,
     contract.initiatorId,
     contract.targetId,
     'CONTRACT_READ',
   );
 
-  if (!canAccess) {
+  if (!hasAccess) {
     return Response.json({ ok: false, error: 'Forbidden' }, { status: 403 });
   }
 
   return Response.json({ ok: true, contract });
-}
-
-/**
- * Check if the authenticated caller can access a contract via direct ownership
- * or org membership on either the initiator or target side.
- */
-async function canAccessContract(
-  auth: { actorId: string; actorType: string; userId: string | null },
-  initiatorId: string,
-  targetId: string,
-  permission: 'CONTRACT_READ' | 'CONTRACT_ACT',
-): Promise<boolean> {
-  // Direct party match.
-  if (auth.actorId === initiatorId || auth.actorId === targetId) {
-    return true;
-  }
-
-  // Org membership on initiator side.
-  const initiatorAuthz = await resolveAuthz(auth, initiatorId);
-  if (initiatorAuthz && hasPermission(initiatorAuthz, permission)) {
-    return true;
-  }
-
-  // Org membership on target side.
-  const targetAuthz = await resolveAuthz(auth, targetId);
-  if (targetAuthz && hasPermission(targetAuthz, permission)) {
-    return true;
-  }
-
-  return false;
 }
