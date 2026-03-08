@@ -593,9 +593,11 @@ export async function createEmailRequest(input: unknown) {
       completionToken,
       completionExpiresAt,
       structuredData: {
-        to: payload.to,
-        from: payload.from,
-        alias: emailAlias.alias
+        _emailMeta: {
+          to: payload.to,
+          from: payload.from,
+          alias: emailAlias.alias
+        }
       },
       events: {
         create: {
@@ -788,9 +790,18 @@ export async function completeEmailRequest(
       id: true,
       status: true,
       doorId: true,
+      senderEmail: true,
       completionExpiresAt: true,
+      structuredData: true,
       door: {
         select: {
+          displayName: true,
+          settings: {
+            select: {
+              autoReplyEnabled: true,
+              autoReplyMessage: true
+            }
+          },
           categories: {
             where: { key: payload.categoryKey, isEnabled: true },
             select: {
@@ -846,13 +857,20 @@ export async function completeEmailRequest(
     }
   }
 
+  // Preserve email metadata from original structuredData
+  const existingData = (request.structuredData as Record<string, unknown> | null) ?? {};
+  const mergedData: Record<string, string | Record<string, string>> = { ...sanitizedFields };
+  if (existingData._emailMeta && typeof existingData._emailMeta === 'object') {
+    mergedData._emailMeta = existingData._emailMeta as Record<string, string>;
+  }
+
   // Transition to PENDING with structured data, clear completion token
   const completed = await db.request.update({
     where: { id: request.id },
     data: {
       status: RequestStatus.PENDING,
       categoryId: category.id,
-      structuredData: sanitizedFields,
+      structuredData: mergedData,
       completionToken: null,
       completionExpiresAt: null,
       events: {
@@ -882,6 +900,18 @@ export async function completeEmailRequest(
     title: completed.title,
     messagePreview: completed.message
   });
+
+  // Fire-and-forget: send auto-reply to knocker if enabled
+  if (request.door.settings?.autoReplyEnabled && request.senderEmail) {
+    notifyKnockerAutoReply({
+      knockerEmail: request.senderEmail,
+      doorName: request.door.displayName,
+      autoReplyMessage: request.door.settings.autoReplyMessage,
+      subject: completed.title
+    }).catch((err) => {
+      console.error('[notification:auto-reply-after-completion-failed]', err);
+    });
+  }
 
   return {
     id: completed.id,

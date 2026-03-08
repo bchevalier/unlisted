@@ -63,6 +63,14 @@ export default async function CompletionPage({ params }: CompletionPageProps) {
           <p>
             <strong>From:</strong> {request.senderEmail ?? 'Unknown sender'}
           </p>
+          {request.message ? (
+            <details className="completion-original-message">
+              <summary>Your original message</summary>
+              <blockquote style={{ whiteSpace: 'pre-wrap', margin: '8px 0', padding: '8px 12px', background: '#f5f5f5', borderLeft: '3px solid #ccc', color: '#444', fontSize: '14px' }}>
+                {request.message}
+              </blockquote>
+            </details>
+          ) : null}
         </div>
 
         <CompletionForm

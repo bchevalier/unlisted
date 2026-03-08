@@ -26,7 +26,14 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
   }
 
   const backSlug = resolvedSearchParams.slug ?? request.door.slug;
-  const structuredData = request.structuredData as Record<string, string> | null;
+  const rawStructuredData = request.structuredData as Record<string, unknown> | null;
+  const emailMeta = rawStructuredData?._emailMeta as Record<string, string> | undefined;
+  // Filter out internal metadata keys for display
+  const structuredData = rawStructuredData
+    ? Object.fromEntries(
+        Object.entries(rawStructuredData).filter(([key]) => !key.startsWith('_'))
+      ) as Record<string, string>
+    : null;
   const hasStructuredFields = structuredData && Object.keys(structuredData).length > 0;
 
   return (
@@ -82,6 +89,34 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
         <p style={{ whiteSpace: 'pre-wrap' }}>{request.message}</p>
       </div>
 
+      {emailMeta && (
+        <>
+          <h2>Email Origin</h2>
+          <table className="detail-meta">
+            <tbody>
+              {emailMeta.from && (
+                <tr>
+                  <td><strong>From (raw)</strong></td>
+                  <td>{emailMeta.from}</td>
+                </tr>
+              )}
+              {emailMeta.to && (
+                <tr>
+                  <td><strong>To</strong></td>
+                  <td>{emailMeta.to}</td>
+                </tr>
+              )}
+              {emailMeta.alias && (
+                <tr>
+                  <td><strong>Alias</strong></td>
+                  <td>{emailMeta.alias}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </>
+      )}
+
       {hasStructuredFields && (
         <>
           <h2>Structured Data</h2>
@@ -90,7 +125,7 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
               {Object.entries(structuredData).map(([key, value]) => (
                 <tr key={key}>
                   <td><strong>{key}</strong></td>
-                  <td>{value}</td>
+                  <td>{String(value)}</td>
                 </tr>
               ))}
             </tbody>
