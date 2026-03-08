@@ -190,9 +190,9 @@ Tasks should be checked only when implemented and verified.
 ## 11R. Reach Pilot (Parallel Track)
 
 - [ ] Create Reach client routes and navigation isolation (`/reach/*`)
-- [ ] Keep Reach behind feature flags by default
-- [ ] Implement Reach request contracts (human↔human, human↔AI, AI↔human, AI↔AI)
-- [ ] Implement policy-based automatic routing (no human admin intervention in normal flow)
+- [x] Keep Reach behind feature flags by default
+- [x] Implement Reach request contracts (human↔human, human↔AI, AI↔human, AI↔AI)
+- [x] Implement policy-based automatic routing (no human admin intervention in normal flow)
 - [ ] Add optional human override/escalation only for policy exceptions
 - [ ] Add org/system integrations (API-first inbound + outbound hooks)
 - [ ] Add Reach pilot metrics (path length, time-to-qualified-counterparty, one-hop success)
