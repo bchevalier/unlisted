@@ -16,9 +16,9 @@ Reach is additive, optional, and must never weaken Direct’s core promise.
 ## 1) Product clarity guardrails
 
 ### Entry by intent
-Use explicit intent-based entry points:
-- “I want to protect my inbound” → Direct journey
-- “I want to find/reach the right human or agent” → Reach journey
+Use explicit intent-based entry points from the root portal (`knokio.io`):
+- “I want to protect my inbound” → Direct client journey
+- “I want to find/reach the right human or agent” → Reach client journey
 
 ### UI separation
 - Keep Direct and Reach navigation clearly labeled.
