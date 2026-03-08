@@ -395,8 +395,10 @@ async function deliverToWebhook(
   let lastError: string | undefined;
   let lastStatus: number | undefined;
   let success = false;
+  let actualAttempts = 0;
 
   for (let attempt = 0; attempt <= WEBHOOK_MAX_RETRIES; attempt++) {
+    actualAttempts = attempt + 1;
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), WEBHOOK_TIMEOUT_MS);
@@ -443,13 +445,13 @@ async function deliverToWebhook(
     }
   }
 
-  // Update delivery record.
+  // Update delivery record with actual attempt count.
   await db.reachWebhookDelivery.update({
     where: { id: delivery.id },
     data: {
       status: success ? 'success' : 'failed',
       httpStatus: lastStatus ?? null,
-      attempts: Math.min(WEBHOOK_MAX_RETRIES + 1, WEBHOOK_MAX_RETRIES + 1),
+      attempts: actualAttempts,
       lastError: success ? null : (lastError ?? null),
       deliveredAt: success ? new Date() : null,
     },

@@ -512,13 +512,16 @@ export async function proposeContract(
   if (initiator.id === target.id) throw new ReachError('Cannot reach yourself', 'SELF_REACH', 400);
 
   // Safety checks: blocklist, rate limit, cooldown.
-  // These throw ReachSafetyError (extends Error) with appropriate status codes.
+  // These are independent of each other, so run in parallel for lower latency.
   try {
-    if (await isBlocked(target.id, initiator.id)) {
+    const [blocked] = await Promise.all([
+      isBlocked(target.id, initiator.id),
+      enforceActorRateLimit(initiator.id),
+      enforcePairCooldown(initiator.id, target.id),
+    ]);
+    if (blocked) {
       throw new ReachError('This actor has blocked you', 'BLOCKED', 403);
     }
-    await enforceActorRateLimit(initiator.id);
-    await enforcePairCooldown(initiator.id, target.id);
   } catch (err) {
     if (err instanceof ReachSafetyError) {
       throw new ReachError(err.message, err.code, err.statusCode);
@@ -555,20 +558,20 @@ export async function proposeContract(
     throw err;
   }
 
-  // Evaluate target's policies.
-  const policies = await db.reachPolicy.findMany({
-    where: { actorId: target.id, isActive: true },
-    orderBy: { priority: 'desc' },
-  });
-
-  // Count contracts received by target this week.
+  // Evaluate target's policies + count weekly inbound in parallel.
   const weekStart = getWeekStart();
-  const weeklyCount = await db.reachContract.count({
-    where: {
-      targetId: target.id,
-      createdAt: { gte: weekStart },
-    },
-  });
+  const [policies, weeklyCount] = await Promise.all([
+    db.reachPolicy.findMany({
+      where: { actorId: target.id, isActive: true },
+      orderBy: { priority: 'desc' },
+    }),
+    db.reachContract.count({
+      where: {
+        targetId: target.id,
+        createdAt: { gte: weekStart },
+      },
+    }),
+  ]);
 
   const policyRecords: PolicyRecord[] = policies.map((p) => ({
     id: p.id,

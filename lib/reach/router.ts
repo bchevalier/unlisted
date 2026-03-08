@@ -365,6 +365,7 @@ async function deliverViaWebhooks(
 /**
  * Deliver to a single webhook with circuit breaker protection.
  * Skips delivery if the circuit is open, records outcome for breaker tracking.
+ * Also records a per-webhook delivery record in the DB for observability.
  */
 async function deliverToWebhookWithCircuitBreaker(
   webhook: { id: string; url: string; secretHash: string | null },
@@ -373,6 +374,17 @@ async function deliverToWebhookWithCircuitBreaker(
 ): Promise<DeliveryResult> {
   // Circuit breaker check.
   if (isCircuitOpen(webhook.id)) {
+    // Record skipped delivery for observability.
+    recordWebhookDelivery(
+      webhook.id,
+      contract.contractId,
+      event,
+      false,
+      0,
+      undefined,
+      'Circuit breaker open',
+    ).catch((err) => console.error('[reach:router:delivery-record]', err));
+
     return {
       channel: 'webhook',
       success: false,
@@ -391,7 +403,47 @@ async function deliverToWebhookWithCircuitBreaker(
   // Record outcome for circuit breaker.
   recordCircuitOutcome(webhook.id, result.success);
 
+  // Record per-webhook delivery in the DB for debugging.
+  recordWebhookDelivery(
+    webhook.id,
+    contract.contractId,
+    event,
+    result.success,
+    result.attempts,
+    result.statusCode,
+    result.error,
+  ).catch((err) => console.error('[reach:router:delivery-record]', err));
+
   return result;
+}
+
+/**
+ * Record a per-webhook delivery outcome in the DB.
+ * Non-blocking — failures are logged but never block the routing flow.
+ */
+async function recordWebhookDelivery(
+  webhookId: string,
+  contractId: string,
+  event: string,
+  success: boolean,
+  attempts: number,
+  httpStatus: number | undefined,
+  error: string | undefined,
+): Promise<void> {
+  const eventType = routingEventToEventType(event);
+  await db.reachWebhookDelivery.create({
+    data: {
+      webhookId,
+      contractId,
+      event: eventType ?? 'ROUTED',
+      status: success ? 'success' : 'failed',
+      httpStatus: httpStatus ?? null,
+      attempts,
+      lastError: error ?? null,
+      deliveredAt: success ? new Date() : null,
+      payload: {} as Parameters<typeof db.reachWebhookDelivery.create>[0]['data']['payload'],
+    },
+  });
 }
 
 /**
