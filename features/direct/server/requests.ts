@@ -241,6 +241,10 @@ const FORM_IP_RATE_LIMIT_MAX = 10;
 const FORM_SENDER_RATE_LIMIT_WINDOW_MINUTES = 60;
 const FORM_SENDER_RATE_LIMIT_MAX = 5;
 
+// Global IP rate limit — prevents a single IP from fanning out across many doors
+const GLOBAL_IP_RATE_LIMIT_WINDOW_MINUTES = 15;
+const GLOBAL_IP_RATE_LIMIT_MAX = 30;
+
 function hashForRateLimit(value: string): string {
   return crypto.createHash('sha256').update(value).digest('hex');
 }
@@ -257,6 +261,27 @@ async function enforceFormIPRateLimit(doorId: string, ipHash: string) {
   const count = await db.request.count({
     where: {
       doorId,
+      ipHash,
+      createdAt: { gte: since }
+    }
+  });
+
+  if (count >= maxRequests) {
+    throw new DirectValidationError('Too many requests from this address. Try again later.', 429);
+  }
+}
+
+async function enforceGlobalIPRateLimit(ipHash: string) {
+  const windowMinutes = Number(process.env.GLOBAL_IP_RATE_LIMIT_WINDOW_MINUTES ?? GLOBAL_IP_RATE_LIMIT_WINDOW_MINUTES);
+  const maxRequests = Number(process.env.GLOBAL_IP_RATE_LIMIT_MAX ?? GLOBAL_IP_RATE_LIMIT_MAX);
+
+  if (Number.isNaN(windowMinutes) || Number.isNaN(maxRequests) || windowMinutes <= 0 || maxRequests <= 0) {
+    return;
+  }
+
+  const since = new Date(Date.now() - windowMinutes * 60 * 1000);
+  const count = await db.request.count({
+    where: {
       ipHash,
       createdAt: { gte: since }
     }
@@ -413,6 +438,7 @@ export async function createFormRequest(
 
   const ipHash = options?.ipAddress ? hashForRateLimit(options.ipAddress) : null;
   if (ipHash) {
+    await enforceGlobalIPRateLimit(ipHash);
     await enforceFormIPRateLimit(door.id, ipHash);
   }
 
@@ -854,6 +880,9 @@ export async function completeEmailRequest(
   if (request.completionExpiresAt && request.completionExpiresAt < new Date()) {
     throw new DirectValidationError('Completion link has expired', 410);
   }
+
+  // Re-check blocklist — sender may have been blocked since original email
+  await enforceBlocklist(request.doorId, request.senderEmail);
 
   const category = request.door.categories[0];
   if (!category) {

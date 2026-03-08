@@ -318,6 +318,7 @@ model Request {
   @@index([doorId, status, createdAt])
   @@index([doorId, ipHash, createdAt])
   @@index([doorId, senderEmail, createdAt])
+  @@index([ipHash, createdAt])
   @@index([status, createdAt])
   @@index([status, completionExpiresAt])
   @@index([categoryId, createdAt])

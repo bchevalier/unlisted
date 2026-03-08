@@ -1,5 +1,7 @@
 'use client';
 
+import { FormEvent, useCallback, useEffect, useState } from 'react';
+
 type SettingsPanelProps = {
   door: {
     slug: string;
@@ -261,6 +263,150 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
           ))}
         </div>
       </article>
+
+      <BlocklistPanel doorSlug={door.slug} />
     </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Blocklist management panel
+// ---------------------------------------------------------------------------
+
+type BlockedSender = {
+  email: string;
+  reason: string | null;
+  createdAt: string;
+};
+
+function BlocklistPanel({ doorSlug }: { doorSlug: string }) {
+  const [entries, setEntries] = useState<BlockedSender[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchBlocklist = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/direct/settings/blocklist?slug=${encodeURIComponent(doorSlug)}`);
+      const data = (await res.json()) as { ok: boolean; blockedSenders?: BlockedSender[]; error?: string };
+      if (data.ok && data.blockedSenders) {
+        setEntries(data.blockedSenders);
+      } else {
+        setError(data.error ?? 'Failed to load blocklist');
+      }
+    } catch {
+      setError('Failed to load blocklist');
+    } finally {
+      setLoading(false);
+    }
+  }, [doorSlug]);
+
+  useEffect(() => { fetchBlocklist(); }, [fetchBlocklist]);
+
+  async function onAdd(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const email = String(data.get('email') ?? '').trim();
+    const reason = String(data.get('reason') ?? '').trim();
+
+    if (!email) return;
+
+    try {
+      const res = await fetch('/api/direct/settings/blocklist', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          doorSlug,
+          email,
+          ...(reason ? { reason } : {})
+        })
+      });
+
+      const payload = (await res.json()) as { ok: boolean; error?: string };
+      if (!res.ok || !payload.ok) {
+        alert(payload.error ?? 'Failed to add blocked sender');
+        return;
+      }
+
+      form.reset();
+      await fetchBlocklist();
+    } catch {
+      alert('Failed to add blocked sender');
+    }
+  }
+
+  async function onRemove(email: string) {
+    if (!confirm(`Unblock ${email}?`)) return;
+
+    try {
+      const res = await fetch('/api/direct/settings/blocklist', {
+        method: 'DELETE',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ doorSlug, email })
+      });
+
+      const payload = (await res.json()) as { ok: boolean; error?: string };
+      if (!res.ok || !payload.ok) {
+        alert(payload.error ?? 'Failed to remove blocked sender');
+        return;
+      }
+
+      await fetchBlocklist();
+    } catch {
+      alert('Failed to remove blocked sender');
+    }
+  }
+
+  return (
+    <article className="settings-card">
+      <h2>Blocked senders</h2>
+      <p>Blocked email addresses cannot submit requests to this door.</p>
+
+      <form className="blocklist-add" onSubmit={onAdd}>
+        <label>
+          Email to block
+          <input name="email" type="email" required placeholder="spam@example.com" />
+        </label>
+        <label>
+          Reason (optional)
+          <input name="reason" type="text" maxLength={500} placeholder="Spam sender" />
+        </label>
+        <button type="submit">Block sender</button>
+      </form>
+
+      {loading ? <p>Loading…</p> : null}
+      {error ? <p className="settings-error">{error}</p> : null}
+
+      {!loading && entries.length === 0 ? (
+        <p>No blocked senders.</p>
+      ) : null}
+
+      {entries.length > 0 ? (
+        <table className="blocklist-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Reason</th>
+              <th>Blocked</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((entry) => (
+              <tr key={entry.email}>
+                <td>{entry.email}</td>
+                <td>{entry.reason ?? '—'}</td>
+                <td>{new Date(entry.createdAt).toLocaleDateString()}</td>
+                <td>
+                  <button type="button" onClick={() => onRemove(entry.email)}>
+                    Unblock
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : null}
+    </article>
   );
 }
