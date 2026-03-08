@@ -15,7 +15,8 @@ import {
   notifyKnockerAccepted,
   notifyKnockerAutoReply,
   notifyKnockerCompletionRequired,
-  notifyKnockerExpired
+  notifyKnockerExpired,
+  sendBatch
 } from '../../../lib/notifications';
 import { verifyTurnstileToken } from '../../../lib/turnstile';
 
@@ -1469,17 +1470,21 @@ export async function expireStaleRequests(options?: { expiryDays?: number; batch
     return updated.count;
   });
 
-  // Fire-and-forget: notify knockers whose requests expired
-  for (const req of stale) {
-    if (req.senderEmail) {
+  // Fire-and-forget: notify knockers whose requests expired (bounded concurrency)
+  const expirationTasks = stale
+    .filter((req) => req.senderEmail)
+    .map((req) => () =>
       notifyKnockerExpired({
-        knockerEmail: req.senderEmail,
+        knockerEmail: req.senderEmail!,
         doorName: req.door.displayName,
         requestToken: req.requestToken
-      }).catch((err) => {
-        console.error('[notification:expired-failed]', err);
-      });
-    }
+      })
+    );
+
+  if (expirationTasks.length > 0) {
+    sendBatch(expirationTasks, 5).catch((err) => {
+      console.error('[notification:expired-batch-failed]', err);
+    });
   }
 
   return { expired: result };

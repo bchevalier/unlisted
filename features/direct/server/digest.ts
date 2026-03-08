@@ -6,47 +6,78 @@
  * a single summary email per door. Updates `lastDigestSentAt` to
  * prevent duplicate sends.
  *
- * Optimized to batch count queries across doors instead of running
- * individual count queries per door (avoids N+1 pattern).
+ * Uses cursor-based pagination to process all eligible doors (not just
+ * the first batch). Notification sends are batched with bounded
+ * concurrency to avoid overwhelming the email provider.
  */
 
 import { RequestStatus } from '@prisma/client';
 import { db } from '../../../lib/db';
-import { notifyKeeperDigest } from '../../../lib/notifications';
+import { notifyKeeperDigest, sendBatch } from '../../../lib/notifications';
 
 const DIGEST_SAMPLE_SENDERS = 5;
 
 export async function sendDigestNotifications(options?: { batchSize?: number }) {
   const batchSize = options?.batchSize ?? 100;
+  let totalSent = 0;
+  let totalSkipped = 0;
+  let cursor: string | undefined;
 
-  // Find all doors with digest enabled
-  const doors = await db.door.findMany({
-    where: {
-      isEnabled: true,
-      settings: {
-        notifyDigest: true
-      }
-    },
-    select: {
-      id: true,
-      slug: true,
-      displayName: true,
-      user: {
-        select: { email: true }
-      },
-      settings: {
-        select: {
-          lastDigestSentAt: true
+  // Paginate through all eligible doors using cursor-based pagination
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const doors = await db.door.findMany({
+      where: {
+        isEnabled: true,
+        settings: {
+          notifyDigest: true
         }
-      }
-    },
-    take: batchSize
-  });
+      },
+      select: {
+        id: true,
+        slug: true,
+        displayName: true,
+        user: {
+          select: { email: true }
+        },
+        settings: {
+          select: {
+            lastDigestSentAt: true
+          }
+        }
+      },
+      take: batchSize,
+      ...(cursor
+        ? { skip: 1, cursor: { id: cursor } }
+        : {}),
+      orderBy: { id: 'asc' }
+    });
 
-  if (doors.length === 0) {
-    return { sent: 0, skipped: 0 };
+    if (doors.length === 0) break;
+
+    // Update cursor for next page
+    cursor = doors[doors.length - 1].id;
+
+    const { sent, skipped } = await processDigestBatch(doors);
+    totalSent += sent;
+    totalSkipped += skipped;
+
+    // If we got fewer than batchSize, we've reached the end
+    if (doors.length < batchSize) break;
   }
 
+  return { sent: totalSent, skipped: totalSkipped };
+}
+
+type DigestDoor = {
+  id: string;
+  slug: string;
+  displayName: string;
+  user: { email: string } | null;
+  settings: { lastDigestSentAt: Date | null } | null;
+};
+
+async function processDigestBatch(doors: DigestDoor[]) {
   // Filter to doors with valid keeper emails
   const eligibleDoors = doors.filter((d) => d.user?.email);
   if (eligibleDoors.length === 0) {
@@ -112,8 +143,10 @@ export async function sendDigestNotifications(options?: { batchSize?: number }) 
     }
   }
 
-  let sent = 0;
-  let skipped = doors.length - eligibleDoors.length; // already skipped doors without email
+  let skipped = doors.length - eligibleDoors.length;
+
+  // Build send tasks for doors that have new content
+  const sendTasks: Array<{ door: DigestDoor; task: () => Promise<void> }> = [];
 
   for (const door of eligibleDoors) {
     const newCount = newCountByDoor.get(door.id) ?? 0;
@@ -130,28 +163,40 @@ export async function sendDigestNotifications(options?: { batchSize?: number }) 
 
     const sampleSenders = sendersByDoor.get(door.id) ?? [];
 
-    try {
-      await notifyKeeperDigest({
-        keeperEmail: door.user!.email,
-        doorName: door.displayName,
-        doorSlug: door.slug,
-        pendingCount,
-        newSinceLastDigest: newCount,
-        sampleSenders
-      });
+    sendTasks.push({
+      door,
+      task: async () => {
+        await notifyKeeperDigest({
+          keeperEmail: door.user!.email,
+          doorName: door.displayName,
+          doorSlug: door.slug,
+          pendingCount,
+          newSinceLastDigest: newCount,
+          sampleSenders
+        });
 
-      // Update lastDigestSentAt
-      await db.doorSettings.update({
-        where: { doorId: door.id },
-        data: { lastDigestSentAt: new Date() }
-      });
-
-      sent++;
-    } catch (error) {
-      console.error(`[digest:send-failed] door=${door.slug}`, error);
-      skipped++;
-    }
+        // Update lastDigestSentAt after successful send
+        await db.doorSettings.update({
+          where: { doorId: door.id },
+          data: { lastDigestSentAt: new Date() }
+        });
+      }
+    });
   }
 
-  return { sent, skipped };
+  if (sendTasks.length === 0) {
+    return { sent: 0, skipped };
+  }
+
+  // Send with bounded concurrency
+  const result = await sendBatch(
+    sendTasks.map((t) => t.task),
+    5
+  );
+
+  // Tasks that failed in sendBatch are counted as skipped
+  return {
+    sent: result.succeeded,
+    skipped: skipped + result.failed
+  };
 }

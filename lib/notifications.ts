@@ -6,6 +6,8 @@
  * blocked by email delivery issues.
  */
 
+import crypto from 'node:crypto';
+
 // ---------------------------------------------------------------------------
 // Low-level email sender (reuses Resend, same pattern as auth-mailer)
 // ---------------------------------------------------------------------------
@@ -16,6 +18,8 @@ type EmailPayload = {
   text: string;
   html?: string;
   headers?: Record<string, string>;
+  /** Optional idempotency key to prevent duplicate sends on retries */
+  idempotencyKey?: string;
 };
 
 function notificationFrom(): string {
@@ -36,12 +40,19 @@ async function sendEmail(payload: EmailPayload): Promise<boolean> {
     return false;
   }
 
+  const reqHeaders: Record<string, string> = {
+    authorization: `Bearer ${apiKey}`,
+    'content-type': 'application/json'
+  };
+
+  // Resend supports Idempotency-Key header to de-duplicate sends
+  if (payload.idempotencyKey) {
+    reqHeaders['Idempotency-Key'] = payload.idempotencyKey;
+  }
+
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
-    headers: {
-      authorization: `Bearer ${apiKey}`,
-      'content-type': 'application/json'
-    },
+    headers: reqHeaders,
     body: JSON.stringify({
       from: notificationFrom(),
       to: [payload.to],
@@ -70,6 +81,47 @@ async function safeSend(payload: EmailPayload): Promise<void> {
   } catch (error) {
     console.error('[notification:error]', error);
   }
+}
+
+/**
+ * Generate a deterministic idempotency key from notification context.
+ * Uses a hash of the key parts to produce a stable, unique identifier.
+ */
+function idempotencyKey(...parts: string[]): string {
+  return crypto.createHash('sha256').update(parts.join('|')).digest('hex').slice(0, 48);
+}
+
+// ---------------------------------------------------------------------------
+// Batch send helper — runs sends with bounded concurrency to avoid
+// overwhelming the email provider rate limit.
+// ---------------------------------------------------------------------------
+
+const DEFAULT_SEND_CONCURRENCY = 5;
+
+export async function sendBatch(
+  tasks: Array<() => Promise<void>>,
+  concurrency = DEFAULT_SEND_CONCURRENCY
+): Promise<{ succeeded: number; failed: number }> {
+  let succeeded = 0;
+  let failed = 0;
+  let cursor = 0;
+
+  async function runNext() {
+    while (cursor < tasks.length) {
+      const idx = cursor++;
+      try {
+        await tasks[idx]();
+        succeeded++;
+      } catch {
+        failed++;
+      }
+    }
+  }
+
+  const workers = Array.from({ length: Math.min(concurrency, tasks.length) }, () => runNext());
+  await Promise.all(workers);
+
+  return { succeeded, failed };
 }
 
 // ---------------------------------------------------------------------------
@@ -160,7 +212,8 @@ export async function notifyKeeperNewRequest(input: NewRequestNotification): Pro
     subject,
     text,
     html,
-    headers: keeperUnsubscribeHeaders(input.doorSlug)
+    headers: keeperUnsubscribeHeaders(input.doorSlug),
+    idempotencyKey: idempotencyKey('new-request', input.doorSlug, input.keeperEmail, input.messagePreview.slice(0, 100))
   });
 }
 
@@ -223,7 +276,13 @@ export async function notifyKnockerAccepted(input: RequestAcceptedNotification):
   <p style="margin-top: 24px; color: #999; font-size: 13px;">— Knokio</p>
 </div>`.trim();
 
-  await safeSend({ to: input.knockerEmail, subject, text, html });
+  await safeSend({
+    to: input.knockerEmail,
+    subject,
+    text,
+    html,
+    idempotencyKey: idempotencyKey('accepted', input.requestToken)
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -359,7 +418,8 @@ export async function notifyKeeperDigest(input: DigestNotification): Promise<voi
     subject,
     text,
     html,
-    headers: keeperUnsubscribeHeaders(input.doorSlug)
+    headers: keeperUnsubscribeHeaders(input.doorSlug),
+    idempotencyKey: idempotencyKey('digest', input.doorSlug, new Date().toISOString().slice(0, 13))
   });
 }
 
@@ -398,5 +458,11 @@ export async function notifyKnockerExpired(input: RequestExpiredNotification): P
   <p style="margin-top: 24px; color: #999; font-size: 13px;">— Knokio</p>
 </div>`.trim();
 
-  await safeSend({ to: input.knockerEmail, subject, text, html });
+  await safeSend({
+    to: input.knockerEmail,
+    subject,
+    text,
+    html,
+    idempotencyKey: idempotencyKey('expired', input.requestToken)
+  });
 }
