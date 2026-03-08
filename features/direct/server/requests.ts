@@ -429,7 +429,20 @@ export async function updateRequestStatusForKeeper(userId: string, requestId: st
   });
 }
 
-export async function listRequestsByDoorSlugForKeeper(userId: string, doorSlug: string) {
+const DEFAULT_PAGE_SIZE = 20;
+const MAX_PAGE_SIZE = 100;
+
+export async function listRequestsByDoorSlugForKeeper(
+  userId: string,
+  doorSlug: string,
+  options?: { page?: number; pageSize?: number; status?: RequestStatus }
+) {
+  const page = Math.max(1, options?.page ?? 1);
+  const pageSize = Math.min(MAX_PAGE_SIZE, Math.max(1, options?.pageSize ?? DEFAULT_PAGE_SIZE));
+  const skip = (page - 1) * pageSize;
+
+  const statusFilter = options?.status ? { status: options.status } : {};
+
   const door = await db.door.findFirst({
     where: { slug: doorSlug, userId },
     select: {
@@ -444,24 +457,6 @@ export async function listRequestsByDoorSlugForKeeper(userId: string, doorSlug: 
           weeklyRequestCap: true,
           revealMethod: true,
           revealValue: true
-        }
-      },
-      requests: {
-        orderBy: { createdAt: 'desc' },
-        take: 100,
-        select: {
-          id: true,
-          source: true,
-          status: true,
-          senderName: true,
-          senderEmail: true,
-          title: true,
-          message: true,
-          requestToken: true,
-          createdAt: true,
-          category: {
-            select: { label: true }
-          }
         }
       },
       categories: {
@@ -484,7 +479,96 @@ export async function listRequestsByDoorSlugForKeeper(userId: string, doorSlug: 
     }
   });
 
-  return door;
+  if (!door) {
+    return null;
+  }
+
+  const [requests, totalCount] = await Promise.all([
+    db.request.findMany({
+      where: { doorId: door.id, ...statusFilter },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: pageSize,
+      select: {
+        id: true,
+        source: true,
+        status: true,
+        senderName: true,
+        senderEmail: true,
+        title: true,
+        message: true,
+        requestToken: true,
+        createdAt: true,
+        category: {
+          select: { label: true }
+        }
+      }
+    }),
+    db.request.count({
+      where: { doorId: door.id, ...statusFilter }
+    })
+  ]);
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+  return {
+    ...door,
+    requests,
+    pagination: {
+      page,
+      pageSize,
+      totalCount,
+      totalPages
+    }
+  };
+}
+
+export async function getRequestDetailForKeeper(userId: string, requestId: string) {
+  const request = await db.request.findUnique({
+    where: { id: requestId },
+    select: {
+      id: true,
+      source: true,
+      status: true,
+      senderName: true,
+      senderEmail: true,
+      title: true,
+      message: true,
+      structuredData: true,
+      requestToken: true,
+      createdAt: true,
+      updatedAt: true,
+      category: {
+        select: { key: true, label: true }
+      },
+      events: {
+        orderBy: { createdAt: 'asc' },
+        select: {
+          id: true,
+          type: true,
+          actor: true,
+          note: true,
+          createdAt: true
+        }
+      },
+      door: {
+        select: {
+          userId: true,
+          slug: true,
+          displayName: true,
+          settings: {
+            select: { revealMethod: true, revealValue: true }
+          }
+        }
+      }
+    }
+  });
+
+  if (!request || request.door.userId !== userId) {
+    return null;
+  }
+
+  return request;
 }
 
 export async function listDoorsForKeeper(userId: string) {
@@ -638,6 +722,52 @@ export async function updateCategoryForKeeper(userId: string, input: unknown) {
       weeklyCap: category.door.plan === DoorPlan.PAID ? null : payload.weeklyCap
     }
   });
+}
+
+const DEFAULT_EXPIRY_DAYS = 30;
+
+export async function expireStaleRequests(options?: { expiryDays?: number; batchSize?: number }) {
+  const expiryDays = options?.expiryDays ?? DEFAULT_EXPIRY_DAYS;
+  const batchSize = options?.batchSize ?? 200;
+
+  const cutoff = new Date(Date.now() - expiryDays * 24 * 60 * 60 * 1000);
+
+  const stale = await db.request.findMany({
+    where: {
+      status: RequestStatus.PENDING,
+      createdAt: { lt: cutoff }
+    },
+    select: { id: true },
+    take: batchSize
+  });
+
+  if (stale.length === 0) {
+    return { expired: 0 };
+  }
+
+  const ids = stale.map((r) => r.id);
+
+  // Batch update status + create events in a transaction
+  const result = await db.$transaction(async (tx) => {
+    const updated = await tx.request.updateMany({
+      where: { id: { in: ids }, status: RequestStatus.PENDING },
+      data: { status: RequestStatus.EXPIRED }
+    });
+
+    // Create expiration events for each
+    await tx.requestEvent.createMany({
+      data: ids.map((requestId) => ({
+        requestId,
+        type: RequestEventType.EXPIRED,
+        actor: RequestEventActor.SYSTEM,
+        note: `Auto-expired after ${expiryDays} days`
+      }))
+    });
+
+    return updated.count;
+  });
+
+  return { expired: result };
 }
 
 export async function updateCategoryFieldForKeeper(userId: string, input: unknown) {
