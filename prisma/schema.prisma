@@ -46,6 +46,11 @@ enum RequestEventActor {
   KEEPER
 }
 
+enum DoorPlan {
+  FREE
+  PAID
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -63,6 +68,7 @@ model Door {
   slug        String   @unique
   displayName String
   headline    String?
+  plan        DoorPlan @default(FREE)
   isEnabled   Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

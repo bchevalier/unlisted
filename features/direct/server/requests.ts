@@ -1,6 +1,7 @@
 import {
   CategoryFieldType,
   ContactRevealMethod,
+  DoorPlan,
   RequestEventActor,
   RequestEventType,
   RequestSource,
@@ -213,6 +214,7 @@ export async function createFormRequest(input: unknown) {
     select: {
       id: true,
       isEnabled: true,
+      plan: true,
       settings: {
         select: { weeklyRequestCap: true }
       },
@@ -244,8 +246,10 @@ export async function createFormRequest(input: unknown) {
     throw new DirectValidationError('Category unavailable');
   }
 
-  await enforceDoorWeeklyCap(door.id, door.settings?.weeklyRequestCap);
-  await enforceCategoryWeeklyCap(category.id, category.weeklyCap);
+  if (door.plan === DoorPlan.FREE) {
+    await enforceDoorWeeklyCap(door.id, door.settings?.weeklyRequestCap);
+    await enforceCategoryWeeklyCap(category.id, category.weeklyCap);
+  }
 
   const sanitizedFields: Record<string, string> = {};
   for (const field of category.fields) {
@@ -316,6 +320,7 @@ export async function createEmailRequest(input: unknown) {
         select: {
           id: true,
           isEnabled: true,
+          plan: true,
           settings: {
             select: {
               weeklyRequestCap: true
@@ -333,8 +338,10 @@ export async function createEmailRequest(input: unknown) {
   const senderEmail = extractEmailAddress(payload.from);
   const senderName = extractSenderName(payload.from);
 
-  await enforceDoorWeeklyCap(emailAlias.door.id, emailAlias.door.settings?.weeklyRequestCap);
-  await enforceInboundEmailSenderRateLimit(emailAlias.door.id, senderEmail);
+  if (emailAlias.door.plan === DoorPlan.FREE) {
+    await enforceDoorWeeklyCap(emailAlias.door.id, emailAlias.door.settings?.weeklyRequestCap);
+    await enforceInboundEmailSenderRateLimit(emailAlias.door.id, senderEmail);
+  }
 
   const cleanedMessage = stripQuotedAndSignature(payload.text);
   if (!cleanedMessage) {
@@ -421,6 +428,7 @@ export async function listRequestsByDoorSlugForKeeper(userId: string, doorSlug: 
       id: true,
       slug: true,
       displayName: true,
+      plan: true,
       settings: {
         select: {
           autoReplyEnabled: true,
@@ -477,7 +485,8 @@ export async function listDoorsForKeeper(userId: string) {
     orderBy: { createdAt: 'asc' },
     select: {
       slug: true,
-      displayName: true
+      displayName: true,
+      plan: true
     }
   });
 }
@@ -487,19 +496,21 @@ export async function updateDoorSettingsForKeeper(userId: string, input: unknown
 
   const door = await db.door.findFirst({
     where: { slug: payload.doorSlug, userId },
-    select: { id: true }
+    select: { id: true, plan: true }
   });
 
   if (!door) {
     throw new DirectValidationError('Door not found');
   }
 
+  const normalizedWeeklyCap = door.plan === DoorPlan.PAID ? null : payload.weeklyRequestCap;
+
   return db.doorSettings.upsert({
     where: { doorId: door.id },
     update: {
       autoReplyEnabled: payload.autoReplyEnabled,
       autoReplyMessage: normalizeOptional(payload.autoReplyMessage),
-      weeklyRequestCap: payload.weeklyRequestCap,
+      weeklyRequestCap: normalizedWeeklyCap,
       revealMethod: payload.revealMethod,
       revealValue: normalizeOptional(payload.revealValue)
     },
@@ -507,7 +518,7 @@ export async function updateDoorSettingsForKeeper(userId: string, input: unknown
       doorId: door.id,
       autoReplyEnabled: payload.autoReplyEnabled,
       autoReplyMessage: normalizeOptional(payload.autoReplyMessage),
-      weeklyRequestCap: payload.weeklyRequestCap,
+      weeklyRequestCap: normalizedWeeklyCap,
       revealMethod: payload.revealMethod,
       revealValue: normalizeOptional(payload.revealValue)
     }
@@ -525,7 +536,14 @@ export async function updateCategoryForKeeper(userId: string, input: unknown) {
         userId
       }
     },
-    select: { id: true }
+    select: {
+      id: true,
+      door: {
+        select: {
+          plan: true
+        }
+      }
+    }
   });
 
   if (!category) {
@@ -536,7 +554,7 @@ export async function updateCategoryForKeeper(userId: string, input: unknown) {
     where: { id: category.id },
     data: {
       isEnabled: payload.isEnabled,
-      weeklyCap: payload.weeklyCap
+      weeklyCap: category.door.plan === DoorPlan.PAID ? null : payload.weeklyCap
     }
   });
 }

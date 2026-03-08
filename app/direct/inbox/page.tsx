@@ -46,13 +46,13 @@ export default async function DirectInboxPage({ searchParams }: DirectInboxPageP
         Signed in as <strong>{session.email}</strong>
       </p>
       <p>
-        Door: <strong>{door.displayName}</strong> ({door.slug})
+        Door: <strong>{door.displayName}</strong> ({door.slug}) · Plan: <strong>{door.plan}</strong>
       </p>
 
       <p className="inbox-links">
         {doors.map((item) => (
           <Link key={item.slug} href={`/direct/inbox?slug=${item.slug}`}>
-            {item.displayName}
+            {item.displayName} ({item.plan})
           </Link>
         ))}
       </p>

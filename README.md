@@ -162,6 +162,11 @@ This repository runs a **two-client model**:
 
 Direct and Reach are developed and tested in parallel, with strict isolation guardrails so Reach changes cannot degrade Direct clarity, privacy, or trust.
 
+Knokio Direct currently supports two door plans:
+- **Free door**: capped inbox/reach volume for baseline protection.
+- **Paid door**: uncapped paid reaches, focused on high-intent commercial inbound.
+  - Core paid ICPs: influencer product placement and paid expert/advisory access.
+
 ## MVP status (current)
 
 Knokio Direct MVP foundation is implemented for development:

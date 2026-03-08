@@ -9,6 +9,9 @@ export default async function DirectClientPage() {
     <main>
       <h1>Knokio Direct</h1>
       <p>Filtered inbound for people who want to stay reachable without inbox chaos.</p>
+      <p>
+        Plans: <strong>Free</strong> (capped) and <strong>Paid</strong> (unlimited paid reaches for product placements and paid advisory access).
+      </p>
 
       {session ? (
         <p>

@@ -47,9 +47,12 @@ export default async function DirectSettingsPage({ searchParams }: DirectSetting
       <p className="inbox-links">
         {doors.map((item) => (
           <Link key={item.slug} href={`/direct/settings?slug=${item.slug}`}>
-            {item.displayName}
+            {item.displayName} ({item.plan})
           </Link>
         ))}
+      </p>
+      <p>
+        Active door plan: <strong>{door.plan}</strong>
       </p>
       <p className="inbox-links">
         <Link href={`/direct/inbox?slug=${door.slug}`}>Inbox</Link>
@@ -62,6 +65,7 @@ export default async function DirectSettingsPage({ searchParams }: DirectSetting
         door={{
           slug: door.slug,
           displayName: door.displayName,
+          plan: door.plan,
           settings: door.settings,
           categories: door.categories
         }}

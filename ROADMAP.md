@@ -62,7 +62,7 @@ Tasks should be checked only when implemented and verified.
 - [x] Implement server-side validation
 - [x] Submit request payload to backend
 - [x] Store request with `pending` status
-- [ ] Enforce per-door request caps
+- [x] Enforce per-door request caps
 - [x] Enforce per-category required fields
 
 ---
@@ -145,13 +145,13 @@ Tasks should be checked only when implemented and verified.
 
 ## 9. Subscription & Entitlements (Model A)
 
-- [ ] Define free vs paid plan limits
+- [x] Define free vs paid plan limits
 - [ ] Configure Stripe products and prices
 - [ ] Implement Stripe Checkout flow
 - [ ] Handle subscription creation webhook
 - [ ] Handle subscription cancellation webhook
 - [ ] Sync subscription status to user account
-- [ ] Enforce plan-based feature limits
+- [x] Enforce plan-based feature limits
 - [ ] Display billing status in settings
 - [ ] Link to Stripe customer portal
 

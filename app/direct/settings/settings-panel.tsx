@@ -4,6 +4,7 @@ type SettingsPanelProps = {
   door: {
     slug: string;
     displayName: string;
+    plan: 'FREE' | 'PAID';
     settings:
       | {
           autoReplyEnabled: boolean;
@@ -41,10 +42,16 @@ async function postJson(url: string, body: unknown) {
 }
 
 export function SettingsPanel({ door }: SettingsPanelProps) {
+  const isPaid = door.plan === 'PAID';
+
   return (
     <section className="settings-panel">
       <article className="settings-card">
         <h2>Door settings</h2>
+        <p>
+          Plan: <strong>{door.plan}</strong>{' '}
+          {isPaid ? '(unlimited paid reaches)' : '(caps enabled for inbox protection)'}
+        </p>
         <form
           onSubmit={async (event) => {
             event.preventDefault();
@@ -55,9 +62,8 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
               doorSlug: door.slug,
               autoReplyEnabled: data.get('autoReplyEnabled') === 'on',
               autoReplyMessage: String(data.get('autoReplyMessage') ?? '').trim() || null,
-              weeklyRequestCap: data.get('weeklyRequestCap')
-                ? Number(data.get('weeklyRequestCap'))
-                : null,
+              weeklyRequestCap:
+                isPaid || !data.get('weeklyRequestCap') ? null : Number(data.get('weeklyRequestCap')),
               revealMethod: String(data.get('revealMethod') ?? 'NONE'),
               revealValue: String(data.get('revealValue') ?? '').trim() || null
             });
@@ -90,8 +96,10 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
               type="number"
               min={1}
               defaultValue={door.settings?.weeklyRequestCap ?? ''}
+              disabled={isPaid}
             />
           </label>
+          {isPaid ? <p>Paid doors are uncapped by design.</p> : null}
 
           <label>
             Contact reveal method
@@ -127,7 +135,7 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
                     doorSlug: door.slug,
                     categoryKey: category.key,
                     isEnabled: data.get('isEnabled') === 'on',
-                    weeklyCap: data.get('weeklyCap') ? Number(data.get('weeklyCap')) : null
+                    weeklyCap: isPaid || !data.get('weeklyCap') ? null : Number(data.get('weeklyCap'))
                   });
 
                   alert(`Saved category: ${category.label}`);
@@ -139,11 +147,18 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
 
                 <label>
                   Weekly cap
-                  <input name="weeklyCap" type="number" min={1} defaultValue={category.weeklyCap ?? ''} />
+                  <input
+                    name="weeklyCap"
+                    type="number"
+                    min={1}
+                    defaultValue={category.weeklyCap ?? ''}
+                    disabled={isPaid}
+                  />
                 </label>
 
                 <button type="submit">Save category</button>
               </form>
+              {isPaid ? <p>Paid plan ignores category caps.</p> : null}
 
               {category.fields.length > 0 ? (
                 <div className="settings-fields">

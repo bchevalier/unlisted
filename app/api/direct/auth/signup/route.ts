@@ -16,7 +16,8 @@ export async function POST(request: Request) {
       ok: true,
       keeper: {
         email: user.email,
-        doorSlug: user.door?.slug ?? null
+        doorSlug: user.door?.slug ?? null,
+        doorPlan: user.door?.plan ?? null
       }
     });
 

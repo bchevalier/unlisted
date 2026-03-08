@@ -24,7 +24,8 @@ export function SignupForm() {
           name: String(formData.get('name') ?? ''),
           email: String(formData.get('email') ?? ''),
           password: String(formData.get('password') ?? ''),
-          desiredSlug: String(formData.get('desiredSlug') ?? '')
+          desiredSlug: String(formData.get('desiredSlug') ?? ''),
+          plan: String(formData.get('plan') ?? 'FREE')
         })
       });
 
@@ -61,6 +62,13 @@ export function SignupForm() {
       <label>
         Desired door slug
         <input name="desiredSlug" type="text" placeholder="john" />
+      </label>
+      <label>
+        Door plan
+        <select name="plan" defaultValue="FREE">
+          <option value="FREE">Free — capped inbox volume</option>
+          <option value="PAID">Paid — unlimited paid reaches</option>
+        </select>
       </label>
       <button type="submit" disabled={loading}>
         {loading ? 'Creating…' : 'Create account'}
