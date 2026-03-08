@@ -146,6 +146,7 @@ Tasks should be checked only when implemented and verified.
 ## 9. Subscription & Entitlements (Model A)
 
 - [x] Define free vs paid plan limits
+- [x] Implement manual free/paid plan switching in Direct settings (pre-Stripe)
 - [ ] Configure Stripe products and prices
 - [ ] Implement Stripe Checkout flow
 - [ ] Handle subscription creation webhook

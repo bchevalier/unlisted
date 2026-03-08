@@ -44,6 +44,11 @@ const updateDoorSettingsSchema = z.object({
   revealValue: z.string().trim().max(500).nullable()
 });
 
+const updateDoorPlanSchema = z.object({
+  doorSlug: z.string().trim().min(1),
+  plan: z.enum([DoorPlan.FREE, DoorPlan.PAID])
+});
+
 const updateCategorySchema = z.object({
   doorSlug: z.string().trim().min(1),
   categoryKey: z.string().trim().min(1),
@@ -59,6 +64,9 @@ const updateFieldSchema = z.object({
 });
 
 export class DirectValidationError extends Error {}
+
+const FREE_DEFAULT_WEEKLY_REQUEST_CAP = 50;
+const FREE_DEFAULT_CATEGORY_WEEKLY_CAP = 20;
 
 function normalizeOptional(value?: string | null): string | null {
   if (!value) {
@@ -489,6 +497,79 @@ export async function listDoorsForKeeper(userId: string) {
       plan: true
     }
   });
+}
+
+export async function updateDoorPlanForKeeper(userId: string, input: unknown) {
+  const payload = updateDoorPlanSchema.parse(input);
+
+  const door = await db.door.findFirst({
+    where: { slug: payload.doorSlug, userId },
+    select: { id: true, plan: true }
+  });
+
+  if (!door) {
+    throw new DirectValidationError('Door not found');
+  }
+
+  if (door.plan === payload.plan) {
+    return { plan: door.plan };
+  }
+
+  await db.$transaction(async (tx) => {
+    await tx.door.update({
+      where: { id: door.id },
+      data: {
+        plan: payload.plan,
+        headline:
+          payload.plan === DoorPlan.PAID
+            ? 'Paid opportunities only. Send complete details for priority review.'
+            : 'Send a structured request. Noise stays out.'
+      }
+    });
+
+    if (payload.plan === DoorPlan.PAID) {
+      await tx.doorSettings.upsert({
+        where: { doorId: door.id },
+        update: { weeklyRequestCap: null },
+        create: {
+          doorId: door.id,
+          autoReplyEnabled: false,
+          weeklyRequestCap: null
+        }
+      });
+
+      await tx.category.updateMany({
+        where: { doorId: door.id },
+        data: { weeklyCap: null }
+      });
+
+      return;
+    }
+
+    await tx.doorSettings.upsert({
+      where: { doorId: door.id },
+      update: {
+        weeklyRequestCap: FREE_DEFAULT_WEEKLY_REQUEST_CAP
+      },
+      create: {
+        doorId: door.id,
+        autoReplyEnabled: false,
+        weeklyRequestCap: FREE_DEFAULT_WEEKLY_REQUEST_CAP
+      }
+    });
+
+    await tx.category.updateMany({
+      where: {
+        doorId: door.id,
+        weeklyCap: null
+      },
+      data: {
+        weeklyCap: FREE_DEFAULT_CATEGORY_WEEKLY_CAP
+      }
+    });
+  });
+
+  return { plan: payload.plan };
 }
 
 export async function updateDoorSettingsForKeeper(userId: string, input: unknown) {

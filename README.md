@@ -175,7 +175,7 @@ Knokio Direct MVP foundation is implemented for development:
 - Dynamic structured form submission → pending requests
 - Keeper auth: `/direct/signup`, `/direct/login`, session cookie, `/api/direct/auth/*`
 - Keeper inbox view: `/direct/inbox?slug=:slug`
-- Keeper settings: `/direct/settings?slug=:slug`
+- Keeper settings: `/direct/settings?slug=:slug` (includes manual Free/Paid plan switch)
 - Accept/decline actions with request events
 - Knocker status route: `/r/:token`
 - Inbound email webhook: `POST /api/direct/email/inbound`

@@ -47,11 +47,55 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
   return (
     <section className="settings-panel">
       <article className="settings-card">
-        <h2>Door settings</h2>
+        <h2>Plan</h2>
         <p>
-          Plan: <strong>{door.plan}</strong>{' '}
+          Current plan: <strong>{door.plan}</strong>{' '}
           {isPaid ? '(unlimited paid reaches)' : '(caps enabled for inbox protection)'}
         </p>
+        <form
+          onSubmit={async (event) => {
+            event.preventDefault();
+            const form = event.currentTarget;
+            const data = new FormData(form);
+            const nextPlan = String(data.get('plan') ?? door.plan) as 'FREE' | 'PAID';
+
+            if (nextPlan === door.plan) {
+              alert('Plan unchanged');
+              return;
+            }
+
+            if (
+              nextPlan === 'FREE' &&
+              !confirm('Downgrading to FREE will re-enable caps on this door. Continue?')
+            ) {
+              return;
+            }
+
+            await postJson('/api/direct/settings/plan', {
+              doorSlug: door.slug,
+              plan: nextPlan
+            });
+
+            alert(`Plan updated to ${nextPlan}`);
+            window.location.reload();
+          }}
+        >
+          <label>
+            Door plan
+            <select name="plan" defaultValue={door.plan}>
+              <option value="FREE">Free</option>
+              <option value="PAID">Paid</option>
+            </select>
+          </label>
+          <button type="submit">Update plan</button>
+        </form>
+        <p>
+          Billing is not connected yet. This is a manual plan switch for internal testing until Stripe is wired.
+        </p>
+      </article>
+
+      <article className="settings-card">
+        <h2>Door settings</h2>
         <form
           onSubmit={async (event) => {
             event.preventDefault();
