@@ -697,28 +697,203 @@ export async function listContracts(
 
 /**
  * Expire contracts that have passed their expiresAt and are still PROPOSED or ACTIVE.
+ *
+ * Uses a batched approach: bulk-updates status + resolvedAt in one query,
+ * then inserts audit events in a single batch. This avoids the N+1 pattern
+ * of transitioning contracts individually.
+ *
  * Returns the count of expired contracts.
  */
 export async function expireStaleContracts(): Promise<number> {
   const now = new Date();
+
+  // Find stale contracts.
   const stale = await db.reachContract.findMany({
     where: {
       expiresAt: { lte: now },
       status: { in: ['PROPOSED', 'ACTIVE'] },
     },
-    select: { id: true, status: true },
+    select: { id: true, targetId: true },
   });
 
-  let count = 0;
+  if (stale.length === 0) return 0;
+
+  const staleIds = stale.map((c) => c.id);
+
+  // Batch update + batch event insert in a single transaction.
+  const result = await db.$transaction(async (tx) => {
+    const updateResult = await tx.reachContract.updateMany({
+      where: { id: { in: staleIds } },
+      data: { status: 'EXPIRED', resolvedAt: now },
+    });
+
+    // Insert audit events in bulk.
+    await tx.reachContractEvent.createMany({
+      data: staleIds.map((id) => ({
+        contractId: id,
+        type: 'EXPIRED' as const,
+        actor: 'SYSTEM' as const,
+        note: 'Auto-expired',
+      })),
+    });
+
+    return updateResult.count;
+  });
+
+  // Fire webhook events outside the transaction (non-blocking).
   for (const contract of stale) {
-    try {
-      await transitionContract(contract.id, 'EXPIRED', 'SYSTEM', 'Auto-expired');
-      count++;
-    } catch {
-      // Already transitioned or invalid — skip.
-    }
+    dispatchWebhookEvent(contract.id, 'EXPIRED', contract.targetId).catch((err) => {
+      console.error('[reach:expireStaleContracts:webhook]', err);
+    });
   }
-  return count;
+
+  return result;
+}
+
+// ---------------------------------------------------------------------------
+// Fulfillment
+// ---------------------------------------------------------------------------
+
+/**
+ * Fulfill a contract, optionally attaching a response payload.
+ *
+ * Only the target (or an org member with CONTRACT_ACT on the target) should
+ * call this. The contract must be in ACTIVE status.
+ *
+ * @param contractId    – the contract to fulfill
+ * @param actorId       – the actor performing the fulfillment (must be target)
+ * @param responseData  – optional structured response payload
+ * @param note          – optional note for the audit event
+ */
+export async function fulfillContract(
+  contractId: string,
+  actorId: string,
+  responseData?: Record<string, unknown>,
+  note?: string,
+) {
+  const contract = await db.reachContract.findUnique({
+    where: { id: contractId },
+    select: { id: true, status: true, targetId: true },
+  });
+
+  if (!contract) throw new ReachError('Contract not found', 'CONTRACT_NOT_FOUND', 404);
+  if (contract.targetId !== actorId) {
+    throw new ReachError('Only the target actor can fulfill a contract', 'FORBIDDEN', 403);
+  }
+  if (contract.status !== 'ACTIVE') {
+    throw new ReachError(
+      `Cannot fulfill a contract in ${contract.status} status (must be ACTIVE)`,
+      'INVALID_FULFILLMENT',
+      400,
+    );
+  }
+
+  const now = new Date();
+
+  const updated = await db.$transaction(async (tx) => {
+    const u = await tx.reachContract.update({
+      where: { id: contractId },
+      data: {
+        status: 'FULFILLED',
+        resolvedAt: now,
+        ...(responseData
+          ? { responseData: responseData as Parameters<typeof tx.reachContract.update>[0]['data']['responseData'] }
+          : {}),
+      },
+    });
+
+    await tx.reachContractEvent.create({
+      data: {
+        contractId,
+        type: 'FULFILLED',
+        actor: 'TARGET',
+        note: note ?? null,
+        ...(responseData
+          ? { metadata: { hasResponseData: true } as Parameters<typeof tx.reachContractEvent.create>[0]['data']['metadata'] }
+          : {}),
+      },
+    });
+
+    return u;
+  });
+
+  // Fire webhook event (fire-and-forget).
+  dispatchWebhookEvent(contractId, 'FULFILLED', contract.targetId).catch((err) => {
+    console.error('[reach:fulfillContract:webhook]', err);
+  });
+
+  return updated;
+}
+
+// ---------------------------------------------------------------------------
+// Actor deactivation with cascade
+// ---------------------------------------------------------------------------
+
+/**
+ * Deactivate an actor and cancel all their in-flight contracts.
+ *
+ * Cancels contracts where the actor is either initiator or target,
+ * in PROPOSED or ACTIVE status. Uses batch operations for performance.
+ *
+ * @param actorId – the actor to deactivate
+ * @returns the deactivated actor + count of cancelled contracts
+ */
+export async function deactivateActorWithCascade(actorId: string) {
+  const actor = await db.reachActor.findUnique({ where: { id: actorId } });
+  if (!actor) throw new ReachError('Actor not found', 'ACTOR_NOT_FOUND', 404);
+  if (!actor.isActive) throw new ReachError('Actor already inactive', 'ALREADY_INACTIVE', 400);
+
+  const now = new Date();
+
+  // Find all in-flight contracts involving this actor.
+  const inFlightContracts = await db.reachContract.findMany({
+    where: {
+      OR: [{ initiatorId: actorId }, { targetId: actorId }],
+      status: { in: ['PROPOSED', 'ACTIVE'] },
+    },
+    select: { id: true, targetId: true },
+  });
+
+  const contractIds = inFlightContracts.map((c) => c.id);
+
+  const result = await db.$transaction(async (tx) => {
+    // Deactivate the actor.
+    const updatedActor = await tx.reachActor.update({
+      where: { id: actorId },
+      data: { isActive: false },
+    });
+
+    // Batch cancel in-flight contracts.
+    let cancelledCount = 0;
+    if (contractIds.length > 0) {
+      const updateResult = await tx.reachContract.updateMany({
+        where: { id: { in: contractIds } },
+        data: { status: 'CANCELLED', resolvedAt: now },
+      });
+      cancelledCount = updateResult.count;
+
+      // Batch insert cancellation events.
+      await tx.reachContractEvent.createMany({
+        data: contractIds.map((id) => ({
+          contractId: id,
+          type: 'CANCELLED' as const,
+          actor: 'SYSTEM' as const,
+          note: `Actor @${actor.handle} deactivated`,
+        })),
+      });
+    }
+
+    return { actor: updatedActor, cancelledContracts: cancelledCount };
+  });
+
+  // Fire webhook events for cancelled contracts (non-blocking).
+  for (const contract of inFlightContracts) {
+    dispatchWebhookEvent(contract.id, 'CANCELLED', contract.targetId).catch((err) => {
+      console.error('[reach:deactivateActor:webhook]', err);
+    });
+  }
+
+  return result;
 }
 
 // ---------------------------------------------------------------------------

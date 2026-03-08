@@ -73,11 +73,15 @@ export {
   // Service functions — contracts
   proposeContract,
   transitionContract,
+  fulfillContract,
   getContract,
   listContracts,
   listEscalatedContracts,
   overrideContractDecision,
   expireStaleContracts,
+
+  // Actor lifecycle
+  deactivateActorWithCascade,
 
   ReachError,
 } from './service';

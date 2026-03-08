@@ -388,7 +388,11 @@ async function sendReachNotificationEmail(
 // ---------------------------------------------------------------------------
 
 /**
- * Record a DELIVERED or DELIVERY_FAILED event on the contract.
+ * Record a delivery outcome event on the contract.
+ *
+ * Uses ROUTED event type — the note and metadata distinguish success from failure.
+ * We intentionally keep a single event type rather than inventing non-lifecycle
+ * event types, since ROUTED already represents the delivery step.
  */
 async function recordDeliveryEvent(
   contractId: string,
@@ -399,7 +403,7 @@ async function recordDeliveryEvent(
     await db.reachContractEvent.create({
       data: {
         contractId,
-        type: result.success ? 'ROUTED' : 'ROUTED',
+        type: 'ROUTED' as const,
         actor: 'SYSTEM' as ReachContractEventActor,
         note: result.success
           ? `Delivered via ${result.channel} (${result.attempts} attempt${result.attempts === 1 ? '' : 's'})`
