@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeContractInput, SanitizeError } from './sanitize';
+import { sanitizeContractInput, SanitizeError, checkSpamSignals } from './sanitize';
 
 describe('sanitizeContractInput', () => {
   it('passes through clean input unchanged', () => {
@@ -127,5 +127,70 @@ describe('sanitizeContractInput', () => {
       message: 'line1\n\n\n\n\n\nline2',
     });
     expect(result.message).toBe('line1\n\n\nline2');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// checkSpamSignals
+// ---------------------------------------------------------------------------
+
+describe('checkSpamSignals', () => {
+  it('returns not suspicious for clean content', () => {
+    const result = checkSpamSignals('Hi, I would like to discuss a partnership for our upcoming project.');
+    expect(result.isSuspicious).toBe(false);
+    expect(result.score).toBe(0);
+    expect(result.signals).toHaveLength(0);
+  });
+
+  it('flags crypto spam', () => {
+    const result = checkSpamSignals('Invest in our new crypto token sale and get guaranteed returns on your bitcoin investment!');
+    expect(result.isSuspicious).toBe(true);
+    expect(result.signals).toContain('crypto_spam');
+    expect(result.signals).toContain('financial_scam');
+  });
+
+  it('flags phishing content', () => {
+    const result = checkSpamSignals('Your account has been suspended. Click here to verify your account and confirm your identity immediately.');
+    expect(result.isSuspicious).toBe(true);
+    expect(result.signals).toContain('phishing');
+  });
+
+  it('flags urgency pressure', () => {
+    const result = checkSpamSignals('Act now! Limited time offer expires today! Guaranteed returns on risk-free investment!');
+    expect(result.score).toBeGreaterThan(0);
+    expect(result.signals).toContain('urgency');
+  });
+
+  it('flags off-platform contact attempts', () => {
+    const result = checkSpamSignals('Contact me on whatsapp: +1234567890 for guaranteed returns');
+    expect(result.signals).toContain('offplatform_contact');
+    expect(result.signals).toContain('financial_scam');
+  });
+
+  it('returns score below threshold for mild signals', () => {
+    const result = checkSpamSignals('Check out our website at https://example.com for more info');
+    expect(result.isSuspicious).toBe(false);
+    expect(result.score).toBeGreaterThan(0); // has a URL
+    expect(result.signals).toContain('url');
+  });
+
+  it('accumulates scores from multiple signals', () => {
+    const result = checkSpamSignals(
+      'Act now! Buy crypto token sale! Guaranteed returns! Click here to verify your account! Contact whatsapp: +123',
+    );
+    expect(result.isSuspicious).toBe(true);
+    expect(result.score).toBeGreaterThan(6);
+    expect(result.signals.length).toBeGreaterThan(3);
+  });
+
+  it('handles empty string', () => {
+    const result = checkSpamSignals('');
+    expect(result.isSuspicious).toBe(false);
+    expect(result.score).toBe(0);
+  });
+
+  it('includes threshold in result', () => {
+    const result = checkSpamSignals('Normal message');
+    expect(result.threshold).toBeGreaterThan(0);
   });
 });

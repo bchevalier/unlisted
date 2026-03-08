@@ -31,13 +31,29 @@ import {
 } from '../../../../lib/reach/auth';
 import { resolveAuthz, requirePermission } from '../../../../lib/reach/permissions';
 import type { ListContractsOptions } from '../../../../lib/reach/service';
+import {
+  contractCreateLimiter,
+  reachReadLimiter,
+  reachAuthLimiter,
+  getClientIp,
+  rateLimitResponse,
+} from '../../../../lib/reach/rate-limit';
 
 export async function POST(request: Request) {
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
 
+  // IP-based rate limiting (defense-in-depth, before auth).
+  const clientIp = getClientIp(request);
+  const ipCheck = contractCreateLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
+
   const auth = await authenticateReachRequest(request);
-  if (!auth) return unauthorizedResponse();
+  if (!auth) {
+    // Track failed auth attempts separately.
+    reachAuthLimiter.check(clientIp);
+    return unauthorizedResponse();
+  }
 
   try {
     const body = await request.json();
@@ -79,6 +95,11 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
+
+  // IP-based read rate limiting.
+  const clientIp = getClientIp(request);
+  const ipCheck = reachReadLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
 
   const auth = await authenticateReachRequest(request);
   if (!auth) return unauthorizedResponse();

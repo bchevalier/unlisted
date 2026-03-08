@@ -196,13 +196,28 @@ export type {
   ReachAbuseReportCreate,
 } from './safety';
 
-// Content sanitization
+// Content sanitization & spam detection
 export {
   sanitizeContractInput,
+  checkSpamSignals,
   SanitizeError,
 } from './sanitize';
 
-export type { SanitizedContractInput } from './sanitize';
+export type { SanitizedContractInput, SpamCheckResult } from './sanitize';
+
+// IP-based rate limiting
+export {
+  InMemoryRateLimiter,
+  contractCreateLimiter,
+  reachReadLimiter,
+  reachWriteLimiter,
+  reachAuthLimiter,
+  getClientIp,
+  rateLimitResponse,
+  addRateLimitHeaders,
+} from './rate-limit';
+
+export type { RateLimitConfig, RateLimitResult } from './rate-limit';
 
 // Webhook integration layer
 export {

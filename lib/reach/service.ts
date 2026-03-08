@@ -29,7 +29,7 @@ import type { PolicyRecord } from './policy-engine';
 import { dispatchContract } from './router';
 import { dispatchWebhookEvent } from './webhooks';
 import { isBlocked, enforceActorRateLimit, enforcePairCooldown, ReachSafetyError } from './safety';
-import { sanitizeContractInput, SanitizeError } from './sanitize';
+import { sanitizeContractInput, SanitizeError, checkSpamSignals } from './sanitize';
 import * as crypto from 'crypto';
 import { z } from 'zod';
 
@@ -594,6 +594,11 @@ export async function proposeContract(
     throw err;
   }
 
+  // Spam/abuse signal detection (score-based, non-blocking for V1 pilot).
+  // Results are recorded in the contract event metadata for monitoring.
+  const contentToCheck = [sanitizedPurpose, sanitizedMessage ?? ''].join(' ');
+  const spamCheck = checkSpamSignals(contentToCheck);
+
   // Evaluate target's policies + count weekly inbound in parallel.
   const weekStart = getWeekStart();
   const [policies, weeklyCount] = await Promise.all([
@@ -674,6 +679,9 @@ export async function proposeContract(
           policyId: evaluation.policyId,
           policyAction: evaluation.action,
           autoAccept: evaluation.autoAccept,
+          ...(spamCheck.isSuspicious
+            ? { spamFlag: true, spamScore: spamCheck.score, spamSignals: spamCheck.signals }
+            : {}),
         } as Parameters<typeof db.reachContractEvent.create>[0]['data']['metadata'],
       },
     });

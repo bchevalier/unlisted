@@ -20,10 +20,20 @@ import {
   unauthorizedResponse,
 } from '../../../../lib/reach/auth';
 import { resolveAuthz, requirePermission } from '../../../../lib/reach/permissions';
+import {
+  reachWriteLimiter,
+  reachReadLimiter,
+  getClientIp,
+  rateLimitResponse,
+} from '../../../../lib/reach/rate-limit';
 
 export async function GET(request: Request) {
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
+
+  const clientIp = getClientIp(request);
+  const ipCheck = reachReadLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
 
   const auth = await authenticateReachRequest(request);
   if (!auth) return unauthorizedResponse();
@@ -51,6 +61,10 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
+
+  const clientIp = getClientIp(request);
+  const ipCheck = reachWriteLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
 
   const auth = await authenticateReachRequest(request);
   if (!auth) return unauthorizedResponse();
@@ -92,6 +106,10 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
+
+  const clientIp = getClientIp(request);
+  const ipCheck = reachWriteLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
 
   const auth = await authenticateReachRequest(request);
   if (!auth) return unauthorizedResponse();

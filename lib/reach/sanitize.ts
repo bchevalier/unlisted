@@ -137,6 +137,72 @@ function sanitizeObject(obj: unknown, depth: number): unknown {
 }
 
 // ---------------------------------------------------------------------------
+// Spam / suspicious content detection
+// ---------------------------------------------------------------------------
+
+/**
+ * Patterns that indicate spam or phishing content.
+ * Each pattern has a weight; if the total exceeds the threshold, the content
+ * is flagged as suspicious.
+ */
+const SPAM_SIGNALS: Array<{ pattern: RegExp; weight: number; label: string }> = [
+  // Crypto / financial scams
+  { pattern: /\b(?:crypto|bitcoin|btc|eth|nft|airdrop|token\s*sale)\b/gi, weight: 2, label: 'crypto_spam' },
+  { pattern: /\b(?:guaranteed\s+returns?|double\s+your\s+money|risk[- ]free\s+investment)\b/gi, weight: 3, label: 'financial_scam' },
+  // Phishing indicators
+  { pattern: /\b(?:verify\s+your\s+account|confirm\s+your\s+identity|suspend(?:ed)?\s+account)\b/gi, weight: 3, label: 'phishing' },
+  { pattern: /\b(?:click\s+(?:here|now|below)\s+(?:to|and)\s+(?:claim|verify|confirm|unlock))\b/gi, weight: 3, label: 'phishing_cta' },
+  // URL spam (excessive links)
+  { pattern: /https?:\/\/\S+/gi, weight: 0.5, label: 'url' },
+  // All-caps yelling (more than 30 consecutive uppercase chars)
+  { pattern: /[A-Z]{30,}/g, weight: 1, label: 'caps_yelling' },
+  // Urgency pressure
+  { pattern: /\b(?:act\s+now|limited\s+time|expires?\s+(?:soon|today)|urgent(?:ly)?|immediately)\b/gi, weight: 1, label: 'urgency' },
+  // Contact outside platform
+  { pattern: /\b(?:whatsapp|telegram|signal)\s*[:\-]?\s*\+?\d/gi, weight: 2, label: 'offplatform_contact' },
+  // Email harvesting
+  { pattern: /\b(?:send\s+(?:me|us)\s+(?:your|the)\s+(?:email|number|phone|address))\b/gi, weight: 1, label: 'data_harvesting' },
+];
+
+/** Threshold: if total score meets or exceeds this, content is suspicious. */
+const SPAM_SCORE_THRESHOLD = Number(process.env.REACH_SPAM_SCORE_THRESHOLD ?? 6);
+
+export interface SpamCheckResult {
+  isSuspicious: boolean;
+  score: number;
+  threshold: number;
+  signals: string[];
+}
+
+/**
+ * Check text content for spam/abuse signals.
+ * Returns a score-based result. Does NOT block — callers decide what to do
+ * (e.g., flag for review, add audit metadata, reject).
+ */
+export function checkSpamSignals(text: string): SpamCheckResult {
+  let score = 0;
+  const signals: string[] = [];
+
+  for (const { pattern, weight, label } of SPAM_SIGNALS) {
+    // Reset lastIndex for global patterns.
+    pattern.lastIndex = 0;
+    const matches = text.match(pattern);
+    if (matches && matches.length > 0) {
+      const contribution = matches.length * weight;
+      score += contribution;
+      signals.push(label);
+    }
+  }
+
+  return {
+    isSuspicious: score >= SPAM_SCORE_THRESHOLD,
+    score: Math.round(score * 10) / 10,
+    threshold: SPAM_SCORE_THRESHOLD,
+    signals,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Error
 // ---------------------------------------------------------------------------
 

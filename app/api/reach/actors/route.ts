@@ -23,10 +23,21 @@ import {
   reachDisabledResponse,
   unauthorizedResponse,
 } from '../../../../lib/reach/auth';
+import {
+  reachWriteLimiter,
+  reachReadLimiter,
+  getClientIp,
+  rateLimitResponse,
+} from '../../../../lib/reach/rate-limit';
 
 export async function POST(request: Request) {
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
+
+  // IP-based rate limiting for actor creation.
+  const clientIp = getClientIp(request);
+  const ipCheck = reachWriteLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
 
   try {
     const body = await request.json();
@@ -96,6 +107,10 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
+
+  const clientIp = getClientIp(request);
+  const ipCheck = reachReadLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
 
   const auth = await authenticateReachRequest(request);
   if (!auth) return unauthorizedResponse();

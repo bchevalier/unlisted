@@ -20,6 +20,12 @@ import {
   reachDisabledResponse,
   unauthorizedResponse,
 } from '../../../../lib/reach/auth';
+import {
+  reachWriteLimiter,
+  reachReadLimiter,
+  getClientIp,
+  rateLimitResponse,
+} from '../../../../lib/reach/rate-limit';
 
 /** Admin handles (env-configurable, comma-separated). */
 const ADMIN_HANDLES = (process.env.REACH_ADMIN_HANDLES ?? '')
@@ -44,6 +50,10 @@ async function isReachAdmin(auth: { actorId: string }): Promise<boolean> {
 export async function POST(request: Request) {
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
+
+  const clientIp = getClientIp(request);
+  const ipCheck = reachWriteLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
 
   const auth = await authenticateReachRequest(request);
   if (!auth) return unauthorizedResponse();
@@ -73,6 +83,10 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
+
+  const clientIp = getClientIp(request);
+  const ipCheck = reachReadLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
 
   const auth = await authenticateReachRequest(request);
   if (!auth) return unauthorizedResponse();
@@ -108,6 +122,10 @@ export async function GET(request: Request) {
 export async function PATCH(request: Request) {
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
+
+  const clientIp = getClientIp(request);
+  const ipCheck = reachWriteLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
 
   const auth = await authenticateReachRequest(request);
   if (!auth) return unauthorizedResponse();

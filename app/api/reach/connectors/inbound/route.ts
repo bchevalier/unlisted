@@ -26,6 +26,12 @@ import {
   fulfillContract,
   ReachError,
 } from '../../../../../lib/reach/service';
+import {
+  reachWriteLimiter,
+  reachAuthLimiter,
+  getClientIp,
+  rateLimitResponse,
+} from '../../../../../lib/reach/rate-limit';
 
 const InboundActionSchema = z.object({
   contractId: z.string().min(1),
@@ -38,8 +44,16 @@ export async function POST(request: Request) {
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
 
+  // IP-based rate limiting for inbound connector actions.
+  const clientIp = getClientIp(request);
+  const ipCheck = reachWriteLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
+
   const auth = await authenticateReachRequest(request);
-  if (!auth) return unauthorizedResponse();
+  if (!auth) {
+    reachAuthLimiter.check(clientIp);
+    return unauthorizedResponse();
+  }
 
   try {
     const body = await request.json();
