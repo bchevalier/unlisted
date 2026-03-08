@@ -1,7 +1,9 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { requireReachSession } from '../../../features/reach/server/session';
 import { getMetricsWithTrendForActor } from '../../../features/reach/server/metrics';
 import type { DistributionStats, ConversionFunnel, SlaMetrics, TypeSegmentMetrics, TrendComparison } from '../../../lib/reach/metrics';
+import DateRangeFilter from './DateRangeFilter';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -228,9 +230,21 @@ function TypeBreakdownSection({ segments }: { segments: TypeSegmentMetrics[] }) 
 // Page
 // ---------------------------------------------------------------------------
 
-export default async function ReachMetricsPage() {
+export default async function ReachMetricsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ from?: string; to?: string }>;
+}) {
   const session = await requireReachSession('/reach/metrics');
-  const { metrics, trend } = await getMetricsWithTrendForActor(session.actorId);
+  const params = await searchParams;
+  const from = params.from ? new Date(params.from) : undefined;
+  const to = params.to ? new Date(params.to) : undefined;
+  const validFrom = from && !isNaN(from.getTime()) ? from : undefined;
+  const validTo = to && !isNaN(to.getTime()) ? to : undefined;
+  const { metrics, trend } = await getMetricsWithTrendForActor(session.actorId, {
+    from: validFrom,
+    to: validTo,
+  });
 
   return (
     <main>
@@ -240,6 +254,11 @@ export default async function ReachMetricsPage() {
         {' · '}
         Data window: {formatDate(metrics.window.from)} — {formatDate(metrics.window.to)}
       </p>
+
+      {/* Date range filter */}
+      <Suspense>
+        <DateRangeFilter />
+      </Suspense>
 
       {/* Top-level stats */}
       <section className="reach-stat-grid">
@@ -366,6 +385,12 @@ export default async function ReachMetricsPage() {
         <p className="inbox-links">
           <Link href="/reach">← Back to Dashboard</Link>
           <Link href="/reach/contracts">View Contracts</Link>
+          <a
+            href={`/api/reach/metrics/export${validFrom || validTo ? '?' + new URLSearchParams({ ...(validFrom ? { from: validFrom.toISOString() } : {}), ...(validTo ? { to: validTo.toISOString() } : {}) }).toString() : ''}`}
+            download
+          >
+            Export CSV ↓
+          </a>
         </p>
       </nav>
     </main>

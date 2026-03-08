@@ -333,6 +333,135 @@ label {
   color: #5d4037;
 }
 
+.reach-stat-detail {
+  display: block;
+  font-size: 0.72rem;
+  color: #6b7a9a;
+  margin-top: 2px;
+}
+
+/* Metrics dashboard blocks */
+
+.reach-metric-block {
+  background: #fff;
+  border: 1px solid #e3e8f2;
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin: 14px 0;
+}
+
+.reach-metric-block h2 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.reach-metric-block h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  color: #2c3e60;
+}
+
+.reach-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin: 14px 0;
+}
+
+.reach-metric-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.reach-metric-table th,
+.reach-metric-table td {
+  text-align: left;
+  padding: 6px 10px;
+  border-bottom: 1px solid #edf1f8;
+}
+
+.reach-metric-table th {
+  color: #4c5c7a;
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.reach-metric-table td:last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.reach-big-metric {
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 8px 0;
+  color: #1b4bff;
+}
+
+.reach-type-segment {
+  padding: 14px 0;
+  border-top: 1px solid #edf1f8;
+}
+
+.reach-type-segment:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.reach-type-segment h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.reach-type-segment p {
+  font-size: 0.88rem;
+  color: #4c5c7a;
+  margin: 4px 0;
+}
+
+/* Date range filter for metrics */
+
+.reach-date-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+  font-size: 0.88rem;
+}
+
+.reach-date-filter label {
+  color: #4c5c7a;
+  font-weight: 500;
+}
+
+.reach-date-filter input[type="date"] {
+  padding: 6px 10px;
+  border: 1px solid #d0d9e8;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #2c3e60;
+}
+
+.reach-date-filter button {
+  padding: 6px 14px;
+  background: #1b4bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.reach-date-filter button:hover {
+  background: #163ec7;
+}
+
 .reach-quick-links {
   margin-top: 24px;
 }
