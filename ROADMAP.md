@@ -168,8 +168,8 @@ Tasks should be checked only when implemented and verified.
 - [x] Implement sender-based rate limiting
 - [x] Add blocklist per door
 - [x] Prevent blocked senders from submitting requests
-- [ ] Add abuse report button
-- [ ] Store abuse reports for admin review
+- [x] Add abuse report button
+- [x] Store abuse reports for admin review
 - [x] Add CAPTCHA or bot protection on public entry
 
 ---

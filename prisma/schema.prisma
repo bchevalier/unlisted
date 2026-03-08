@@ -73,6 +73,20 @@ enum AuthActionType {
   EMAIL_VERIFICATION
 }
 
+enum AbuseReportReason {
+  SPAM
+  HARASSMENT
+  IMPERSONATION
+  PHISHING
+  OTHER
+}
+
+enum AbuseReportStatus {
+  OPEN
+  REVIEWED
+  DISMISSED
+}
+
 model User {
   id               String   @id @default(cuid())
   email            String   @unique
@@ -167,6 +181,7 @@ model Door {
   emailAliases    EmailAlias[]
   requests        Request[]
   blockedSenders  DoorBlockedSender[]
+  abuseReports    AbuseReport[]
 
   @@index([slug, isEnabled])
 }
@@ -202,6 +217,28 @@ model DoorBlockedSender {
 
   @@unique([doorId, email])
   @@index([doorId])
+}
+
+model AbuseReport {
+  id          String             @id @default(cuid())
+  requestId   String?
+  doorId      String?
+  reason      AbuseReportReason
+  description String?
+  reporterEmail String?
+  ipHash      String?
+  status      AbuseReportStatus  @default(OPEN)
+  reviewedAt  DateTime?
+  reviewNote  String?
+  createdAt   DateTime           @default(now())
+
+  request Request? @relation(fields: [requestId], references: [id], onDelete: SetNull)
+  door    Door?    @relation(fields: [doorId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([doorId, createdAt])
+  @@index([requestId])
+  @@index([ipHash, createdAt])
 }
 
 model Category {
@@ -273,9 +310,10 @@ model Request {
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
 
-  door     Door        @relation(fields: [doorId], references: [id], onDelete: Cascade)
-  category Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  events   RequestEvent[]
+  door          Door        @relation(fields: [doorId], references: [id], onDelete: Cascade)
+  category      Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  events        RequestEvent[]
+  abuseReports  AbuseReport[]
 
   @@index([doorId, status, createdAt])
   @@index([doorId, ipHash, createdAt])

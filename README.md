@@ -183,6 +183,7 @@ Knokio Direct MVP foundation is implemented for development:
 - Knocker status route: `/r/:token`
 - Inbound email webhook: `POST /api/direct/email/inbound`
 - Basic hardening: caps enforcement + inbound sender rate-limit + quote/signature stripping
+- Abuse controls: IP/sender rate-limits, per-door blocklist, Turnstile CAPTCHA, honeypot, abuse report button + storage
 
 Quickstart (dev):
 

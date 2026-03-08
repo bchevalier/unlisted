@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { db } from '../../../lib/db';
+import { ReportButton } from './report-button';
 
 type RequestStatusPageProps = {
   params: Promise<{
@@ -64,6 +65,9 @@ export default async function RequestStatusPage({ params }: RequestStatusPagePro
       ) : (
         <p>Contact details are only shown after acceptance.</p>
       )}
+
+      <hr />
+      <ReportButton requestToken={token} />
 
       <p>
         <Link href="/">Back to Knokio portal</Link>
