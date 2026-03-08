@@ -133,6 +133,23 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
         </>
       )}
 
+      {request.status === 'AWAITING_COMPLETION' && (
+        <div className="detail-completion-notice" style={{ padding: '12px 16px', background: '#fffbe6', border: '1px solid #ffe58f', borderRadius: 6, margin: '16px 0' }}>
+          <p style={{ margin: 0 }}>
+            <strong>⏳ Awaiting form completion</strong>
+          </p>
+          <p style={{ margin: '4px 0 0 0', color: '#666' }}>
+            The sender was emailed a link to complete required fields.
+            {request.completionExpiresAt ? (
+              <> Link expires: <strong>{new Date(request.completionExpiresAt).toLocaleString()}</strong>.</>
+            ) : null}
+          </p>
+          <p style={{ margin: '4px 0 0 0', color: '#666', fontSize: '13px' }}>
+            You can decline this request if you don&apos;t want to wait.
+          </p>
+        </div>
+      )}
+
       <RequestActions requestId={request.id} status={request.status} />
 
       {request.status === 'ACCEPTED' && request.door.settings && (

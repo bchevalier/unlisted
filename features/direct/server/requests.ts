@@ -841,12 +841,14 @@ export async function completeEmailRequest(
         select: {
           slug: true,
           displayName: true,
+          plan: true,
           user: { select: { email: true } },
           settings: {
             select: {
               autoReplyEnabled: true,
               autoReplyMessage: true,
-              notifyNewRequest: true
+              notifyNewRequest: true,
+              weeklyRequestCap: true
             }
           },
           categories: {
@@ -854,6 +856,7 @@ export async function completeEmailRequest(
             select: {
               id: true,
               key: true,
+              weeklyCap: true,
               fields: {
                 select: {
                   key: true,
@@ -884,9 +887,18 @@ export async function completeEmailRequest(
   // Re-check blocklist — sender may have been blocked since original email
   await enforceBlocklist(request.doorId, request.senderEmail);
 
+  // Re-check caps — up to 72h may have passed since the original email
+  if (request.door.plan === DoorPlan.FREE) {
+    await enforceDoorWeeklyCap(request.doorId, request.door.settings?.weeklyRequestCap);
+  }
+
   const category = request.door.categories[0];
   if (!category) {
     throw new DirectValidationError('Category unavailable');
+  }
+
+  if (request.door.plan === DoorPlan.FREE) {
+    await enforceCategoryWeeklyCap(category.id, category.weeklyCap);
   }
 
   // Validate required fields
@@ -1007,8 +1019,14 @@ export async function updateRequestStatusForKeeper(userId: string, requestId: st
     throw new DirectValidationError('Request not found');
   }
 
-  if (existing.status !== RequestStatus.PENDING) {
+  const actionableStatuses: RequestStatus[] = [RequestStatus.PENDING, RequestStatus.AWAITING_COMPLETION];
+  if (!actionableStatuses.includes(existing.status as RequestStatus)) {
     throw new DirectValidationError('Request already finalized');
+  }
+
+  // Only allow decline (not accept) for AWAITING_COMPLETION requests
+  if (existing.status === RequestStatus.AWAITING_COMPLETION && payload.status === RequestStatus.ACCEPTED) {
+    throw new DirectValidationError('Cannot accept a request that is still awaiting completion');
   }
 
   const eventType =
@@ -1016,18 +1034,26 @@ export async function updateRequestStatusForKeeper(userId: string, requestId: st
 
   const keeperNote = normalizeOptional(payload.note);
 
+  const updateData: Record<string, unknown> = {
+    status: payload.status,
+    events: {
+      create: {
+        type: eventType,
+        actor: RequestEventActor.KEEPER,
+        note: keeperNote
+      }
+    }
+  };
+
+  // Clear completion token when declining an AWAITING_COMPLETION request
+  if (existing.status === RequestStatus.AWAITING_COMPLETION) {
+    updateData.completionToken = null;
+    updateData.completionExpiresAt = null;
+  }
+
   const updated = await db.request.update({
     where: { id: requestId },
-    data: {
-      status: payload.status,
-      events: {
-        create: {
-          type: eventType,
-          actor: RequestEventActor.KEEPER,
-          note: keeperNote
-        }
-      }
-    },
+    data: updateData,
     select: { id: true, status: true }
   });
 
@@ -1173,6 +1199,7 @@ export async function getRequestDetailForKeeper(userId: string, requestId: strin
       message: true,
       structuredData: true,
       requestToken: true,
+      completionExpiresAt: true,
       createdAt: true,
       updatedAt: true,
       category: {

@@ -10,7 +10,8 @@ type RequestActionsProps = {
 export function RequestActions({ requestId, status }: RequestActionsProps) {
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
 
-  if (status !== 'PENDING') {
+  const canAct = status === 'PENDING' || status === 'AWAITING_COMPLETION';
+  if (!canAct) {
     return null;
   }
 
@@ -37,9 +38,11 @@ export function RequestActions({ requestId, status }: RequestActionsProps) {
 
   return (
     <p className="request-actions">
-      <button onClick={() => update('ACCEPTED')} disabled={state === 'loading'}>
-        Accept
-      </button>{' '}
+      {status === 'PENDING' && (
+        <button onClick={() => update('ACCEPTED')} disabled={state === 'loading'}>
+          Accept
+        </button>
+      )}{' '}
       <button onClick={() => update('DECLINED')} disabled={state === 'loading'}>
         Decline
       </button>
