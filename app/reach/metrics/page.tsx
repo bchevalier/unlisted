@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { requireReachSession } from '../../../features/reach/server/session';
 import { getMetricsForActor } from '../../../features/reach/server/metrics';
-import type { DistributionStats } from '../../../lib/reach/metrics';
+import type { DistributionStats, ConversionFunnel, SlaMetrics, TypeSegmentMetrics } from '../../../lib/reach/metrics';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -99,6 +99,123 @@ function DistributionTable({
   );
 }
 
+function FunnelSection({ funnel }: { funnel: ConversionFunnel }) {
+  if (funnel.proposed === 0) {
+    return (
+      <div className="reach-metric-block">
+        <h3>Conversion Funnel</h3>
+        <p>No contracts yet.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="reach-metric-block">
+      <h3>Conversion Funnel</h3>
+      <table className="reach-metric-table">
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>Count</th>
+            <th>Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Proposed</td>
+            <td>{funnel.proposed}</td>
+            <td>100%</td>
+          </tr>
+          <tr>
+            <td>→ Active (accepted)</td>
+            <td>{funnel.active}</td>
+            <td>{formatPercent(funnel.proposedToActiveRate)}</td>
+          </tr>
+          <tr>
+            <td>→ Fulfilled</td>
+            <td>{funnel.fulfilled}</td>
+            <td>{formatPercent(funnel.activeToFulfilledRate)}</td>
+          </tr>
+          <tr style={{ fontWeight: 600 }}>
+            <td>End-to-end</td>
+            <td>{funnel.fulfilled} / {funnel.proposed}</td>
+            <td>{formatPercent(funnel.overallRate)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function SlaSection({ sla }: { sla: SlaMetrics }) {
+  if (sla.total === 0) {
+    return (
+      <div className="reach-metric-block">
+        <h3>SLA Compliance</h3>
+        <p>No accepted contracts to measure yet.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="reach-metric-block">
+      <h3>SLA Compliance — Time to Counterparty ≤ {formatDuration(sla.thresholdSeconds)}</h3>
+      <p className="reach-big-metric">{formatPercent(sla.rate)}</p>
+      <p>
+        {sla.withinSla} of {sla.total} accepted contracts met the{' '}
+        {formatDuration(sla.thresholdSeconds)} SLA threshold.
+      </p>
+    </div>
+  );
+}
+
+function TypeBreakdownSection({ segments }: { segments: TypeSegmentMetrics[] }) {
+  if (segments.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="reach-metric-block">
+      <h2>Performance by Contract Type</h2>
+      {segments.map((seg) => (
+        <div key={seg.type} className="reach-type-segment">
+          <h3>{formatContractType(seg.type)}</h3>
+          <div className="reach-stat-grid">
+            <StatCard label="Total" value={String(seg.total)} />
+            <StatCard label="Resolved" value={String(seg.resolved)} />
+            <StatCard label="In-Flight" value={String(seg.inFlight)} />
+            <StatCard label="One-Hop Rate" value={formatPercent(seg.oneHopRate)} />
+            <StatCard
+              label="Acceptance Rate"
+              value={formatPercent(seg.funnel.proposedToActiveRate)}
+              detail={`${seg.funnel.active} / ${seg.funnel.proposed}`}
+            />
+            <StatCard
+              label="Fulfillment Rate"
+              value={formatPercent(seg.funnel.overallRate)}
+              detail={`${seg.funnel.fulfilled} / ${seg.funnel.proposed}`}
+            />
+          </div>
+          {seg.timeToCounterparty && (
+            <p>
+              Median time to counterparty:{' '}
+              <strong>{formatDuration(seg.timeToCounterparty.median)}</strong>
+              {' · '}P90: {formatDuration(seg.timeToCounterparty.p90)}
+            </p>
+          )}
+          {seg.pathLength && (
+            <p>
+              Median path length:{' '}
+              <strong>{seg.pathLength.median} events</strong>
+              {' · '}P90: {seg.pathLength.p90} events
+            </p>
+          )}
+        </div>
+      ))}
+    </section>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
@@ -126,6 +243,18 @@ export default async function ReachMetricsPage() {
           value={formatPercent(metrics.oneHopSuccess.rate)}
           detail={`${metrics.oneHopSuccess.oneHopCount} / ${metrics.oneHopSuccess.resolvedCount} resolved`}
         />
+      </section>
+
+      {/* Conversion funnel */}
+      <section>
+        <h2>Lifecycle Funnel</h2>
+        <FunnelSection funnel={metrics.funnel} />
+      </section>
+
+      {/* SLA compliance */}
+      <section>
+        <h2>SLA Tracking</h2>
+        <SlaSection sla={metrics.sla} />
       </section>
 
       {/* Status breakdown */}
@@ -189,6 +318,9 @@ export default async function ReachMetricsPage() {
           )}
         </div>
       </section>
+
+      {/* Per-type breakdowns */}
+      <TypeBreakdownSection segments={metrics.byType} />
 
       <nav className="reach-quick-links">
         <p className="inbox-links">

@@ -2,13 +2,18 @@
  * GET /api/reach/metrics — Retrieve Reach pilot metrics.
  *
  * Auth required. Returns metrics scoped to the authenticated actor.
- * Supports ?from= and ?to= ISO date filters for time-window queries.
+ * Supports:
+ *   ?from= and ?to= — ISO date filters for time-window queries
+ *   ?trend=true     — include trend comparison against previous period (requires from+to)
  *
  * If ?actorId= is provided and the caller has org-level CONTRACT_READ,
  * metrics are scoped to that actor instead.
  */
 
-import { getReachPilotMetrics } from '../../../../lib/reach/metrics';
+import {
+  getReachPilotMetrics,
+  getReachPilotMetricsWithTrend,
+} from '../../../../lib/reach/metrics';
 import {
   authenticateReachRequest,
   reachDisabledResponse,
@@ -31,6 +36,7 @@ export async function GET(request: Request) {
     const toParam = url.searchParams.get('to');
     const from = fromParam ? new Date(fromParam) : undefined;
     const to = toParam ? new Date(toParam) : undefined;
+    const includeTrend = url.searchParams.get('trend') === 'true';
 
     // Validate date params.
     if (from && isNaN(from.getTime())) {
@@ -57,8 +63,13 @@ export async function GET(request: Request) {
       actorId = requestedActorId;
     }
 
-    const metrics = await getReachPilotMetrics({ actorId, from, to });
+    // Trend comparison requires both from and to.
+    if (includeTrend && from && to) {
+      const result = await getReachPilotMetricsWithTrend({ actorId, from, to });
+      return Response.json({ ok: true, metrics: result.metrics, trend: result.trend });
+    }
 
+    const metrics = await getReachPilotMetrics({ actorId, from, to });
     return Response.json({ ok: true, metrics });
   } catch (error) {
     console.error('[reach/metrics GET]', error);
