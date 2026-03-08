@@ -1016,39 +1016,41 @@ export async function listRequestsByDoorSlugForKeeper(
     return null;
   }
 
-  const [requests, totalCount] = await Promise.all([
-    db.request.findMany({
-      where: { doorId: door.id, ...statusFilter },
-      orderBy: { createdAt: 'desc' },
-      skip,
-      take: pageSize,
-      select: {
-        id: true,
-        source: true,
-        status: true,
-        senderName: true,
-        senderEmail: true,
-        title: true,
-        message: true,
-        requestToken: true,
-        createdAt: true,
-        category: {
-          select: { label: true }
-        }
-      }
-    }),
-    db.request.count({
-      where: { doorId: door.id, ...statusFilter }
-    })
-  ]);
+  // Count first so we can clamp page to valid range
+  const totalCount = await db.request.count({
+    where: { doorId: door.id, ...statusFilter }
+  });
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const clampedPage = Math.min(page, totalPages);
+  const clampedSkip = (clampedPage - 1) * pageSize;
+
+  const requests = await db.request.findMany({
+    where: { doorId: door.id, ...statusFilter },
+    orderBy: { createdAt: 'desc' },
+    skip: clampedSkip,
+    take: pageSize,
+    select: {
+      id: true,
+      source: true,
+      status: true,
+      senderName: true,
+      senderEmail: true,
+      title: true,
+      message: true,
+      requestToken: true,
+      createdAt: true,
+      category: {
+        select: { label: true }
+      }
+    }
+  });
 
   return {
     ...door,
     requests,
     pagination: {
-      page,
+      page: clampedPage,
       pageSize,
       totalCount,
       totalPages
@@ -1273,25 +1275,30 @@ export async function expireStaleRequests(options?: { expiryDays?: number; batch
   const cutoff = new Date(Date.now() - expiryDays * 24 * 60 * 60 * 1000);
   const now = new Date();
 
-  const stale = await db.request.findMany({
-    where: {
-      OR: [
-        // Standard PENDING expiry by age
-        { status: RequestStatus.PENDING, createdAt: { lt: cutoff } },
-        // AWAITING_COMPLETION expiry by completion deadline
-        { status: RequestStatus.AWAITING_COMPLETION, completionExpiresAt: { lt: now } }
-      ]
-    },
-    select: {
-      id: true,
-      senderEmail: true,
-      requestToken: true,
-      door: {
-        select: { displayName: true }
-      }
-    },
-    take: batchSize
-  });
+  const selectFields = {
+    id: true,
+    senderEmail: true,
+    requestToken: true,
+    door: { select: { displayName: true } }
+  } as const;
+
+  // Two targeted queries instead of OR — each uses its optimal index
+  const halfBatch = Math.max(1, Math.floor(batchSize / 2));
+
+  const [stalePending, staleCompletion] = await Promise.all([
+    db.request.findMany({
+      where: { status: RequestStatus.PENDING, createdAt: { lt: cutoff } },
+      select: selectFields,
+      take: halfBatch
+    }),
+    db.request.findMany({
+      where: { status: RequestStatus.AWAITING_COMPLETION, completionExpiresAt: { lt: now } },
+      select: selectFields,
+      take: halfBatch
+    })
+  ]);
+
+  const stale = [...stalePending, ...staleCompletion];
 
   if (stale.length === 0) {
     return { expired: 0 };
