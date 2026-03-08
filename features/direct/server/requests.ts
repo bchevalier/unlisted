@@ -1088,11 +1088,16 @@ export async function expireStaleRequests(options?: { expiryDays?: number; batch
   const batchSize = options?.batchSize ?? 200;
 
   const cutoff = new Date(Date.now() - expiryDays * 24 * 60 * 60 * 1000);
+  const now = new Date();
 
   const stale = await db.request.findMany({
     where: {
-      status: RequestStatus.PENDING,
-      createdAt: { lt: cutoff }
+      OR: [
+        // Standard PENDING expiry by age
+        { status: RequestStatus.PENDING, createdAt: { lt: cutoff } },
+        // AWAITING_COMPLETION expiry by completion deadline
+        { status: RequestStatus.AWAITING_COMPLETION, completionExpiresAt: { lt: now } }
+      ]
     },
     select: { id: true },
     take: batchSize
@@ -1107,8 +1112,15 @@ export async function expireStaleRequests(options?: { expiryDays?: number; batch
   // Batch update status + create events in a transaction
   const result = await db.$transaction(async (tx) => {
     const updated = await tx.request.updateMany({
-      where: { id: { in: ids }, status: RequestStatus.PENDING },
-      data: { status: RequestStatus.EXPIRED }
+      where: {
+        id: { in: ids },
+        status: { in: [RequestStatus.PENDING, RequestStatus.AWAITING_COMPLETION] }
+      },
+      data: {
+        status: RequestStatus.EXPIRED,
+        completionToken: null,
+        completionExpiresAt: null
+      }
     });
 
     // Create expiration events for each
