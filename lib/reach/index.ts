@@ -138,14 +138,27 @@ export type {
 export {
   computeMetrics,
   computeDistribution,
+  computeFunnel,
+  computeSla,
+  computeByType,
+  computeTrend,
+  makeDelta,
   getReachPilotMetrics,
+  getReachPilotMetricsWithTrend,
+  DEFAULT_SLA_THRESHOLD_SECONDS,
 } from './metrics';
 
 export type {
   ContractMetricRow,
   DistributionStats,
+  ConversionFunnel,
+  SlaMetrics,
+  TypeSegmentMetrics,
+  TrendDelta,
+  TrendComparison,
   ReachPilotMetrics,
   MetricsQueryOptions,
+  MetricsWithTrend,
 } from './metrics';
 
 // Safety & abuse controls
