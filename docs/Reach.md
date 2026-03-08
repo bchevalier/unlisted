@@ -312,6 +312,34 @@ Reach operates with strict isolation from Direct:
 
 ---
 
+## Pilot Rollout
+
+For step-by-step operator onboarding, see **[Reach-Pilot-Runbook.md](./Reach-Pilot-Runbook.md)**.
+
+### Smoke test
+
+Run the end-to-end pilot smoke test to validate the full contract lifecycle:
+
+```bash
+./scripts/reach-pilot-smoke.sh                    # local dev (http://localhost:3333)
+./scripts/reach-pilot-smoke.sh https://your.host  # production URL
+CLEANUP=1 ./scripts/reach-pilot-smoke.sh          # auto-remove test actor after run
+```
+
+### Contract expiry cron
+
+Stale contracts require periodic cleanup. Add a cron job hitting the expiry endpoint:
+
+```bash
+# Every 15 minutes
+*/15 * * * * curl -sf -X POST $APP_URL/api/reach/contracts/expire \
+  -H "Authorization: Bearer $CRON_SECRET" >/dev/null 2>&1
+```
+
+Set `CRON_SECRET` in your environment variables (same secret used by Direct expiry).
+
+---
+
 ## Testing
 
 ```bash
