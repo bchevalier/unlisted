@@ -2,7 +2,8 @@
  * POST /api/reach/contracts — Propose a new contract.
  * GET  /api/reach/contracts — List contracts for the authenticated actor.
  *
- * Auth required.
+ * Auth required. Supports ?actorId= to list contracts for an org the caller
+ * is a member of (requires CONTRACT_READ on that org).
  */
 
 import { ZodError } from 'zod';
@@ -14,6 +15,7 @@ import {
   reachDisabledResponse,
   unauthorizedResponse,
 } from '../../../../lib/reach/auth';
+import { resolveAuthz, requirePermission } from '../../../../lib/reach/permissions';
 
 export async function POST(request: Request) {
   const blocked = reachDisabledResponse();
@@ -25,7 +27,20 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const data = ReachContractCreateSchema.parse(body);
-    const contract = await proposeContract(auth.actorId, data);
+
+    // If ?actorId is provided, propose on behalf of that actor (org delegation).
+    const url = new URL(request.url);
+    const onBehalfOf = url.searchParams.get('actorId');
+    let proposerId = auth.actorId;
+
+    if (onBehalfOf && onBehalfOf !== auth.actorId) {
+      const authz = await resolveAuthz(auth, onBehalfOf);
+      const denied = requirePermission(authz, 'CONTRACT_PROPOSE');
+      if (denied) return denied;
+      proposerId = onBehalfOf;
+    }
+
+    const contract = await proposeContract(proposerId, data);
 
     return Response.json({ ok: true, contract }, { status: 201 });
   } catch (error) {
@@ -61,14 +76,23 @@ export async function GET(request: Request) {
     const limit = Math.min(parseInt(url.searchParams.get('limit') || '50', 10), 100);
     const offset = Math.max(parseInt(url.searchParams.get('offset') || '0', 10), 0);
 
+    // If ?actorId is provided, list contracts for that actor (org delegation).
+    const forActorId = url.searchParams.get('actorId') || auth.actorId;
+
+    if (forActorId !== auth.actorId) {
+      const authz = await resolveAuthz(auth, forActorId);
+      const denied = requirePermission(authz, 'CONTRACT_READ');
+      if (denied) return denied;
+    }
+
     // If ?escalated=true, return only contracts pending human review.
     if (escalated) {
-      const contracts = await listEscalatedContracts(auth.actorId, limit, offset);
+      const contracts = await listEscalatedContracts(forActorId, limit, offset);
       return Response.json({ ok: true, contracts });
     }
 
     const contracts = await listContracts(
-      auth.actorId,
+      forActorId,
       role,
       status || undefined,
       limit,

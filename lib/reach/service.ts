@@ -27,6 +27,7 @@ import { evaluatePolicies } from './policy-engine';
 import type { PolicyRecord } from './policy-engine';
 import { dispatchContract } from './router';
 import * as crypto from 'crypto';
+import { z } from 'zod';
 
 // ---------------------------------------------------------------------------
 // Errors
@@ -98,6 +99,208 @@ export async function deactivateActor(actorId: string) {
   return db.reachActor.update({
     where: { id: actorId },
     data: { isActive: false },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Actor update
+// ---------------------------------------------------------------------------
+
+export const ReachActorUpdateSchema = z.object({
+  displayName: z.string().min(1).max(200).optional(),
+  capabilities: z.record(z.unknown()).optional(),
+  endpoint: z.string().url().optional().nullable(),
+});
+
+export type ReachActorUpdate = z.infer<typeof ReachActorUpdateSchema>;
+
+export async function updateActor(actorId: string, input: ReachActorUpdate) {
+  const data = ReachActorUpdateSchema.parse(input);
+
+  const actor = await db.reachActor.findUnique({ where: { id: actorId } });
+  if (!actor) throw new ReachError('Actor not found', 'ACTOR_NOT_FOUND', 404);
+
+  const updateData: Record<string, unknown> = {};
+  if (data.displayName !== undefined) updateData.displayName = data.displayName;
+  if (data.capabilities !== undefined) {
+    updateData.capabilities = data.capabilities as Parameters<typeof db.reachActor.update>[0]['data']['capabilities'];
+  }
+  if (data.endpoint !== undefined) updateData.endpoint = data.endpoint;
+
+  if (Object.keys(updateData).length === 0) {
+    return actor; // nothing to update
+  }
+
+  return db.reachActor.update({
+    where: { id: actorId },
+    data: updateData,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// API key rotation (headless actors only)
+// ---------------------------------------------------------------------------
+
+export async function rotateApiKey(actorId: string) {
+  const actor = await db.reachActor.findUnique({
+    where: { id: actorId },
+    select: { id: true, type: true, userId: true, apiKeyHash: true },
+  });
+
+  if (!actor) throw new ReachError('Actor not found', 'ACTOR_NOT_FOUND', 404);
+
+  // Only headless actors (AI_AGENT, ORGANIZATION without userId) use API keys.
+  if (actor.type === 'HUMAN') {
+    throw new ReachError('Human actors use session auth, not API keys', 'NOT_HEADLESS', 400);
+  }
+
+  const newKey = `knk_${crypto.randomBytes(32).toString('hex')}`;
+  const newHash = crypto.createHash('sha256').update(newKey).digest('hex');
+
+  await db.reachActor.update({
+    where: { id: actorId },
+    data: { apiKeyHash: newHash },
+  });
+
+  // Return plaintext key — caller must surface to the user.
+  return { apiKey: newKey };
+}
+
+// ---------------------------------------------------------------------------
+// Org membership
+// ---------------------------------------------------------------------------
+
+export async function addOrgMember(
+  orgId: string,
+  memberId: string,
+  role: 'OWNER' | 'ADMIN' | 'MEMBER' = 'MEMBER',
+) {
+  // Validate org is an ORGANIZATION.
+  const org = await db.reachActor.findUnique({
+    where: { id: orgId },
+    select: { id: true, type: true, isActive: true },
+  });
+  if (!org) throw new ReachError('Organization not found', 'ORG_NOT_FOUND', 404);
+  if (org.type !== 'ORGANIZATION') {
+    throw new ReachError('Actor is not an organization', 'NOT_ORG', 400);
+  }
+  if (!org.isActive) throw new ReachError('Organization is inactive', 'ORG_INACTIVE', 403);
+
+  // Validate member exists and is not itself an org.
+  const member = await db.reachActor.findUnique({
+    where: { id: memberId },
+    select: { id: true, type: true, isActive: true },
+  });
+  if (!member) throw new ReachError('Member actor not found', 'MEMBER_NOT_FOUND', 404);
+  if (member.type === 'ORGANIZATION') {
+    throw new ReachError('Cannot add an organization as a member', 'ORG_AS_MEMBER', 400);
+  }
+  if (!member.isActive) throw new ReachError('Member actor is inactive', 'MEMBER_INACTIVE', 403);
+
+  // Check for existing membership.
+  const existing = await db.reachOrgMember.findUnique({
+    where: { orgId_memberId: { orgId, memberId } },
+  });
+
+  if (existing) {
+    if (existing.isActive) {
+      throw new ReachError('Already a member', 'ALREADY_MEMBER', 409);
+    }
+    // Reactivate.
+    return db.reachOrgMember.update({
+      where: { id: existing.id },
+      data: { isActive: true, role },
+    });
+  }
+
+  return db.reachOrgMember.create({
+    data: { orgId, memberId, role },
+  });
+}
+
+export async function removeOrgMember(orgId: string, memberId: string) {
+  const membership = await db.reachOrgMember.findUnique({
+    where: { orgId_memberId: { orgId, memberId } },
+  });
+  if (!membership || !membership.isActive) {
+    throw new ReachError('Membership not found', 'MEMBERSHIP_NOT_FOUND', 404);
+  }
+
+  // Prevent removing the last OWNER.
+  if (membership.role === 'OWNER') {
+    const ownerCount = await db.reachOrgMember.count({
+      where: { orgId, role: 'OWNER', isActive: true },
+    });
+    if (ownerCount <= 1) {
+      throw new ReachError(
+        'Cannot remove the last owner. Transfer ownership first.',
+        'LAST_OWNER',
+        400,
+      );
+    }
+  }
+
+  return db.reachOrgMember.update({
+    where: { id: membership.id },
+    data: { isActive: false },
+  });
+}
+
+export async function updateOrgMemberRole(
+  orgId: string,
+  memberId: string,
+  newRole: 'OWNER' | 'ADMIN' | 'MEMBER',
+) {
+  const membership = await db.reachOrgMember.findUnique({
+    where: { orgId_memberId: { orgId, memberId } },
+  });
+  if (!membership || !membership.isActive) {
+    throw new ReachError('Membership not found', 'MEMBERSHIP_NOT_FOUND', 404);
+  }
+
+  // If demoting from OWNER, ensure they're not the last one.
+  if (membership.role === 'OWNER' && newRole !== 'OWNER') {
+    const ownerCount = await db.reachOrgMember.count({
+      where: { orgId, role: 'OWNER', isActive: true },
+    });
+    if (ownerCount <= 1) {
+      throw new ReachError(
+        'Cannot demote the last owner. Assign another owner first.',
+        'LAST_OWNER',
+        400,
+      );
+    }
+  }
+
+  return db.reachOrgMember.update({
+    where: { id: membership.id },
+    data: { role: newRole },
+  });
+}
+
+export async function listOrgMembers(orgId: string, includeInactive = false) {
+  return db.reachOrgMember.findMany({
+    where: {
+      orgId,
+      ...(includeInactive ? {} : { isActive: true }),
+    },
+    include: {
+      member: {
+        select: { id: true, handle: true, displayName: true, type: true, isActive: true },
+      },
+    },
+    orderBy: [{ role: 'asc' }, { createdAt: 'asc' }],
+  });
+}
+
+export async function getOrgMembership(orgId: string, memberId: string) {
+  return db.reachOrgMember.findUnique({
+    where: { orgId_memberId: { orgId, memberId } },
+    include: {
+      member: {
+        select: { id: true, handle: true, displayName: true, type: true },
+      },
+    },
   });
 }
 

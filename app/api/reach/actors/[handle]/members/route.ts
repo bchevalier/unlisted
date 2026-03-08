@@ -1,25 +1,28 @@
 /**
- * GET  /api/reach/actors/:handle/policies — List policies for an actor.
- * POST /api/reach/actors/:handle/policies — Create a policy for an actor.
+ * GET  /api/reach/actors/:handle/members — List org members.
+ * POST /api/reach/actors/:handle/members — Add a member to the org.
  *
- * Auth required. Uses RBAC: GET needs POLICY_READ, POST needs POLICY_WRITE.
- * Both direct actor ownership and org membership (with appropriate role) work.
+ * Auth required. GET needs ORG_MEMBERS_READ, POST needs ORG_MEMBERS_WRITE.
  */
 
-import { ZodError } from 'zod';
+import { z, ZodError } from 'zod';
 import {
-  createPolicy,
-  listPolicies,
   getActorByHandle,
+  addOrgMember,
+  listOrgMembers,
   ReachError,
 } from '../../../../../../lib/reach';
-import { ReachPolicyCreateSchema } from '../../../../../../lib/reach/contracts';
 import {
   authenticateReachRequest,
   reachDisabledResponse,
   unauthorizedResponse,
 } from '../../../../../../lib/reach/auth';
 import { resolveAuthz, requirePermission } from '../../../../../../lib/reach/permissions';
+
+const AddMemberSchema = z.object({
+  memberId: z.string().min(1),
+  role: z.enum(['OWNER', 'ADMIN', 'MEMBER']).default('MEMBER'),
+});
 
 export async function GET(
   request: Request,
@@ -38,11 +41,31 @@ export async function GET(
   }
 
   const authz = await resolveAuthz(auth, actor.id);
-  const denied = requirePermission(authz, 'POLICY_READ');
+  const denied = requirePermission(authz, 'ORG_MEMBERS_READ');
   if (denied) return denied;
 
-  const policies = await listPolicies(actor.id);
-  return Response.json({ ok: true, policies });
+  try {
+    const members = await listOrgMembers(actor.id);
+    return Response.json({
+      ok: true,
+      members: members.map((m) => ({
+        id: m.id,
+        role: m.role,
+        isActive: m.isActive,
+        member: m.member,
+        createdAt: m.createdAt,
+      })),
+    });
+  } catch (error) {
+    if (error instanceof ReachError) {
+      return Response.json(
+        { ok: false, error: error.message, code: error.code },
+        { status: error.statusCode },
+      );
+    }
+    console.error('[reach/actors/:handle/members GET]', error);
+    return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
+  }
 }
 
 export async function POST(
@@ -62,15 +85,28 @@ export async function POST(
   }
 
   const authz = await resolveAuthz(auth, actor.id);
-  const denied = requirePermission(authz, 'POLICY_WRITE');
+  const denied = requirePermission(authz, 'ORG_MEMBERS_WRITE');
   if (denied) return denied;
 
   try {
     const body = await request.json();
-    const data = ReachPolicyCreateSchema.parse(body);
-    const policy = await createPolicy(actor.id, data);
+    const data = AddMemberSchema.parse(body);
+    const membership = await addOrgMember(actor.id, data.memberId, data.role);
 
-    return Response.json({ ok: true, policy }, { status: 201 });
+    return Response.json(
+      {
+        ok: true,
+        membership: {
+          id: membership.id,
+          orgId: membership.orgId,
+          memberId: membership.memberId,
+          role: membership.role,
+          isActive: membership.isActive,
+          createdAt: membership.createdAt,
+        },
+      },
+      { status: 201 },
+    );
   } catch (error) {
     if (error instanceof ZodError) {
       return Response.json(
@@ -84,7 +120,7 @@ export async function POST(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/actors/policies POST]', error);
+    console.error('[reach/actors/:handle/members POST]', error);
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

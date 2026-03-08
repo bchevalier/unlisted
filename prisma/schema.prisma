@@ -390,6 +390,28 @@ enum ReachContractEventActor {
   ADMIN
 }
 
+/// Role within an organization actor.
+enum ReachOrgRole {
+  OWNER   // full control: manage members, policies, settings, keys
+  ADMIN   // manage policies, view/act on contracts, manage settings
+  MEMBER  // propose contracts, view org contracts, act on assigned contracts
+}
+
+/// Permission scopes for Reach actor operations.
+enum ReachPermission {
+  ACTOR_READ        // view own actor profile
+  ACTOR_UPDATE      // update displayName, capabilities, endpoint
+  ACTOR_DEACTIVATE  // deactivate the actor
+  KEY_ROTATE        // regenerate API key
+  POLICY_READ       // view policies
+  POLICY_WRITE      // create/update/deactivate policies
+  CONTRACT_PROPOSE  // propose new contracts
+  CONTRACT_READ     // view contracts
+  CONTRACT_ACT      // accept/reject/override contracts
+  ORG_MEMBERS_READ  // view org membership
+  ORG_MEMBERS_WRITE // add/remove/change role of members
+}
+
 /// A reachable entity in the Reach network.
 /// Humans link to an existing User; AI agents and orgs may be headless.
 model ReachActor {
@@ -405,12 +427,32 @@ model ReachActor {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
-  user                User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user                User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
   policies            ReachPolicy[]
-  initiatedContracts  ReachContract[] @relation("ContractInitiator")
-  receivedContracts   ReachContract[] @relation("ContractTarget")
+  initiatedContracts  ReachContract[]    @relation("ContractInitiator")
+  receivedContracts   ReachContract[]    @relation("ContractTarget")
+  memberships         ReachOrgMember[]   @relation("OrgMember")     // orgs this actor belongs to (as member)
+  orgMembers          ReachOrgMember[]   @relation("OrgActor")      // members of this actor (if it's an org)
 
   @@index([type, isActive])
+}
+
+/// Membership linking a human/AI actor to an organization actor.
+model ReachOrgMember {
+  id        String       @id @default(cuid())
+  orgId     String       // the ORGANIZATION actor
+  memberId  String       // the HUMAN or AI_AGENT actor
+  role      ReachOrgRole @default(MEMBER)
+  isActive  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  org    ReachActor @relation("OrgActor", fields: [orgId], references: [id], onDelete: Cascade)
+  member ReachActor @relation("OrgMember", fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, memberId])
+  @@index([orgId, isActive, role])
+  @@index([memberId, isActive])
 }
 
 /// Policy that governs how inbound reach requests are handled for an actor.

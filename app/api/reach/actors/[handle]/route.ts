@@ -1,12 +1,21 @@
 /**
- * GET /api/reach/actors/:handle — Look up an actor by handle.
- *
- * Public endpoint (no auth required) — returns non-sensitive actor info.
- * This allows initiators to discover target handles before proposing contracts.
+ * GET   /api/reach/actors/:handle — Look up an actor by handle (public).
+ * PATCH /api/reach/actors/:handle — Update actor profile (auth + ACTOR_UPDATE).
  */
 
-import { getActorByHandle } from '../../../../../lib/reach';
-import { reachDisabledResponse } from '../../../../../lib/reach/auth';
+import { ZodError } from 'zod';
+import {
+  getActorByHandle,
+  updateActor,
+  ReachActorUpdateSchema,
+  ReachError,
+} from '../../../../../lib/reach';
+import {
+  authenticateReachRequest,
+  reachDisabledResponse,
+  unauthorizedResponse,
+} from '../../../../../lib/reach/auth';
+import { resolveAuthz, requirePermission } from '../../../../../lib/reach/permissions';
 
 export async function GET(
   _request: Request,
@@ -38,4 +47,59 @@ export async function GET(
       createdAt: actor.createdAt,
     },
   });
+}
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ handle: string }> },
+) {
+  const blocked = reachDisabledResponse();
+  if (blocked) return blocked;
+
+  const auth = await authenticateReachRequest(request);
+  if (!auth) return unauthorizedResponse();
+
+  const { handle } = await params;
+  const actor = await getActorByHandle(handle);
+  if (!actor) {
+    return Response.json({ ok: false, error: 'Actor not found' }, { status: 404 });
+  }
+
+  const authz = await resolveAuthz(auth, actor.id);
+  const denied = requirePermission(authz, 'ACTOR_UPDATE');
+  if (denied) return denied;
+
+  try {
+    const body = await request.json();
+    const data = ReachActorUpdateSchema.parse(body);
+    const updated = await updateActor(actor.id, data);
+
+    return Response.json({
+      ok: true,
+      actor: {
+        id: updated.id,
+        type: updated.type,
+        handle: updated.handle,
+        displayName: updated.displayName,
+        capabilities: updated.capabilities,
+        endpoint: updated.endpoint,
+        updatedAt: updated.updatedAt,
+      },
+    });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return Response.json(
+        { ok: false, error: 'Invalid payload', issues: error.issues },
+        { status: 400 },
+      );
+    }
+    if (error instanceof ReachError) {
+      return Response.json(
+        { ok: false, error: error.message, code: error.code },
+        { status: error.statusCode },
+      );
+    }
+    console.error('[reach/actors/:handle PATCH]', error);
+    return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
+  }
 }

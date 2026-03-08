@@ -48,15 +48,29 @@ export type {
 } from './policy-engine';
 
 export {
-  // Service functions
+  // Service functions — actors
   createActor,
   getActorByHandle,
   getActorByUserId,
   deactivateActor,
+  updateActor,
+  rotateApiKey,
+  ReachActorUpdateSchema,
+
+  // Service functions — org membership
+  addOrgMember,
+  removeOrgMember,
+  updateOrgMemberRole,
+  listOrgMembers,
+  getOrgMembership,
+
+  // Service functions — policies
   createPolicy,
   listPolicies,
   updatePolicy,
   deactivatePolicy,
+
+  // Service functions — contracts
   proposeContract,
   transitionContract,
   getContract,
@@ -64,8 +78,11 @@ export {
   listEscalatedContracts,
   overrideContractDecision,
   expireStaleContracts,
+
   ReachError,
 } from './service';
+
+export type { ReachActorUpdate } from './service';
 
 export {
   authenticateReachRequest,
@@ -74,6 +91,21 @@ export {
 } from './auth';
 
 export type { ReachAuthResult } from './auth';
+
+export {
+  resolveAuthz,
+  hasPermission,
+  requirePermission,
+  getPermissionsForRole,
+  REACH_PERMISSIONS,
+  REACH_ORG_ROLES,
+} from './permissions';
+
+export type {
+  ReachPermission as ReachPermissionScope,
+  ReachOrgRole,
+  AuthzContext,
+} from './permissions';
 
 export {
   dispatchContract,
