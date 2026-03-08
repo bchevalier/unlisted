@@ -73,6 +73,7 @@ export default async function ReachDashboardPage() {
           <Link href="/reach/contracts?role=target&status=PROPOSED">Incoming proposals</Link>
           <Link href="/reach/escalations">Escalation queue</Link>
           <Link href="/reach/policies">Manage policies</Link>
+          <Link href="/reach/metrics">Pilot metrics</Link>
         </p>
       </section>
     </main>

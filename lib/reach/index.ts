@@ -119,6 +119,20 @@ export type {
   DeliveryResult,
 } from './router';
 
+// Pilot metrics
+export {
+  computeMetrics,
+  computeDistribution,
+  getReachPilotMetrics,
+} from './metrics';
+
+export type {
+  ContractMetricRow,
+  DistributionStats,
+  ReachPilotMetrics,
+  MetricsQueryOptions,
+} from './metrics';
+
 // Webhook integration layer
 export {
   createWebhook,
