@@ -89,6 +89,14 @@ export default async function ReachSettingsPage() {
       )}
 
       <section>
+        <h2>Integrations</h2>
+        <p className="inbox-links">
+          <Link href="/reach/settings/webhooks">Manage Webhooks</Link>
+          <Link href="/reach/settings/blocklist">Blocked Actors</Link>
+        </p>
+      </section>
+
+      <section>
         <h2>Navigation</h2>
         <p className="inbox-links">
           <Link href="/reach">Dashboard</Link>

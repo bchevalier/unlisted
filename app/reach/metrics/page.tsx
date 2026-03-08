@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { requireReachSession } from '../../../features/reach/server/session';
-import { getMetricsForActor } from '../../../features/reach/server/metrics';
-import type { DistributionStats, ConversionFunnel, SlaMetrics, TypeSegmentMetrics } from '../../../lib/reach/metrics';
+import { getMetricsWithTrendForActor } from '../../../features/reach/server/metrics';
+import type { DistributionStats, ConversionFunnel, SlaMetrics, TypeSegmentMetrics, TrendComparison } from '../../../lib/reach/metrics';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -36,10 +36,18 @@ function formatContractType(type: string): string {
 // Components
 // ---------------------------------------------------------------------------
 
-function StatCard({ label, value, detail }: { label: string; value: string; detail?: string }) {
+function trendIndicator(delta: TrendComparison[keyof TrendComparison] | undefined): string {
+  if (!delta || delta.direction === 'no_data') return '';
+  if (delta.direction === 'flat') return ' ‹→›';
+  const arrow = delta.direction === 'up' ? '↑' : '↓';
+  const pct = delta.changeRate !== null ? ` ${(Math.abs(delta.changeRate) * 100).toFixed(0)}%` : '';
+  return ` ${arrow}${pct}`;
+}
+
+function StatCard({ label, value, detail, trend }: { label: string; value: string; detail?: string; trend?: string }) {
   return (
     <div className="reach-stat">
-      <span className="reach-stat-value">{value}</span>
+      <span className="reach-stat-value">{value}{trend ? <span style={{ fontSize: '0.7em', opacity: 0.7 }}>{trend}</span> : null}</span>
       <span className="reach-stat-label">{label}</span>
       {detail && <span className="reach-stat-detail">{detail}</span>}
     </div>
@@ -222,7 +230,7 @@ function TypeBreakdownSection({ segments }: { segments: TypeSegmentMetrics[] }) 
 
 export default async function ReachMetricsPage() {
   const session = await requireReachSession('/reach/metrics');
-  const metrics = await getMetricsForActor(session.actorId);
+  const { metrics, trend } = await getMetricsWithTrendForActor(session.actorId);
 
   return (
     <main>
@@ -235,15 +243,47 @@ export default async function ReachMetricsPage() {
 
       {/* Top-level stats */}
       <section className="reach-stat-grid">
-        <StatCard label="Total Contracts" value={String(metrics.totalContracts)} />
-        <StatCard label="Resolved" value={String(metrics.resolvedContracts)} />
+        <StatCard
+          label="Total Contracts"
+          value={String(metrics.totalContracts)}
+          trend={trend ? trendIndicator(trend.totalContracts) : undefined}
+        />
+        <StatCard
+          label="Resolved"
+          value={String(metrics.resolvedContracts)}
+          trend={trend ? trendIndicator(trend.resolvedContracts) : undefined}
+        />
         <StatCard label="In-Flight" value={String(metrics.inFlightContracts)} />
         <StatCard
           label="One-Hop Success"
           value={formatPercent(metrics.oneHopSuccess.rate)}
           detail={`${metrics.oneHopSuccess.oneHopCount} / ${metrics.oneHopSuccess.resolvedCount} resolved`}
+          trend={trend ? trendIndicator(trend.oneHopSuccessRate) : undefined}
         />
       </section>
+
+      {trend && (
+        <section className="reach-metric-block">
+          <h2>Period-over-Period Trends</h2>
+          <div className="reach-stat-grid">
+            <StatCard
+              label="Conversion Rate"
+              value={formatPercent(metrics.funnel.overallRate)}
+              trend={trendIndicator(trend.overallConversionRate)}
+            />
+            <StatCard
+              label="Median Time to Counterparty"
+              value={metrics.timeToCounterparty ? formatDuration(metrics.timeToCounterparty.median) : '—'}
+              trend={trendIndicator(trend.medianTimeToCounterparty)}
+            />
+            <StatCard
+              label="Median Path Length"
+              value={metrics.pathLength ? `${metrics.pathLength.median} events` : '—'}
+              trend={trendIndicator(trend.medianPathLength)}
+            />
+          </div>
+        </section>
+      )}
 
       {/* Conversion funnel */}
       <section>
