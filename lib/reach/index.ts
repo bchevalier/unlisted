@@ -64,3 +64,11 @@ export {
   expireStaleContracts,
   ReachError,
 } from './service';
+
+export {
+  authenticateReachRequest,
+  reachDisabledResponse,
+  unauthorizedResponse,
+} from './auth';
+
+export type { ReachAuthResult } from './auth';
