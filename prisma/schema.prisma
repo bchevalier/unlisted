@@ -433,6 +433,7 @@ model ReachActor {
   receivedContracts   ReachContract[]    @relation("ContractTarget")
   memberships         ReachOrgMember[]   @relation("OrgMember")     // orgs this actor belongs to (as member)
   orgMembers          ReachOrgMember[]   @relation("OrgActor")      // members of this actor (if it's an org)
+  webhooks            ReachWebhook[]
 
   @@index([type, isActive])
 }
@@ -496,10 +497,11 @@ model ReachContract {
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 
-  initiator ReachActor           @relation("ContractInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
-  target    ReachActor           @relation("ContractTarget", fields: [targetId], references: [id], onDelete: Cascade)
-  policy    ReachPolicy?         @relation(fields: [policyId], references: [id], onDelete: SetNull)
-  events    ReachContractEvent[]
+  initiator          ReachActor             @relation("ContractInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
+  target             ReachActor             @relation("ContractTarget", fields: [targetId], references: [id], onDelete: Cascade)
+  policy             ReachPolicy?           @relation(fields: [policyId], references: [id], onDelete: SetNull)
+  events             ReachContractEvent[]
+  webhookDeliveries  ReachWebhookDelivery[]
 
   @@index([initiatorId, status, createdAt])
   @@index([targetId, status, createdAt])
@@ -519,4 +521,50 @@ model ReachContractEvent {
   contract ReachContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
 
   @@index([contractId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Reach integration layer — webhooks & connectors
+// ---------------------------------------------------------------------------
+
+/// A registered webhook endpoint for a Reach actor.
+/// Actors can have multiple webhooks, each filtering on specific event types.
+model ReachWebhook {
+  id          String   @id @default(cuid())
+  actorId     String
+  url         String   // delivery endpoint URL
+  secretHash  String?  // HMAC secret hash for per-webhook signing
+  events      ReachContractEventType[] // which events trigger delivery (empty = all)
+  description String?  // human-friendly label
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  actor      ReachActor             @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  deliveries ReachWebhookDelivery[]
+
+  @@index([actorId, isActive])
+}
+
+/// Delivery log for webhook attempts — aids debugging and retry visibility.
+model ReachWebhookDelivery {
+  id          String   @id @default(cuid())
+  webhookId   String
+  contractId  String
+  event       ReachContractEventType
+  status      String   // "success", "failed", "pending"
+  httpStatus  Int?     // response status code (null if network error)
+  attempts    Int      @default(0)
+  lastError   String?
+  payload     Json?    // snapshot of sent payload (optional, for debugging)
+  deliveredAt DateTime? // when delivery succeeded
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  webhook  ReachWebhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  contract ReachContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@index([webhookId, createdAt])
+  @@index([contractId, event])
+  @@index([status, createdAt])
 }

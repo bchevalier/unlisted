@@ -26,6 +26,7 @@ import type {
 import { evaluatePolicies } from './policy-engine';
 import type { PolicyRecord } from './policy-engine';
 import { dispatchContract } from './router';
+import { dispatchWebhookEvent } from './webhooks';
 import * as crypto from 'crypto';
 import { z } from 'zod';
 
@@ -562,6 +563,19 @@ export async function proposeContract(
     });
   }
 
+  // Fire webhook lifecycle events for the target actor.
+  const webhookEvent = evaluation.action === 'ACCEPT' && evaluation.autoAccept
+    ? 'ACCEPTED' as const
+    : evaluation.action === 'ESCALATE'
+      ? 'ESCALATED' as const
+      : evaluation.action === 'REJECT'
+        ? 'REJECTED' as const
+        : 'CREATED' as const;
+
+  dispatchWebhookEvent(result.contract.id, webhookEvent, target.id).catch((err) => {
+    console.error('[reach:proposeContract:webhook]', err);
+  });
+
   return result.contract;
 }
 
@@ -574,7 +588,10 @@ export async function transitionContract(
   eventActor: ReachContractEventActor = 'SYSTEM',
   note?: string,
 ) {
-  const contract = await db.reachContract.findUnique({ where: { id: contractId } });
+  const contract = await db.reachContract.findUnique({
+    where: { id: contractId },
+    select: { id: true, status: true, targetId: true },
+  });
   if (!contract) throw new ReachError('Contract not found', 'CONTRACT_NOT_FOUND', 404);
 
   if (!canTransition(contract.status as ReachContractStatus, newStatus)) {
@@ -588,8 +605,8 @@ export async function transitionContract(
   const eventType = statusToEventType(newStatus);
   const isResolved = ['FULFILLED', 'REJECTED', 'CANCELLED', 'EXPIRED'].includes(newStatus);
 
-  return db.$transaction(async (tx) => {
-    const updated = await tx.reachContract.update({
+  const updated = await db.$transaction(async (tx) => {
+    const u = await tx.reachContract.update({
       where: { id: contractId },
       data: {
         status: newStatus,
@@ -607,8 +624,15 @@ export async function transitionContract(
       },
     });
 
-    return updated;
+    return u;
   });
+
+  // Fire webhook lifecycle event for the target actor (fire-and-forget).
+  dispatchWebhookEvent(contractId, eventType, contract.targetId).catch((err) => {
+    console.error('[reach:transitionContract:webhook]', err);
+  });
+
+  return updated;
 }
 
 /**
@@ -754,7 +778,7 @@ export async function overrideContractDecision(
     );
   }
 
-  return db.$transaction(async (tx) => {
+  const result = await db.$transaction(async (tx) => {
     // Step 1: Reopen — transition REJECTED → PROPOSED with override audit.
     const reopened = await tx.reachContract.update({
       where: { id: contractId },
@@ -796,11 +820,18 @@ export async function overrideContractDecision(
         },
       });
 
-      return accepted;
+      return { contract: accepted, event: 'ACCEPTED' as const };
     }
 
-    return reopened;
+    return { contract: reopened, event: 'OVERRIDDEN' as const };
   });
+
+  // Fire webhook lifecycle event for the override.
+  dispatchWebhookEvent(contractId, result.event, contract.targetId).catch((err) => {
+    console.error('[reach:overrideContract:webhook]', err);
+  });
+
+  return result.contract;
 }
 
 // ---------------------------------------------------------------------------

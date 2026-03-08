@@ -118,3 +118,24 @@ export type {
   WebhookPayload,
   DeliveryResult,
 } from './router';
+
+// Webhook integration layer
+export {
+  createWebhook,
+  listWebhooks,
+  getWebhook,
+  updateWebhook,
+  deleteWebhook,
+  rotateWebhookSecret,
+  listDeliveries,
+  dispatchWebhookEvent,
+  ReachWebhookCreateSchema,
+  ReachWebhookUpdateSchema,
+} from './webhooks';
+
+export type {
+  ReachWebhookCreate,
+  ReachWebhookUpdate,
+  WebhookEventPayload,
+  SignedWebhookPayload,
+} from './webhooks';
