@@ -2,39 +2,46 @@
 
 ## Strategic objective
 
-Drive adoption by attacking two pains in parallel:
+Drive adoption by attacking **three pains** in parallel:
 
 1. **Attention overload** (Knokio Direct)
 2. **Coordination distance** (Knokio Reach)
+3. **Exposure risk** (privacy/anonymity by design)
 
-We do this with a **multi-front GTM** where each lane reinforces the others.
-
----
-
-## GTM thesis: a multi-lane flywheel
-
-Run several routes simultaneously instead of betting on one channel.
-
-### Lane A — AI Agent Economy (Knokio Reach)
-**Who:** AI agents, agent operators, automation agencies, AI-native startups.
-
-**Problem:** Agents can generate tasks, but fail at the final mile requiring human uniqueness.
-
-**Message:** Use Knokio Reach to hire humans by policy, not random outreach.
-
-**Offer:**
-- Agent-ready request contracts
-- Human matching/routing to unique capabilities
-- Audit trail and completion receipts
-
-**Primary channels:**
-- API/docs-driven growth
-- integrations and partner launches
-- direct outreach to agent builders
+Knokio wins if users can be reachable, efficient, and private at the same time.
 
 ---
 
-### Lane B — High-inbound Professionals (Knokio Direct)
+## Product architecture for clarity and trust
+
+Use an endorsed two-client model under one parent brand:
+
+- `knokio.io` = **intent portal**
+  - “I want to protect my inbound” → **Knokio Direct**
+  - “I want to find/reach the right person or agent” → **Knokio Reach**
+
+- `Knokio Direct` = protected core product
+- `Knokio Reach` = additive coordination client
+
+### Non-negotiable GTM rule
+
+**Broad GTM, protected core product.**
+We can run many demand experiments in parallel, but Reach cannot degrade Direct clarity, privacy, or trust.
+
+---
+
+## GTM thesis: multi-lane flywheel, staged product depth
+
+Run multiple acquisition lanes simultaneously, while keeping product scope disciplined:
+- Direct gets hardening + proof first
+- Reach runs as controlled alpha/beta tracks
+- Privacy positioning is explicit in every lane
+
+---
+
+## Lane map
+
+### Lane A — High-inbound professionals (Direct-first)
 **Who:** creators, influencers, consultants, founders, execs.
 
 **Problem:** DMs/email volume destroys focus and response quality.
@@ -45,6 +52,7 @@ Run several routes simultaneously instead of betting on one channel.
 - Knokio door in bio
 - structured inbound
 - filtering, caps, auto-reply, controlled reveal
+- private-by-default profile/contact posture
 
 **Primary channels:**
 - creator partnerships
@@ -53,7 +61,7 @@ Run several routes simultaneously instead of betting on one channel.
 
 ---
 
-### Lane C — Safety-critical inbound (Direct + trust posture)
+### Lane B — Safety-critical inbound (Direct + trust posture)
 **Who:** feminist associations, victim support orgs, activists, moderation teams.
 
 **Problem:** Abuse/threat messages consume resources and harm teams.
@@ -64,6 +72,7 @@ Run several routes simultaneously instead of betting on one channel.
 - threat/abuse filtering workflows
 - structured reporting intake
 - escalation and audit controls
+- non-searchable/private-by-default visibility
 
 **Primary channels:**
 - NGO partnerships
@@ -72,16 +81,37 @@ Run several routes simultaneously instead of betting on one channel.
 
 ---
 
-### Lane D — Expat & cross-border communities
-**Who:** expats, digital nomads, relocation communities, diaspora networks.
+### Lane C — AI Agent economy (Reach)
+**Who:** AI agents, agent operators, automation agencies, AI-native startups.
 
-**Problem:** Hard to rapidly find reliable people/services across countries.
+**Problem:** Agents can generate tasks but fail at the final mile requiring human uniqueness.
 
-**Message:** Reduce coordination distance and connect intentionally across borders.
+**Message:** Use Knokio Reach to hire humans by policy, not random outreach.
 
 **Offer:**
-- profile-linked doors for requests
-- location-aware, trust-aware reach paths
+- agent-ready request contracts
+- human routing for unique capabilities
+- audit trail + completion receipts
+- privacy-preserving reachability controls
+
+**Primary channels:**
+- API/docs-driven growth
+- integrations and partner launches
+- direct outreach to agent builders
+
+---
+
+### Lane D — Expat & cross-border communities (Reach + privacy)
+**Who:** expats, digital nomads, relocation communities, diaspora networks.
+
+**Problem:** Hard to find trustworthy, relevant contacts quickly across countries.
+
+**Message:** Reduce coordination distance while protecting personal details.
+
+**Offer:**
+- one-hop intent routing
+- location-aware trust-aware matching
+- private, controlled contact reveal
 
 **Primary channels:**
 - expat channels and communities
@@ -90,10 +120,10 @@ Run several routes simultaneously instead of betting on one channel.
 
 ---
 
-### Lane E — Viral utility spin-offs (distribution products)
+### Lane E — Viral utility spin-offs (distribution layer)
 **Who:** friend groups, communities, consumer cohorts.
 
-**Example:** “Best dine-out option” helper that uses private preference/budget info from Knokio profiles.
+**Example:** “Best dine-out option” helper using consented preference/budget signals from Knokio profiles.
 
 **Role in strategy:**
 - low-friction growth surface
@@ -104,69 +134,86 @@ Run several routes simultaneously instead of betting on one channel.
 
 ## Why these lanes reinforce each other
 
-- Direct success stories prove attention ROI and trust.
-- Reach + AI success stories prove economic utility and speed.
-- Safety deployments validate policy and moderation credibility.
-- Viral spin-offs generate top-of-funnel and identity graph depth.
-- Expat communities pressure-test cross-border routing.
+- Direct case studies prove attention ROI and product reliability.
+- Safety deployments prove trust and privacy credibility.
+- Reach + AI use-cases prove economic utility and speed.
+- Expat pilots pressure-test real-world cross-border routing.
+- Viral spin-offs create top-of-funnel and conversion paths.
 
-Together, this creates a compounding loop:
+Compounding loop:
 
-> **More usage → better routing + trust signals → better outcomes → stronger word-of-mouth and partner pull.**
+> **More trusted usage → better routing signals → better outcomes → stronger word-of-mouth and partner pull.**
 
 ---
 
 ## Simultaneous execution model (AI-agent leverage)
 
-Because execution is AI-assisted, we run lanes in parallel:
+Because execution is AI-assisted, we can run lanes in parallel:
 
 - **Prospecting agents:** map leads, partnerships, communities
-- **Content agents:** generate and localize case studies, landing pages, outreach assets
+- **Content agents:** generate/localize case studies, LPs, outreach assets
 - **Experiment agents:** run A/B tests on onboarding and messaging
-- **Ops agents:** track pilots, renewal risk, activation blockers
+- **Ops agents:** track pilots, activation blockers, expansion risk
 
-Human team focus:
-- partnerships,
-- product decisions,
-- high-trust relationship building,
-- safety governance.
+Human focus:
+- partnerships
+- product decisions
+- trust/safety governance
+- high-trust relationship work
+
+---
+
+## Resource allocation (default)
+
+To prevent scope bleed:
+- **60–70%** Direct product quality + conversion
+- **20–30%** Reach alpha/beta experiments
+- **10%** viral distribution experiments
+
+If Direct KPIs regress, shift allocation back to Direct immediately.
 
 ---
 
 ## 90-day launch plan (rolling)
 
-### Phase 1 (0–30 days): prove pain and message fit
-- Launch 3 landing pages: Direct, Reach-for-agents, Safety
-- Recruit 10 design partners per lane (A/B/C)
-- Ship at least 5 measurable case studies
+### Phase 1 (0–30 days): Direct proof + privacy trust
+- Launch portal messaging (`knokio.io`) with Direct/Reach intent split
+- Ship Direct onboarding + first measurable ROI case studies
+- Recruit 10 design partners across Direct-heavy lanes (A/B)
 
-### Phase 2 (31–60 days): scale repeatable motion
-- Formalize outreach playbooks for each lane
-- Launch first viral utility prototype (dine-out coordinator)
-- Start expat community pilots in 2–3 target geographies
+### Phase 2 (31–60 days): Reach controlled alpha
+- Start Reach pilots with selected AI operators and expat cohorts (C/D)
+- Keep Reach behind explicit stage controls (alpha/limited beta)
+- Publish trust posture docs + privacy guarantees in GTM assets
 
-### Phase 3 (61–90 days): compound and integrate
-- Turn best-performing pilot lanes into packaged offers
-- Add integrations/API examples for agent operators
-- Build referral loop across creators, communities, and agent builders
+### Phase 3 (61–90 days): compound and package
+- Turn best pilot motions into repeatable offers
+- Publish reference integrations for agent operators
+- Build referrals between Direct users, partners, and Reach pilots
 
 ---
 
 ## Packaging and pricing direction (initial)
 
-- **Direct plan:** optimized for inbound filtering and attention protection
-- **Reach plan:** optimized for routing, agent requests, and verified completion
-- **Org/Safety plan:** governance, moderation controls, and audit requirements
+- **Direct plan:** inbound filtering + attention protection + privacy controls
+- **Reach plan:** routing + agent requests + verified completion
+- **Org/Safety plan:** moderation governance + audit + escalation requirements
 
 ---
 
 ## Strategic risks and mitigations
 
-- **Risk:** “Marketplace drift” into noisy discovery platform  
-  **Mitigation:** keep consent/policy gates strict; no uncontrolled browsing.
+- **Risk:** product confusion between Direct and Reach  
+  **Mitigation:** strict portal intent split + separate client UX.
+
+- **Risk:** Reach complexity degrades Direct quality  
+  **Mitigation:** release gates tied to Direct KPIs + allocation guardrails.
+
+- **Risk:** “marketplace drift” into noisy discovery platform  
+  **Mitigation:** consent/policy gates and no uncontrolled browsing.
 
 - **Risk:** agent spam at scale  
-  **Mitigation:** strong auth, quotas, cost/rate friction, reputation scoring.
+  **Mitigation:** strong auth, quotas, rate/cost friction, reputation controls.
 
 - **Risk:** trust failures in sensitive use cases  
   **Mitigation:** audit logs, human override, escalation paths, safety review.
@@ -175,9 +222,10 @@ Human team focus:
 
 ## Decision rule
 
-We prioritize experiments that improve at least one of these with hard data:
+Prioritize initiatives that improve at least one of these with hard data:
 1. Attention ROI
 2. Reach path compression
-3. Completion of human-unique tasks
+3. Privacy/trust outcomes (lower exposure + lower abuse impact)
+4. Completion of human-unique tasks
 
-If an initiative does none of the three, we cut it.
+If an initiative does none of the above, cut it.
