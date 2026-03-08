@@ -10,6 +10,11 @@ import {
 } from '@prisma/client';
 import { z } from 'zod';
 import { db } from '../../../lib/db';
+import {
+  notifyKeeperNewRequest,
+  notifyKnockerAccepted,
+  notifyKnockerExpired
+} from '../../../lib/notifications';
 
 const formRequestSchema = z.object({
   doorSlug: z.string().trim().min(1),
@@ -301,6 +306,45 @@ async function enforceBlocklist(doorId: string, senderEmail: string | null | und
   }
 }
 
+// ---------------------------------------------------------------------------
+// Notification helpers (fire-and-forget — never block the main flow)
+// ---------------------------------------------------------------------------
+
+function sendNewRequestNotificationToKeeper(
+  doorId: string,
+  request: {
+    categoryLabel: string | null;
+    senderName: string | null;
+    senderEmail: string | null;
+    title: string | null;
+    messagePreview: string;
+  }
+) {
+  // Intentionally not awaited — fire-and-forget
+  db.door.findUnique({
+    where: { id: doorId },
+    select: {
+      slug: true,
+      displayName: true,
+      user: { select: { email: true } }
+    }
+  }).then((door) => {
+    if (!door?.user?.email) return;
+    notifyKeeperNewRequest({
+      keeperEmail: door.user.email,
+      doorName: door.displayName,
+      doorSlug: door.slug,
+      categoryLabel: request.categoryLabel,
+      senderName: request.senderName,
+      senderEmail: request.senderEmail,
+      title: request.title,
+      messagePreview: request.messagePreview
+    });
+  }).catch((err) => {
+    console.error('[notification:new-request-lookup-failed]', err);
+  });
+}
+
 export async function createFormRequest(input: unknown, options?: { ipAddress?: string | null }) {
   const payload = formRequestSchema.parse(input);
 
@@ -376,7 +420,7 @@ export async function createFormRequest(input: unknown, options?: { ipAddress?: 
     }
   }
 
-  return db.request.create({
+  const created = await db.request.create({
     data: {
       doorId: door.id,
       categoryId: category.id,
@@ -402,6 +446,17 @@ export async function createFormRequest(input: unknown, options?: { ipAddress?: 
       status: true
     }
   });
+
+  // Fire-and-forget: notify keeper of new request
+  sendNewRequestNotificationToKeeper(door.id, {
+    categoryLabel: category.key,
+    senderName: normalizeOptional(payload.senderName),
+    senderEmail: normalizedSenderEmail,
+    title: normalizeOptional(payload.title),
+    messagePreview: payload.message
+  });
+
+  return created;
 }
 
 const COMPLETION_TOKEN_EXPIRY_HOURS = 72;
@@ -537,6 +592,18 @@ export async function createEmailRequest(input: unknown) {
   });
 
   const appUrl = process.env.APP_URL ?? 'http://localhost:3000';
+
+  // Fire-and-forget: notify keeper when email request is immediately PENDING
+  // (AWAITING_COMPLETION requests notify later, when the form is completed)
+  if (!requiresCompletion) {
+    sendNewRequestNotificationToKeeper(emailAlias.door.id, {
+      categoryLabel: null,
+      senderName,
+      senderEmail,
+      title: normalizeOptional(payload.subject),
+      messagePreview: cleanedMessage
+    });
+  }
 
   return {
     ...created,
@@ -719,7 +786,7 @@ export async function completeEmailRequest(input: unknown) {
   }
 
   // Transition to PENDING with structured data, clear completion token
-  return db.request.update({
+  const completed = await db.request.update({
     where: { id: request.id },
     data: {
       status: RequestStatus.PENDING,
@@ -738,9 +805,28 @@ export async function completeEmailRequest(input: unknown) {
     select: {
       id: true,
       requestToken: true,
-      status: true
+      status: true,
+      senderName: true,
+      senderEmail: true,
+      title: true,
+      message: true
     }
   });
+
+  // Fire-and-forget: notify keeper of new request
+  sendNewRequestNotificationToKeeper(request.doorId, {
+    categoryLabel: category.key,
+    senderName: completed.senderName,
+    senderEmail: completed.senderEmail,
+    title: completed.title,
+    messagePreview: completed.message
+  });
+
+  return {
+    id: completed.id,
+    requestToken: completed.requestToken,
+    status: completed.status
+  };
 }
 
 export async function updateRequestStatusForKeeper(userId: string, requestId: string, input: unknown) {
@@ -751,9 +837,18 @@ export async function updateRequestStatusForKeeper(userId: string, requestId: st
     select: {
       id: true,
       status: true,
+      senderEmail: true,
+      requestToken: true,
       door: {
         select: {
-          userId: true
+          userId: true,
+          displayName: true,
+          settings: {
+            select: {
+              revealMethod: true,
+              revealValue: true
+            }
+          }
         }
       }
     }
@@ -770,7 +865,9 @@ export async function updateRequestStatusForKeeper(userId: string, requestId: st
   const eventType =
     payload.status === RequestStatus.ACCEPTED ? RequestEventType.ACCEPTED : RequestEventType.DECLINED;
 
-  return db.request.update({
+  const keeperNote = normalizeOptional(payload.note);
+
+  const updated = await db.request.update({
     where: { id: requestId },
     data: {
       status: payload.status,
@@ -778,12 +875,28 @@ export async function updateRequestStatusForKeeper(userId: string, requestId: st
         create: {
           type: eventType,
           actor: RequestEventActor.KEEPER,
-          note: normalizeOptional(payload.note)
+          note: keeperNote
         }
       }
     },
     select: { id: true, status: true }
   });
+
+  // Fire-and-forget: notify knocker on acceptance
+  if (payload.status === RequestStatus.ACCEPTED && existing.senderEmail) {
+    notifyKnockerAccepted({
+      knockerEmail: existing.senderEmail,
+      doorName: existing.door.displayName,
+      requestToken: existing.requestToken,
+      revealMethod: existing.door.settings?.revealMethod ?? 'NONE',
+      revealValue: existing.door.settings?.revealValue ?? null,
+      keeperNote
+    }).catch((err) => {
+      console.error('[notification:accepted-failed]', err);
+    });
+  }
+
+  return updated;
 }
 
 const DEFAULT_PAGE_SIZE = 20;
@@ -1099,7 +1212,14 @@ export async function expireStaleRequests(options?: { expiryDays?: number; batch
         { status: RequestStatus.AWAITING_COMPLETION, completionExpiresAt: { lt: now } }
       ]
     },
-    select: { id: true },
+    select: {
+      id: true,
+      senderEmail: true,
+      requestToken: true,
+      door: {
+        select: { displayName: true }
+      }
+    },
     take: batchSize
   });
 
@@ -1135,6 +1255,19 @@ export async function expireStaleRequests(options?: { expiryDays?: number; batch
 
     return updated.count;
   });
+
+  // Fire-and-forget: notify knockers whose requests expired
+  for (const req of stale) {
+    if (req.senderEmail) {
+      notifyKnockerExpired({
+        knockerEmail: req.senderEmail,
+        doorName: req.door.displayName,
+        requestToken: req.requestToken
+      }).catch((err) => {
+        console.error('[notification:expired-failed]', err);
+      });
+    }
+  }
 
   return { expired: result };
 }
