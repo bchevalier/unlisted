@@ -1,4 +1,4 @@
-import { PrismaClient, CategoryFieldType, DoorPlan } from '@prisma/client';
+import { PrismaClient, AuthProvider, CategoryFieldType, DoorPlan } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -15,8 +15,27 @@ async function main() {
 
   const user = await prisma.user.upsert({
     where: { email: demoEmail },
-    update: { name: demoName, passwordHash },
-    create: { email: demoEmail, name: demoName, passwordHash }
+    update: { name: demoName, passwordHash, emailVerifiedAt: new Date() },
+    create: { email: demoEmail, name: demoName, passwordHash, emailVerifiedAt: new Date() }
+  });
+
+  await prisma.authIdentity.upsert({
+    where: {
+      provider_providerSubject: {
+        provider: AuthProvider.PASSWORD,
+        providerSubject: demoEmail.toLowerCase()
+      }
+    },
+    update: {
+      userId: user.id,
+      providerEmail: demoEmail.toLowerCase()
+    },
+    create: {
+      userId: user.id,
+      provider: AuthProvider.PASSWORD,
+      providerSubject: demoEmail.toLowerCase(),
+      providerEmail: demoEmail.toLowerCase()
+    }
   });
 
   const door = await prisma.door.upsert({

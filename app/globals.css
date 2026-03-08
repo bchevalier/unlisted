@@ -210,6 +210,18 @@ label {
   padding: 16px;
 }
 
+.auth-form + .auth-form {
+  margin-top: 14px;
+}
+
+.auth-form h3 {
+  margin-top: 0;
+}
+
+.auth-form form + form {
+  margin-top: 12px;
+}
+
 .settings-panel {
   display: grid;
   gap: 16px;

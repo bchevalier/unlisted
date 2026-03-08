@@ -51,15 +51,101 @@ enum DoorPlan {
   PAID
 }
 
-model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  name         String?
-  passwordHash String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+enum AuthProvider {
+  PASSWORD
+  GOOGLE
+  APPLE
+  LINKEDIN
+  PRIVY
+}
 
-  door Door?
+enum AuthTokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  TWO_FACTOR_CHALLENGE
+}
+
+enum AuthActionType {
+  SIGNUP
+  LOGIN
+  PASSWORD_RESET_REQUEST
+  EMAIL_VERIFICATION
+}
+
+model User {
+  id               String   @id @default(cuid())
+  email            String   @unique
+  name             String?
+  passwordHash     String?
+  emailVerifiedAt  DateTime?
+  twoFactorEnabled Boolean  @default(false)
+  twoFactorSecret  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  door              Door?
+  identities        AuthIdentity[]
+  authTokens        AuthToken[]
+  recoveryCodes     TwoFactorRecoveryCode[]
+}
+
+model AuthIdentity {
+  id              String       @id @default(cuid())
+  userId          String
+  provider        AuthProvider
+  providerSubject String
+  providerEmail   String?
+  walletAddress   String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerSubject])
+  @@index([userId, provider])
+  @@index([walletAddress])
+}
+
+model AuthToken {
+  id        String        @id @default(cuid())
+  userId    String
+  type      AuthTokenType
+  tokenHash String
+  expiresAt DateTime
+  consumedAt DateTime?
+  metadata  Json?
+  createdAt DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([type, tokenHash])
+  @@index([userId, type, expiresAt])
+}
+
+model TwoFactorRecoveryCode {
+  id        String   @id @default(cuid())
+  userId    String
+  codeHash  String
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, codeHash])
+  @@index([userId, usedAt])
+}
+
+model AuthAttempt {
+  id        String         @id @default(cuid())
+  action    AuthActionType
+  ipHash    String?
+  email     String?
+  success   Boolean        @default(false)
+  createdAt DateTime       @default(now())
+
+  @@index([action, createdAt])
+  @@index([email, action, createdAt])
+  @@index([ipHash, action, createdAt])
 }
 
 model Door {

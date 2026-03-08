@@ -174,6 +174,8 @@ Knokio Direct MVP foundation is implemented for development:
 - Public door route: `/u/:slug`
 - Dynamic structured form submission → pending requests
 - Keeper auth: `/direct/signup`, `/direct/login`, session cookie, `/api/direct/auth/*`
+- Multi-provider identity support: password + Google + Apple + LinkedIn + Privy (token-based provider verification endpoint)
+- Auth hardening: email verification, password recovery, optional 2FA (TOTP + recovery codes), anti-bot honeypot + auth rate limits
 - Keeper inbox view: `/direct/inbox?slug=:slug`
 - Keeper settings: `/direct/settings?slug=:slug` (includes manual Free/Paid plan switch)
 - Accept/decline actions with request events

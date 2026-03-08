@@ -3,8 +3,10 @@ import {
   listDoorsForKeeper,
   listRequestsByDoorSlugForKeeper
 } from '../../../features/direct/server/requests';
+import { getKeeperSecurityProfile } from '../../../features/direct/server/security';
 import { requireKeeperSession } from '../../../features/direct/server/session';
 import { SettingsPanel } from './settings-panel';
+import { TwoFactorPanel } from './two-factor-panel';
 
 type DirectSettingsPageProps = {
   searchParams?: Promise<{
@@ -28,7 +30,11 @@ export default async function DirectSettingsPage({ searchParams }: DirectSetting
     );
   }
 
-  const door = await listRequestsByDoorSlugForKeeper(session.userId, selectedSlug);
+  const [door, securityProfile] = await Promise.all([
+    listRequestsByDoorSlugForKeeper(session.userId, selectedSlug),
+    getKeeperSecurityProfile(session.userId)
+  ]);
+
   if (!door) {
     return (
       <main>
@@ -60,6 +66,14 @@ export default async function DirectSettingsPage({ searchParams }: DirectSetting
           Open public door
         </Link>
       </p>
+
+      {securityProfile ? (
+        <TwoFactorPanel
+          email={securityProfile.email}
+          emailVerified={Boolean(securityProfile.emailVerifiedAt)}
+          twoFactorEnabled={securityProfile.twoFactorEnabled}
+        />
+      ) : null}
 
       <SettingsPanel
         door={{

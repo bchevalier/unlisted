@@ -17,6 +17,10 @@ Tasks should be checked only when implemented and verified.
 - [x] Provision managed PostgreSQL database
 - [x] Configure database migration tooling
 - [x] Set up basic authentication (signup, login, sessions)
+- [x] Add multi-provider auth identity layer (Google, Apple, LinkedIn, Privy, password)
+- [x] Add email verification + password recovery auth flows
+- [x] Add optional 2FA (TOTP + recovery codes)
+- [x] Add auth-layer anti-bot/rate-limit protections
 - [x] Add Direct/Reach feature flags and runtime isolation for parallel testing
 
 ---
