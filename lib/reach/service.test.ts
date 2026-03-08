@@ -68,7 +68,7 @@ describe('fulfillContract', () => {
     const mockUpdated = { id: 'c-1', status: 'FULFILLED', responseData: { answer: 42 } };
 
     // $transaction executes the callback
-    mockFns.$transaction.mockImplementation(async (cb: Function) => {
+    mockFns.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       mockFns.reachContract.update.mockResolvedValue(mockUpdated);
       mockFns.reachContractEvent.create.mockResolvedValue({});
       return cb({
@@ -101,7 +101,7 @@ describe('fulfillContract', () => {
     });
 
     const mockUpdated = { id: 'c-2', status: 'FULFILLED' };
-    mockFns.$transaction.mockImplementation(async (cb: Function) => {
+    mockFns.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       mockFns.reachContract.update.mockResolvedValue(mockUpdated);
       mockFns.reachContractEvent.create.mockResolvedValue({});
       return cb({
@@ -172,7 +172,7 @@ describe('deactivateActorWithCascade', () => {
       cancelledContracts: 2,
     };
 
-    mockFns.$transaction.mockImplementation(async (cb: Function) => {
+    mockFns.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       mockFns.reachActor.update.mockResolvedValue(mockResult.actor);
       mockFns.reachContract.updateMany.mockResolvedValue({ count: 2 });
       mockFns.reachContractEvent.createMany.mockResolvedValue({ count: 2 });
@@ -208,7 +208,7 @@ describe('deactivateActorWithCascade', () => {
 
     mockFns.reachContract.findMany.mockResolvedValue([]);
 
-    mockFns.$transaction.mockImplementation(async (cb: Function) => {
+    mockFns.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       mockFns.reachActor.update.mockResolvedValue({ id: 'actor-1', isActive: false });
       return cb({
         reachActor: { update: mockFns.reachActor.update },
@@ -263,7 +263,7 @@ describe('expireStaleContracts (batch)', () => {
       { id: 'c-3', targetId: 'actor-a' },
     ]);
 
-    mockFns.$transaction.mockImplementation(async (cb: Function) => {
+    mockFns.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       mockFns.reachContract.updateMany.mockResolvedValue({ count: 3 });
       mockFns.reachContractEvent.createMany.mockResolvedValue({ count: 3 });
       return cb({

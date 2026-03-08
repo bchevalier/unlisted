@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireReachSession } from '../../../features/reach/server/session';
 import { db } from '../../../lib/db';
+import { PolicyActions } from './policy-actions';
 
 export default async function ReachPoliciesPage() {
   const session = await requireReachSession('/reach/policies');
@@ -26,12 +27,14 @@ export default async function ReachPoliciesPage() {
         {inactivePolicies.length > 0
           ? ` · ${inactivePolicies.length} inactive`
           : ''}
+        {' · '}
+        <Link href="/reach/policies/new">+ New Policy</Link>
       </p>
 
       {activePolicies.length === 0 && inactivePolicies.length === 0 ? (
         <p>
-          No policies configured. All inbound contracts will require manual review.
-          Use the <Link href="/reach/policies/new">API</Link> to create policies.
+          No policies configured. All inbound contracts will require manual review.{' '}
+          <Link href="/reach/policies/new">Create your first policy</Link>.
         </p>
       ) : (
         <div className="inbox-list">
@@ -42,7 +45,11 @@ export default async function ReachPoliciesPage() {
               style={!policy.isActive ? { opacity: 0.6 } : undefined}
             >
               <header>
-                <strong>{policy.name}</strong>
+                <strong>
+                  <Link href={`/reach/policies/${policy.id}/edit`}>
+                    {policy.name}
+                  </Link>
+                </strong>
                 {!policy.isActive && <span> (inactive)</span>}
                 <p>
                   Action: <strong>{policy.action}</strong>
@@ -80,6 +87,11 @@ export default async function ReachPoliciesPage() {
                   )}
                 </tbody>
               </table>
+
+              <PolicyActions
+                policyId={policy.id}
+                isActive={policy.isActive}
+              />
             </article>
           ))}
         </div>

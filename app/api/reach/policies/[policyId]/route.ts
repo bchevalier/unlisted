@@ -6,7 +6,7 @@
  * or have POLICY_WRITE permission via org membership.
  */
 
-import { ZodError } from 'zod';
+import { z, ZodError } from 'zod';
 import { db } from '../../../../../lib/db';
 import { updatePolicy, deactivatePolicy, ReachError } from '../../../../../lib/reach';
 import { ReachPolicyCreateSchema } from '../../../../../lib/reach/contracts';
@@ -17,7 +17,9 @@ import {
 } from '../../../../../lib/reach/auth';
 import { resolveAuthz, requirePermission } from '../../../../../lib/reach/permissions';
 
-const PolicyUpdateSchema = ReachPolicyCreateSchema.partial().omit({ name: true });
+const PolicyUpdateSchema = ReachPolicyCreateSchema.partial()
+  .omit({ name: true })
+  .extend({ isActive: z.boolean().optional() });
 
 export async function PATCH(
   request: Request,
@@ -47,8 +49,20 @@ export async function PATCH(
 
   try {
     const body = await request.json();
-    const updates = PolicyUpdateSchema.parse(body);
-    const updated = await updatePolicy(policyId, updates);
+    const { isActive, ...fieldUpdates } = PolicyUpdateSchema.parse(body);
+
+    // Handle isActive toggle separately.
+    if (isActive !== undefined) {
+      await db.reachPolicy.update({ where: { id: policyId }, data: { isActive } });
+    }
+
+    // Apply remaining field updates if any.
+    let updated;
+    if (Object.keys(fieldUpdates).length > 0) {
+      updated = await updatePolicy(policyId, fieldUpdates);
+    } else {
+      updated = await db.reachPolicy.findUnique({ where: { id: policyId } });
+    }
 
     return Response.json({ ok: true, policy: updated });
   } catch (error) {

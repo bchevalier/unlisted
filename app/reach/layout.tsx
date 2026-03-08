@@ -29,6 +29,7 @@ export default function ReachLayout({ children }: ReachLayoutProps) {
           <Link href="/reach/contracts">Contracts</Link>
           <Link href="/reach/escalations">Escalations</Link>
           <Link href="/reach/policies">Policies</Link>
+          <Link href="/reach/metrics">Metrics</Link>
           <Link href="/reach/settings">Settings</Link>
         </span>
       </nav>

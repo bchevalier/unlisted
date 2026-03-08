@@ -23,7 +23,6 @@ import type {
   ReachContractEventType,
   ReachContractEventActor,
   ReachActorType,
-  AgentMeta,
 } from './contracts';
 import { evaluatePolicies } from './policy-engine';
 import type { PolicyRecord } from './policy-engine';
