@@ -158,7 +158,12 @@ export {
   enforcePairCooldown,
   createReachAbuseReport,
   listReachAbuseReports,
+  listOwnAbuseReports,
   updateReachAbuseReportStatus,
+  reviewAbuseReport,
+  getActorAbuseScore,
+  checkAndAutoSuspend,
+  autoBlockOnConfirmedAbuse,
   ReachBlockCreateSchema,
   ReachAbuseReportCreateSchema,
   ReachAbuseReportUpdateSchema,
@@ -169,6 +174,14 @@ export type {
   ReachBlockCreate,
   ReachAbuseReportCreate,
 } from './safety';
+
+// Content sanitization
+export {
+  sanitizeContractInput,
+  SanitizeError,
+} from './sanitize';
+
+export type { SanitizedContractInput } from './sanitize';
 
 // Webhook integration layer
 export {

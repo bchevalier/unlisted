@@ -385,6 +385,226 @@ export async function updateReachAbuseReportStatus(input: z.infer<typeof ReachAb
 }
 
 // ---------------------------------------------------------------------------
+// Repeated-offender detection & automated consequences
+// ---------------------------------------------------------------------------
+
+/**
+ * Threshold of confirmed (REVIEWED) abuse reports before an actor is
+ * auto-suspended. Configurable via env.
+ */
+const AUTO_SUSPEND_THRESHOLD = Number(process.env.REACH_AUTO_SUSPEND_THRESHOLD ?? 3);
+
+/**
+ * Compute an actor's abuse score: count of REVIEWED abuse reports where the
+ * actor is the *reported party* (i.e., the other participant who was reported).
+ *
+ * This is useful for admin dashboards and automated suspension decisions.
+ */
+export async function getActorAbuseScore(actorId: string): Promise<{
+  confirmedReports: number;
+  isSuspended: boolean;
+  threshold: number;
+}> {
+  // Find all contracts where this actor is initiator or target,
+  // and a confirmed (REVIEWED) abuse report exists filed by the OTHER party.
+  const confirmedReports = await db.reachAbuseReport.count({
+    where: {
+      status: 'REVIEWED',
+      // The reporter is NOT this actor — meaning this actor was the offender.
+      reporterId: { not: actorId },
+      contract: {
+        OR: [{ initiatorId: actorId }, { targetId: actorId }],
+      },
+    },
+  });
+
+  const actor = await db.reachActor.findUnique({
+    where: { id: actorId },
+    select: { isActive: true },
+  });
+
+  return {
+    confirmedReports,
+    isSuspended: !(actor?.isActive ?? true),
+    threshold: AUTO_SUSPEND_THRESHOLD,
+  };
+}
+
+/**
+ * Check if an actor should be auto-suspended based on accumulated confirmed
+ * abuse reports. If threshold is met, deactivates the actor and cancels
+ * in-flight contracts.
+ *
+ * Called after an abuse report is confirmed (status → REVIEWED).
+ *
+ * @returns true if the actor was auto-suspended, false otherwise.
+ */
+export async function checkAndAutoSuspend(offenderActorId: string): Promise<boolean> {
+  if (AUTO_SUSPEND_THRESHOLD <= 0) return false;
+
+  const { confirmedReports, isSuspended } = await getActorAbuseScore(offenderActorId);
+
+  if (isSuspended) return false; // already suspended
+  if (confirmedReports < AUTO_SUSPEND_THRESHOLD) return false;
+
+  // Import deactivateActorWithCascade lazily to avoid circular dependency.
+  const { deactivateActorWithCascade } = await import('./service');
+
+  try {
+    await deactivateActorWithCascade(offenderActorId);
+    console.warn(
+      `[reach:safety] Auto-suspended actor ${offenderActorId} after ${confirmedReports} confirmed abuse reports`,
+    );
+    return true;
+  } catch {
+    // Actor may have been deactivated between check and action — not an error.
+    return false;
+  }
+}
+
+/**
+ * After confirming an abuse report (status → REVIEWED), auto-block the offending
+ * actor so they can't send further contracts to the reporter.
+ *
+ * The "offender" is the contract participant who is NOT the reporter.
+ */
+export async function autoBlockOnConfirmedAbuse(
+  contractId: string,
+  reporterId: string,
+): Promise<{ blocked: boolean; offenderId: string | null }> {
+  const contract = await db.reachContract.findUnique({
+    where: { id: contractId },
+    select: { initiatorId: true, targetId: true },
+  });
+
+  if (!contract) return { blocked: false, offenderId: null };
+
+  // The offender is whichever participant is NOT the reporter.
+  const offenderId =
+    contract.initiatorId === reporterId ? contract.targetId : contract.initiatorId;
+
+  // Check if already blocked.
+  const alreadyBlocked = await isBlocked(reporterId, offenderId);
+  if (alreadyBlocked) return { blocked: false, offenderId };
+
+  // Auto-block.
+  await db.reachBlockedActor.upsert({
+    where: {
+      blockerId_blockedId: { blockerId: reporterId, blockedId: offenderId },
+    },
+    update: { reason: 'Auto-blocked after confirmed abuse report' },
+    create: {
+      blockerId: reporterId,
+      blockedId: offenderId,
+      reason: 'Auto-blocked after confirmed abuse report',
+    },
+  });
+
+  return { blocked: true, offenderId };
+}
+
+/**
+ * Enhanced abuse report review: updates status AND triggers automated
+ * consequences (auto-block, repeated offender check).
+ *
+ * This should be used by the admin review API route instead of the bare
+ * updateReachAbuseReportStatus.
+ */
+export async function reviewAbuseReport(input: z.infer<typeof ReachAbuseReportUpdateSchema>) {
+  const report = await updateReachAbuseReportStatus(input);
+
+  // Only trigger consequences for confirmed abuse (REVIEWED), not DISMISSED.
+  if (input.status === 'REVIEWED') {
+    const fullReport = await db.reachAbuseReport.findUnique({
+      where: { id: input.reportId },
+      select: { contractId: true, reporterId: true },
+    });
+
+    if (fullReport) {
+      // Auto-block offender from contacting reporter.
+      const blockResult = await autoBlockOnConfirmedAbuse(
+        fullReport.contractId,
+        fullReport.reporterId,
+      );
+
+      // Check if offender should be auto-suspended.
+      let autoSuspended = false;
+      if (blockResult.offenderId) {
+        autoSuspended = await checkAndAutoSuspend(blockResult.offenderId);
+      }
+
+      return {
+        ...report,
+        consequences: {
+          autoBlocked: blockResult.blocked,
+          offenderId: blockResult.offenderId,
+          autoSuspended,
+        },
+      };
+    }
+  }
+
+  return { ...report, consequences: null };
+}
+
+/**
+ * List abuse reports scoped to the caller's own contracts.
+ * Regular actors can only see reports on contracts they participated in.
+ */
+export async function listOwnAbuseReports(
+  actorId: string,
+  opts?: { status?: ReachAbuseReportStatus; page?: number; pageSize?: number },
+) {
+  const page = Math.max(1, opts?.page ?? 1);
+  const pageSize = Math.min(100, Math.max(1, opts?.pageSize ?? 20));
+  const skip = (page - 1) * pageSize;
+
+  const where: Record<string, unknown> = {
+    contract: {
+      OR: [{ initiatorId: actorId }, { targetId: actorId }],
+    },
+  };
+  if (opts?.status) {
+    (where as { status?: ReachAbuseReportStatus }).status = opts.status;
+  }
+
+  const [reports, totalCount] = await Promise.all([
+    db.reachAbuseReport.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: pageSize,
+      include: {
+        contract: {
+          select: {
+            id: true,
+            type: true,
+            status: true,
+            purpose: true,
+            initiatorId: true,
+            targetId: true,
+          },
+        },
+        reporter: {
+          select: { id: true, handle: true, displayName: true, type: true },
+        },
+      },
+    }),
+    db.reachAbuseReport.count({ where }),
+  ]);
+
+  return {
+    reports,
+    pagination: {
+      page,
+      pageSize,
+      totalCount,
+      totalPages: Math.max(1, Math.ceil(totalCount / pageSize)),
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
 

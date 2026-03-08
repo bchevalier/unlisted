@@ -29,6 +29,7 @@ import type { PolicyRecord } from './policy-engine';
 import { dispatchContract } from './router';
 import { dispatchWebhookEvent } from './webhooks';
 import { isBlocked, enforceActorRateLimit, enforcePairCooldown, ReachSafetyError } from './safety';
+import { sanitizeContractInput, SanitizeError } from './sanitize';
 import * as crypto from 'crypto';
 import { z } from 'zod';
 
@@ -471,6 +472,26 @@ export async function proposeContract(
     );
   }
 
+  // Sanitize user-supplied content (defense-in-depth).
+  let sanitizedPurpose = data.purpose;
+  let sanitizedMessage = data.message ?? null;
+  let sanitizedStructuredData = data.structuredData;
+  try {
+    const sanitized = sanitizeContractInput({
+      purpose: data.purpose,
+      message: data.message,
+      structuredData: data.structuredData,
+    });
+    sanitizedPurpose = sanitized.purpose;
+    sanitizedMessage = sanitized.message;
+    sanitizedStructuredData = sanitized.structuredData;
+  } catch (err) {
+    if (err instanceof SanitizeError) {
+      throw new ReachError(err.message, err.code, 400);
+    }
+    throw err;
+  }
+
   // Evaluate target's policies.
   const policies = await db.reachPolicy.findMany({
     where: { actorId: target.id, isActive: true },
@@ -534,9 +555,9 @@ export async function proposeContract(
         initiatorId: initiator.id,
         targetId: target.id,
         policyId: evaluation.policyId,
-        purpose: data.purpose,
-        message: data.message ?? null,
-        structuredData: (data.structuredData ?? undefined) as Parameters<typeof db.reachContract.create>[0]['data']['structuredData'],
+        purpose: sanitizedPurpose,
+        message: sanitizedMessage,
+        structuredData: (sanitizedStructuredData ?? undefined) as Parameters<typeof db.reachContract.create>[0]['data']['structuredData'],
         expiresAt,
       },
     });

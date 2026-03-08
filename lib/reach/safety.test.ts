@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ReachBlockCreateSchema, ReachAbuseReportCreateSchema, ReachAbuseReportUpdateSchema } from './safety';
+import { ReachBlockCreateSchema, ReachAbuseReportCreateSchema, ReachAbuseReportUpdateSchema, ReachSafetyError } from './safety';
 
 // ---------------------------------------------------------------------------
 // Schema validation tests (no DB required)
@@ -138,5 +138,25 @@ describe('ReachAbuseReportUpdateSchema', () => {
       reviewNote: 'x'.repeat(501),
     });
     expect(result.success).toBe(false);
+  });
+});
+
+describe('ReachSafetyError', () => {
+  it('has correct properties', () => {
+    const err = new ReachSafetyError('test message', 'TEST_CODE', 429);
+    expect(err.message).toBe('test message');
+    expect(err.code).toBe('TEST_CODE');
+    expect(err.statusCode).toBe(429);
+    expect(err.name).toBe('ReachSafetyError');
+  });
+
+  it('defaults to 400 status code', () => {
+    const err = new ReachSafetyError('test', 'CODE');
+    expect(err.statusCode).toBe(400);
+  });
+
+  it('is instanceof Error', () => {
+    const err = new ReachSafetyError('test', 'CODE');
+    expect(err).toBeInstanceOf(Error);
   });
 });
