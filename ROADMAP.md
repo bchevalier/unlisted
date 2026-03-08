@@ -86,16 +86,16 @@ Tasks should be checked only when implemented and verified.
 ## 5. Request Inbox & Lifecycle
 
 - [x] List requests by status (pending, accepted, declined, expired)
-- [ ] Paginate request list
-- [ ] Display request detail view
+- [x] Paginate request list
+- [x] Display request detail view
 - [x] Show structured request data
 - [x] Implement accept action
 - [x] Reveal contact details on accept
 - [x] Record accept event
 - [x] Implement decline action
 - [x] Record decline event
-- [ ] Auto-expire stale requests via background job
-- [ ] Record expiration events
+- [x] Auto-expire stale requests via background job
+- [x] Record expiration events
 
 ---
 
