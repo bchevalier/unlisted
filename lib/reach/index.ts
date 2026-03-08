@@ -133,6 +133,28 @@ export type {
   MetricsQueryOptions,
 } from './metrics';
 
+// Safety & abuse controls
+export {
+  blockActor,
+  unblockActor,
+  isBlocked,
+  listBlockedActors,
+  enforceActorRateLimit,
+  enforcePairCooldown,
+  createReachAbuseReport,
+  listReachAbuseReports,
+  updateReachAbuseReportStatus,
+  ReachBlockCreateSchema,
+  ReachAbuseReportCreateSchema,
+  ReachAbuseReportUpdateSchema,
+  ReachSafetyError,
+} from './safety';
+
+export type {
+  ReachBlockCreate,
+  ReachAbuseReportCreate,
+} from './safety';
+
 // Webhook integration layer
 export {
   createWebhook,

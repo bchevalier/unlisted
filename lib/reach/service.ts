@@ -27,6 +27,7 @@ import { evaluatePolicies } from './policy-engine';
 import type { PolicyRecord } from './policy-engine';
 import { dispatchContract } from './router';
 import { dispatchWebhookEvent } from './webhooks';
+import { isBlocked, enforceActorRateLimit, enforcePairCooldown, ReachSafetyError } from './safety';
 import * as crypto from 'crypto';
 import { z } from 'zod';
 
@@ -389,9 +390,25 @@ export async function proposeContract(
   ]);
 
   if (!initiator) throw new ReachError('Initiator not found', 'INITIATOR_NOT_FOUND', 404);
+  if (!initiator.isActive) throw new ReachError('Initiator is not active', 'INITIATOR_INACTIVE', 403);
   if (!target) throw new ReachError('Target not found', 'TARGET_NOT_FOUND', 404);
   if (!target.isActive) throw new ReachError('Target is not active', 'TARGET_INACTIVE', 403);
   if (initiator.id === target.id) throw new ReachError('Cannot reach yourself', 'SELF_REACH', 400);
+
+  // Safety checks: blocklist, rate limit, cooldown.
+  // These throw ReachSafetyError (extends Error) with appropriate status codes.
+  try {
+    if (await isBlocked(target.id, initiator.id)) {
+      throw new ReachError('This actor has blocked you', 'BLOCKED', 403);
+    }
+    await enforceActorRateLimit(initiator.id);
+    await enforcePairCooldown(initiator.id, target.id);
+  } catch (err) {
+    if (err instanceof ReachSafetyError) {
+      throw new ReachError(err.message, err.code, err.statusCode);
+    }
+    throw err;
+  }
 
   // Validate actor types match contract type.
   if (!validateActorTypes(data.type, initiator.type as ReachActorType, target.type as ReachActorType)) {

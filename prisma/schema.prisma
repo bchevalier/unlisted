@@ -88,21 +88,21 @@ enum AbuseReportStatus {
 }
 
 model User {
-  id               String   @id @default(cuid())
-  email            String   @unique
+  id               String    @id @default(cuid())
+  email            String    @unique
   name             String?
   passwordHash     String?
   emailVerifiedAt  DateTime?
-  twoFactorEnabled Boolean  @default(false)
+  twoFactorEnabled Boolean   @default(false)
   twoFactorSecret  String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
-  door              Door?
-  identities        AuthIdentity[]
-  authTokens        AuthToken[]
-  recoveryCodes     TwoFactorRecoveryCode[]
-  reachActor        ReachActor?
+  door          Door?
+  identities    AuthIdentity[]
+  authTokens    AuthToken[]
+  recoveryCodes TwoFactorRecoveryCode[]
+  reachActor    ReachActor?
 }
 
 model AuthIdentity {
@@ -123,14 +123,14 @@ model AuthIdentity {
 }
 
 model AuthToken {
-  id        String        @id @default(cuid())
-  userId    String
-  type      AuthTokenType
-  tokenHash String
-  expiresAt DateTime
+  id         String        @id @default(cuid())
+  userId     String
+  type       AuthTokenType
+  tokenHash  String
+  expiresAt  DateTime
   consumedAt DateTime?
-  metadata  Json?
-  createdAt DateTime      @default(now())
+  metadata   Json?
+  createdAt  DateTime      @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -139,11 +139,11 @@ model AuthToken {
 }
 
 model TwoFactorRecoveryCode {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
   codeHash  String
   usedAt    DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -175,33 +175,33 @@ model Door {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  settings        DoorSettings?
-  categories      Category[]
-  emailAliases    EmailAlias[]
-  requests        Request[]
-  blockedSenders  DoorBlockedSender[]
-  abuseReports    AbuseReport[]
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  settings       DoorSettings?
+  categories     Category[]
+  emailAliases   EmailAlias[]
+  requests       Request[]
+  blockedSenders DoorBlockedSender[]
+  abuseReports   AbuseReport[]
 
   @@index([slug, isEnabled])
 }
 
 model DoorSettings {
-  id               String             @id @default(cuid())
-  doorId           String             @unique
-  autoReplyEnabled Boolean            @default(false)
+  id               String              @id @default(cuid())
+  doorId           String              @unique
+  autoReplyEnabled Boolean             @default(false)
   autoReplyMessage String?
   weeklyRequestCap Int?
   revealMethod     ContactRevealMethod @default(NONE)
   revealValue      String?
 
   // Notification preferences
-  notifyNewRequest Boolean            @default(true)
-  notifyDigest     Boolean            @default(false)
+  notifyNewRequest Boolean   @default(true)
+  notifyDigest     Boolean   @default(false)
   lastDigestSentAt DateTime?
 
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   door Door @relation(fields: [doorId], references: [id], onDelete: Cascade)
 }
@@ -220,17 +220,17 @@ model DoorBlockedSender {
 }
 
 model AbuseReport {
-  id          String             @id @default(cuid())
-  requestId   String?
-  doorId      String?
-  reason      AbuseReportReason
-  description String?
+  id            String            @id @default(cuid())
+  requestId     String?
+  doorId        String?
+  reason        AbuseReportReason
+  description   String?
   reporterEmail String?
-  ipHash      String?
-  status      AbuseReportStatus  @default(OPEN)
-  reviewedAt  DateTime?
-  reviewNote  String?
-  createdAt   DateTime           @default(now())
+  ipHash        String?
+  status        AbuseReportStatus @default(OPEN)
+  reviewedAt    DateTime?
+  reviewNote    String?
+  createdAt     DateTime          @default(now())
 
   request Request? @relation(fields: [requestId], references: [id], onDelete: SetNull)
   door    Door?    @relation(fields: [doorId], references: [id], onDelete: SetNull)
@@ -262,16 +262,16 @@ model Category {
 }
 
 model CategoryField {
-  id          String           @id @default(cuid())
+  id          String            @id @default(cuid())
   categoryId  String
   key         String
   label       String
   type        CategoryFieldType @default(TEXT)
-  required    Boolean          @default(false)
+  required    Boolean           @default(false)
   placeholder String?
-  sortOrder   Int              @default(0)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  sortOrder   Int               @default(0)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
 
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
@@ -293,27 +293,27 @@ model EmailAlias {
 }
 
 model Request {
-  id             String       @id @default(cuid())
-  doorId         String
-  categoryId     String?
-  source         RequestSource
-  status         RequestStatus @default(PENDING)
-  senderName     String?
-  senderEmail    String?
-  ipHash         String?
-  title          String?
-  message        String
-  structuredData     Json?
-  requestToken       String       @unique @default(cuid())
-  completionToken    String?      @unique
+  id                  String        @id @default(cuid())
+  doorId              String
+  categoryId          String?
+  source              RequestSource
+  status              RequestStatus @default(PENDING)
+  senderName          String?
+  senderEmail         String?
+  ipHash              String?
+  title               String?
+  message             String
+  structuredData      Json?
+  requestToken        String        @unique @default(cuid())
+  completionToken     String?       @unique
   completionExpiresAt DateTime?
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 
-  door          Door        @relation(fields: [doorId], references: [id], onDelete: Cascade)
-  category      Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  events        RequestEvent[]
-  abuseReports  AbuseReport[]
+  door         Door           @relation(fields: [doorId], references: [id], onDelete: Cascade)
+  category     Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  events       RequestEvent[]
+  abuseReports AbuseReport[]
 
   @@index([doorId, status, createdAt])
   @@index([doorId, ipHash, createdAt])
@@ -392,23 +392,37 @@ enum ReachContractEventActor {
 
 /// Role within an organization actor.
 enum ReachOrgRole {
-  OWNER   // full control: manage members, policies, settings, keys
-  ADMIN   // manage policies, view/act on contracts, manage settings
-  MEMBER  // propose contracts, view org contracts, act on assigned contracts
+  OWNER // full control: manage members, policies, settings, keys
+  ADMIN // manage policies, view/act on contracts, manage settings
+  MEMBER // propose contracts, view org contracts, act on assigned contracts
 }
 
 /// Permission scopes for Reach actor operations.
+enum ReachAbuseReportReason {
+  SPAM
+  HARASSMENT
+  IMPERSONATION
+  PHISHING
+  OTHER
+}
+
+enum ReachAbuseReportStatus {
+  OPEN
+  REVIEWED
+  DISMISSED
+}
+
 enum ReachPermission {
-  ACTOR_READ        // view own actor profile
-  ACTOR_UPDATE      // update displayName, capabilities, endpoint
-  ACTOR_DEACTIVATE  // deactivate the actor
-  KEY_ROTATE        // regenerate API key
-  POLICY_READ       // view policies
-  POLICY_WRITE      // create/update/deactivate policies
-  CONTRACT_PROPOSE  // propose new contracts
-  CONTRACT_READ     // view contracts
-  CONTRACT_ACT      // accept/reject/override contracts
-  ORG_MEMBERS_READ  // view org membership
+  ACTOR_READ // view own actor profile
+  ACTOR_UPDATE // update displayName, capabilities, endpoint
+  ACTOR_DEACTIVATE // deactivate the actor
+  KEY_ROTATE // regenerate API key
+  POLICY_READ // view policies
+  POLICY_WRITE // create/update/deactivate policies
+  CONTRACT_PROPOSE // propose new contracts
+  CONTRACT_READ // view contracts
+  CONTRACT_ACT // accept/reject/override contracts
+  ORG_MEMBERS_READ // view org membership
   ORG_MEMBERS_WRITE // add/remove/change role of members
 }
 
@@ -421,19 +435,22 @@ model ReachActor {
   handle       String         @unique
   displayName  String
   isActive     Boolean        @default(true)
-  capabilities Json?          // AI: skill tags, supported intents, etc.
-  endpoint     String?        // AI/org: webhook or API callback URL
-  apiKeyHash   String?        // hashed API key for headless actors
+  capabilities Json? // AI: skill tags, supported intents, etc.
+  endpoint     String? // AI/org: webhook or API callback URL
+  apiKeyHash   String? // hashed API key for headless actors
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
-  user                User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
-  policies            ReachPolicy[]
-  initiatedContracts  ReachContract[]    @relation("ContractInitiator")
-  receivedContracts   ReachContract[]    @relation("ContractTarget")
-  memberships         ReachOrgMember[]   @relation("OrgMember")     // orgs this actor belongs to (as member)
-  orgMembers          ReachOrgMember[]   @relation("OrgActor")      // members of this actor (if it's an org)
-  webhooks            ReachWebhook[]
+  user               User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  policies           ReachPolicy[]
+  initiatedContracts ReachContract[]     @relation("ContractInitiator")
+  receivedContracts  ReachContract[]     @relation("ContractTarget")
+  memberships        ReachOrgMember[]    @relation("OrgMember") // orgs this actor belongs to (as member)
+  orgMembers         ReachOrgMember[]    @relation("OrgActor") // members of this actor (if it's an org)
+  webhooks           ReachWebhook[]
+  blockedByMe        ReachBlockedActor[] @relation("Blocker")
+  blockedMe          ReachBlockedActor[] @relation("BlockedTarget")
+  abuseReports       ReachAbuseReport[]  @relation("AbuseReporter")
 
   @@index([type, isActive])
 }
@@ -441,8 +458,8 @@ model ReachActor {
 /// Membership linking a human/AI actor to an organization actor.
 model ReachOrgMember {
   id        String       @id @default(cuid())
-  orgId     String       // the ORGANIZATION actor
-  memberId  String       // the HUMAN or AI_AGENT actor
+  orgId     String // the ORGANIZATION actor
+  memberId  String // the HUMAN or AI_AGENT actor
   role      ReachOrgRole @default(MEMBER)
   isActive  Boolean      @default(true)
   createdAt DateTime     @default(now())
@@ -458,20 +475,20 @@ model ReachOrgMember {
 
 /// Policy that governs how inbound reach requests are handled for an actor.
 model ReachPolicy {
-  id                    String           @id @default(cuid())
+  id                    String              @id @default(cuid())
   actorId               String
   name                  String
-  isActive              Boolean          @default(true)
+  isActive              Boolean             @default(true)
   contractTypes         ReachContractType[] // which contract types this policy covers
-  action                ReachPolicyAction @default(ACCEPT)
+  action                ReachPolicyAction   @default(ACCEPT)
   maxWeeklyInbound      Int?
-  requireVerifiedSender Boolean          @default(false)
-  autoAcceptMatching    Boolean          @default(false)
-  escalateToHuman       Boolean          @default(false) // AI actors: flag for human override
-  filters               Json?            // structured matching criteria (tags, intents, etc.)
-  priority              Int              @default(0)      // higher = evaluated first
-  createdAt             DateTime         @default(now())
-  updatedAt             DateTime         @updatedAt
+  requireVerifiedSender Boolean             @default(false)
+  autoAcceptMatching    Boolean             @default(false)
+  escalateToHuman       Boolean             @default(false) // AI actors: flag for human override
+  filters               Json? // structured matching criteria (tags, intents, etc.)
+  priority              Int                 @default(0) // higher = evaluated first
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
 
   actor     ReachActor      @relation(fields: [actorId], references: [id], onDelete: Cascade)
   contracts ReachContract[]
@@ -487,21 +504,22 @@ model ReachContract {
   initiatorId    String
   targetId       String
   policyId       String?
-  purpose        String              // short description of what the reach is about
-  message        String?             // optional freeform message from initiator
-  structuredData Json?               // typed payload (varies by contract type)
-  responseData   Json?               // target's response payload
+  purpose        String // short description of what the reach is about
+  message        String? // optional freeform message from initiator
+  structuredData Json? // typed payload (varies by contract type)
+  responseData   Json? // target's response payload
   routedAt       DateTime?
   resolvedAt     DateTime?
   expiresAt      DateTime?
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 
-  initiator          ReachActor             @relation("ContractInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
-  target             ReachActor             @relation("ContractTarget", fields: [targetId], references: [id], onDelete: Cascade)
-  policy             ReachPolicy?           @relation(fields: [policyId], references: [id], onDelete: SetNull)
-  events             ReachContractEvent[]
-  webhookDeliveries  ReachWebhookDelivery[]
+  initiator         ReachActor             @relation("ContractInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
+  target            ReachActor             @relation("ContractTarget", fields: [targetId], references: [id], onDelete: Cascade)
+  policy            ReachPolicy?           @relation(fields: [policyId], references: [id], onDelete: SetNull)
+  events            ReachContractEvent[]
+  webhookDeliveries ReachWebhookDelivery[]
+  abuseReports      ReachAbuseReport[]
 
   @@index([initiatorId, status, createdAt])
   @@index([targetId, status, createdAt])
@@ -530,15 +548,15 @@ model ReachContractEvent {
 /// A registered webhook endpoint for a Reach actor.
 /// Actors can have multiple webhooks, each filtering on specific event types.
 model ReachWebhook {
-  id          String   @id @default(cuid())
+  id          String                   @id @default(cuid())
   actorId     String
-  url         String   // delivery endpoint URL
-  secretHash  String?  // HMAC secret hash for per-webhook signing
+  url         String // delivery endpoint URL
+  secretHash  String? // HMAC secret hash for per-webhook signing
   events      ReachContractEventType[] // which events trigger delivery (empty = all)
-  description String?  // human-friendly label
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  description String? // human-friendly label
+  isActive    Boolean                  @default(true)
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
 
   actor      ReachActor             @relation(fields: [actorId], references: [id], onDelete: Cascade)
   deliveries ReachWebhookDelivery[]
@@ -548,18 +566,18 @@ model ReachWebhook {
 
 /// Delivery log for webhook attempts — aids debugging and retry visibility.
 model ReachWebhookDelivery {
-  id          String   @id @default(cuid())
+  id          String                 @id @default(cuid())
   webhookId   String
   contractId  String
   event       ReachContractEventType
-  status      String   // "success", "failed", "pending"
-  httpStatus  Int?     // response status code (null if network error)
-  attempts    Int      @default(0)
+  status      String // "success", "failed", "pending"
+  httpStatus  Int? // response status code (null if network error)
+  attempts    Int                    @default(0)
   lastError   String?
-  payload     Json?    // snapshot of sent payload (optional, for debugging)
+  payload     Json? // snapshot of sent payload (optional, for debugging)
   deliveredAt DateTime? // when delivery succeeded
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
 
   webhook  ReachWebhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
   contract ReachContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
@@ -567,4 +585,40 @@ model ReachWebhookDelivery {
   @@index([webhookId, createdAt])
   @@index([contractId, event])
   @@index([status, createdAt])
+}
+
+/// Per-actor blocklist: prevents a blocked actor from sending contracts to the blocker.
+model ReachBlockedActor {
+  id        String   @id @default(cuid())
+  blockerId String // the actor who created the block
+  blockedId String // the actor being blocked
+  reason    String? // optional note from the blocker
+  createdAt DateTime @default(now())
+
+  blocker ReachActor @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked ReachActor @relation("BlockedTarget", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+  @@index([blockedId, blockerId])
+}
+
+/// Abuse reports submitted by Reach actors about contracts.
+model ReachAbuseReport {
+  id          String                 @id @default(cuid())
+  contractId  String
+  reporterId  String // the actor reporting the abuse
+  reason      ReachAbuseReportReason
+  description String? // optional details
+  status      ReachAbuseReportStatus @default(OPEN)
+  reviewedAt  DateTime?
+  reviewNote  String?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  contract ReachContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  reporter ReachActor    @relation("AbuseReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@unique([contractId, reporterId]) // one report per actor per contract
+  @@index([status, createdAt])
+  @@index([reporterId, createdAt])
 }
