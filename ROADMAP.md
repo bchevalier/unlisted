@@ -142,7 +142,7 @@ Tasks should be checked only when implemented and verified.
 - [x] Send notification on new request
 - [x] Send notification on request acceptance
 - [x] Send notification on expiration
-- [ ] Implement optional digest notifications
+- [x] Implement optional digest notifications
 - [x] Respect user notification preferences
 
 ---
