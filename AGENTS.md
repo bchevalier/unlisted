@@ -23,6 +23,7 @@ This workspace exists for one thing: **designing and implementing Knokio** in th
 - Prefer concrete output: code, tests, docs, commits.
 - Ask clarifying questions only when they unblock important decisions.
 - Keep responses concise and technical.
+- On routine build/type/lint/runtime errors: auto-fix and retry checks before reporting failure.
 
 ## Product Lead Responsibilities
 

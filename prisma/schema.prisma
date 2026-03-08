@@ -7,10 +7,171 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ContactRevealMethod {
+  NONE
+  EMAIL
+  URL
+}
+
+enum CategoryFieldType {
+  TEXT
+  TEXTAREA
+  NUMBER
+  URL
+  EMAIL
+}
+
+enum RequestSource {
+  FORM
+  EMAIL
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
+
+enum RequestEventType {
+  CREATED
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  AUTO_REPLIED
+}
+
+enum RequestEventActor {
+  SYSTEM
+  KEEPER
+}
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  door Door?
+}
+
+model Door {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  slug        String   @unique
+  displayName String
+  headline    String?
+  isEnabled   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  settings    DoorSettings?
+  categories  Category[]
+  emailAliases EmailAlias[]
+  requests    Request[]
+
+  @@index([slug, isEnabled])
+}
+
+model DoorSettings {
+  id               String             @id @default(cuid())
+  doorId           String             @unique
+  autoReplyEnabled Boolean            @default(false)
+  autoReplyMessage String?
+  weeklyRequestCap Int?
+  revealMethod     ContactRevealMethod @default(NONE)
+  revealValue      String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  door Door @relation(fields: [doorId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  doorId      String
+  key         String
+  label       String
+  description String?
+  isEnabled   Boolean  @default(true)
+  weeklyCap   Int?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  door     Door            @relation(fields: [doorId], references: [id], onDelete: Cascade)
+  fields   CategoryField[]
+  requests Request[]
+
+  @@unique([doorId, key])
+  @@index([doorId, isEnabled])
+}
+
+model CategoryField {
+  id          String           @id @default(cuid())
+  categoryId  String
+  key         String
+  label       String
+  type        CategoryFieldType @default(TEXT)
+  required    Boolean          @default(false)
+  placeholder String?
+  sortOrder   Int              @default(0)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, key])
+  @@index([categoryId, sortOrder])
+}
+
+model EmailAlias {
+  id        String   @id @default(cuid())
+  doorId    String
+  alias     String   @unique
+  isEnabled Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  door Door @relation(fields: [doorId], references: [id], onDelete: Cascade)
+
+  @@index([doorId, isEnabled])
+}
+
+model Request {
+  id             String       @id @default(cuid())
+  doorId         String
+  categoryId     String?
+  source         RequestSource
+  status         RequestStatus @default(PENDING)
+  senderName     String?
+  senderEmail    String?
+  title          String?
+  message        String
+  structuredData Json?
+  requestToken   String       @unique @default(cuid())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  door     Door        @relation(fields: [doorId], references: [id], onDelete: Cascade)
+  category Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  events   RequestEvent[]
+
+  @@index([doorId, status, createdAt])
+}
+
+model RequestEvent {
+  id        String            @id @default(cuid())
+  requestId String
+  type      RequestEventType
+  actor     RequestEventActor @default(SYSTEM)
+  note      String?
+  metadata  Json?
+  createdAt DateTime          @default(now())
+
+  request Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([requestId, createdAt])
 }

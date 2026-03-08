@@ -20,6 +20,41 @@ main {
   padding: 48px 24px;
 }
 
+a {
+  color: #1b4bff;
+}
+
+button {
+  border: 1px solid #1f2430;
+  background: #fff;
+  color: #1f2430;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid #ced5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 6px;
+  font: inherit;
+}
+
+label {
+  display: block;
+  margin-bottom: 12px;
+}
+
 .portal__header {
   margin-bottom: 28px;
 }
@@ -75,4 +110,94 @@ main {
 
 .client-card__link:hover {
   text-decoration: underline;
+}
+
+.door-page {
+  max-width: 780px;
+}
+
+.door-page__header {
+  margin-bottom: 20px;
+}
+
+.door-page__eyebrow {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #4c5c7a;
+}
+
+.door-page__footer {
+  margin-top: 18px;
+  color: #4c5c7a;
+}
+
+.knock-form {
+  background: #fff;
+  border: 1px solid #e3e8f2;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.knock-form__row {
+  margin-bottom: 12px;
+}
+
+.knock-form__hint {
+  margin: 6px 0 0;
+  color: #4c5c7a;
+}
+
+.knock-form__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.knock-form fieldset {
+  border: 1px solid #dde4f0;
+  border-radius: 10px;
+  margin: 10px 0 16px;
+  padding: 12px;
+}
+
+.knock-form legend {
+  padding: 0 4px;
+  color: #4c5c7a;
+}
+
+.knock-form__error {
+  color: #c11f1f;
+}
+
+.knock-form__success {
+  color: #0f7d39;
+}
+
+.inbox-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.inbox-list {
+  display: grid;
+  gap: 12px;
+}
+
+.inbox-card {
+  background: #fff;
+  border: 1px solid #e3e8f2;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.inbox-card header p {
+  margin: 4px 0;
+  color: #4c5c7a;
+}
+
+.request-actions {
+  margin-top: 12px;
 }

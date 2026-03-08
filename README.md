@@ -162,6 +162,24 @@ This repository runs a **two-client model**:
 
 Direct and Reach are developed and tested in parallel, with strict isolation guardrails so Reach changes cannot degrade Direct clarity, privacy, or trust.
 
+## MVP status (current)
+
+Knokio Direct MVP foundation is implemented for development:
+
+- Public door route: `/u/:slug`
+- Dynamic structured form submission → pending requests
+- Keeper inbox view: `/direct/inbox?slug=:slug`
+- Accept/decline actions with request events
+- Knocker status route: `/r/:token`
+- Inbound email webhook: `POST /api/direct/email/inbound`
+
+Quickstart (dev):
+
+1. `npm run db:migrate:dev`
+2. `npm run db:seed`
+3. `npm run dev`
+4. Open `/direct`, `/u/john`, and `/direct/inbox?slug=john`
+
 ## Environment configuration
 
 Knokio relies on a `.env.local` file for local testing while the `.env.example` file documents the required keys (see `lib/env.ts`). The loader enforces `APP_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET` (32+ chars), and `DATABASE_URL` before the server starts. Don’t commit secrets—use the same keys in your deployment provider (Render supports encrypted variables and starts at $0 before you scale).

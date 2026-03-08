@@ -1,21 +1,23 @@
 import Link from 'next/link';
+import { isReachEnabled } from '../lib/flags';
 
-const clients = [
-  {
-    href: '/direct',
-    name: 'Knokio Direct',
-    tagline: 'Protect your attention with filtered inbound.',
-    bullets: ['Reduce noise', 'Control who reaches you', 'Stay private by default']
-  },
-  {
-    href: '/reach',
-    name: 'Knokio Reach',
-    tagline: 'Find and reach the right human or agent in one intentional step.',
-    bullets: ['Compress coordination distance', 'Policy-bound routing', 'Human↔AI and AI↔AI reachability']
-  }
-] as const;
+const directClient = {
+  href: '/direct',
+  name: 'Knokio Direct',
+  tagline: 'Protect your attention with filtered inbound.',
+  bullets: ['Reduce noise', 'Control who reaches you', 'Stay private by default']
+} as const;
+
+const reachClient = {
+  href: '/reach',
+  name: 'Knokio Reach',
+  tagline: 'Find and reach the right human or agent in one intentional step.',
+  bullets: ['Compress coordination distance', 'Policy-bound routing', 'Human↔AI and AI↔AI reachability']
+} as const;
 
 export default function HomePage() {
+  const clients = isReachEnabled() ? [directClient, reachClient] : [directClient];
+
   return (
     <main className="portal">
       <header className="portal__header">

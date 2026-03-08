@@ -17,53 +17,53 @@ Tasks should be checked only when implemented and verified.
 - [x] Provision managed PostgreSQL database
 - [x] Configure database migration tooling
 - [ ] Set up basic authentication (signup, login, sessions)
-- [ ] Add Direct/Reach feature flags and runtime isolation for parallel testing
+- [x] Add Direct/Reach feature flags and runtime isolation for parallel testing
 
 ---
 
 ## 1. Data Model & Schema
 
-- [ ] Define `users` table
-- [ ] Define `doors` table
-- [ ] Define `door_settings` table
-- [ ] Define `categories` table
-- [ ] Define `category_fields` table
-- [ ] Define `email_aliases` table
-- [ ] Define `requests` table
-- [ ] Define `request_events` table
+- [x] Define `users` table
+- [x] Define `doors` table
+- [x] Define `door_settings` table
+- [x] Define `categories` table
+- [x] Define `category_fields` table
+- [x] Define `email_aliases` table
+- [x] Define `requests` table
+- [x] Define `request_events` table
 - [ ] Define `payments` table
 - [ ] Define `admin_users` table
-- [ ] Create database migrations
-- [ ] Seed default categories and fields
-- [ ] Integrate ORM models into application
+- [x] Create database migrations
+- [x] Seed default categories and fields
+- [x] Integrate ORM models into application
 
 ---
 
 ## 2. Knokio Door (URL-based Entry)
 
 - [ ] Generate unique door slugs
-- [ ] Implement door enable / disable logic
-- [ ] Create public door route (`/u/:slug`)
-- [ ] Render door branding and trust copy
-- [ ] Display enabled categories on door page
-- [ ] Handle invalid or disabled doors gracefully
+- [x] Implement door enable / disable logic
+- [x] Create public door route (`/u/:slug`)
+- [x] Render door branding and trust copy
+- [x] Display enabled categories on door page
+- [x] Handle invalid or disabled doors gracefully
 
 ---
 
 ## 3. Dynamic Request Form
 
-- [ ] Render category selector
-- [ ] Render dynamic form fields from schema
-- [ ] Support text input fields
-- [ ] Support textarea fields
-- [ ] Support number fields
-- [ ] Support URL fields
-- [ ] Implement client-side validation
-- [ ] Implement server-side validation
-- [ ] Submit request payload to backend
-- [ ] Store request with `pending` status
+- [x] Render category selector
+- [x] Render dynamic form fields from schema
+- [x] Support text input fields
+- [x] Support textarea fields
+- [x] Support number fields
+- [x] Support URL fields
+- [x] Implement client-side validation
+- [x] Implement server-side validation
+- [x] Submit request payload to backend
+- [x] Store request with `pending` status
 - [ ] Enforce per-door request caps
-- [ ] Enforce per-category required fields
+- [x] Enforce per-category required fields
 
 ---
 
@@ -85,11 +85,11 @@ Tasks should be checked only when implemented and verified.
 - [ ] Paginate request list
 - [ ] Display request detail view
 - [ ] Show structured request data
-- [ ] Implement accept action
-- [ ] Reveal contact details on accept
-- [ ] Record accept event
-- [ ] Implement decline action
-- [ ] Record decline event
+- [x] Implement accept action
+- [x] Reveal contact details on accept
+- [x] Record accept event
+- [x] Implement decline action
+- [x] Record decline event
 - [ ] Auto-expire stale requests via background job
 - [ ] Record expiration events
 
@@ -97,12 +97,12 @@ Tasks should be checked only when implemented and verified.
 
 ## 6. Knocker Experience
 
-- [ ] Generate secure request access tokens
-- [ ] Create knocker status page (`/r/:token`)
-- [ ] Display current request state
-- [ ] Display contact details on acceptance
-- [ ] Display declined / expired states with clear messaging
-- [ ] Prevent knocker replies or threading
+- [x] Generate secure request access tokens
+- [x] Create knocker status page (`/r/:token`)
+- [x] Display current request state
+- [x] Display contact details on acceptance
+- [x] Display declined / expired states with clear messaging
+- [x] Prevent knocker replies or threading
 
 ---
 
@@ -110,17 +110,17 @@ Tasks should be checked only when implemented and verified.
 
 - [ ] Configure inbound email domain (`@knokio.io`)
 - [ ] Enable catch-all email routing
-- [ ] Create inbound email webhook endpoint
-- [ ] Verify inbound email authenticity
-- [ ] Parse sender address
-- [ ] Parse recipient address (alias)
-- [ ] Parse subject as request title
-- [ ] Parse email body as request message
+- [x] Create inbound email webhook endpoint
+- [x] Verify inbound email authenticity
+- [x] Parse sender address
+- [x] Parse recipient address (alias)
+- [x] Parse subject as request title
+- [x] Parse email body as request message
 - [ ] Strip quoted replies and signatures
-- [ ] Reject CC/BCC emails
-- [ ] Reject emails with attachments
-- [ ] Map email alias to door
-- [ ] Create request from email content
+- [x] Reject CC/BCC emails
+- [x] Reject emails with attachments
+- [x] Map email alias to door
+- [x] Create request from email content
 - [ ] Enforce caps for email-submitted requests
 - [ ] Detect required-field categories
 - [ ] Send auto-reply requesting form completion when required
