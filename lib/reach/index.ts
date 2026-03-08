@@ -61,6 +61,8 @@ export {
   transitionContract,
   getContract,
   listContracts,
+  listEscalatedContracts,
+  overrideContractDecision,
   expireStaleContracts,
   ReachError,
 } from './service';

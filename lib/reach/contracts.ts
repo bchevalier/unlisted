@@ -45,6 +45,7 @@ export const REACH_EVENT_TYPES = [
   'ESCALATED',
   'EXPIRED',
   'CANCELLED',
+  'OVERRIDDEN',
 ] as const;
 export type ReachContractEventType = (typeof REACH_EVENT_TYPES)[number];
 
@@ -60,7 +61,7 @@ export const CONTRACT_TRANSITIONS: Record<ReachContractStatus, readonly ReachCon
   PROPOSED: ['ACTIVE', 'REJECTED', 'CANCELLED', 'EXPIRED'],
   ACTIVE: ['FULFILLED', 'CANCELLED', 'EXPIRED'],
   FULFILLED: [],
-  REJECTED: [],
+  REJECTED: ['PROPOSED'], // human override can reopen a rejected contract
   CANCELLED: [],
   EXPIRED: [],
 } as const;

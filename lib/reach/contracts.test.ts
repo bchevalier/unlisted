@@ -50,10 +50,20 @@ describe('canTransition', () => {
     expect(canTransition('ACTIVE', 'PROPOSED')).toBe(false);
   });
 
-  it('rejects transitions from terminal states', () => {
-    const terminals: Array<'FULFILLED' | 'REJECTED' | 'CANCELLED' | 'EXPIRED'> = [
+  it('allows REJECTED → PROPOSED (human override)', () => {
+    expect(canTransition('REJECTED', 'PROPOSED')).toBe(true);
+  });
+
+  it('rejects REJECTED → any non-PROPOSED status', () => {
+    for (const status of REACH_CONTRACT_STATUSES) {
+      if (status === 'PROPOSED') continue;
+      expect(canTransition('REJECTED', status)).toBe(false);
+    }
+  });
+
+  it('rejects transitions from other terminal states', () => {
+    const terminals: Array<'FULFILLED' | 'CANCELLED' | 'EXPIRED'> = [
       'FULFILLED',
-      'REJECTED',
       'CANCELLED',
       'EXPIRED',
     ];

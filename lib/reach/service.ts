@@ -470,6 +470,129 @@ export async function expireStaleContracts(): Promise<number> {
 }
 
 // ---------------------------------------------------------------------------
+// Escalation & Human Override
+// ---------------------------------------------------------------------------
+
+/**
+ * List contracts that have been escalated to human review.
+ * Returns contracts in PROPOSED status that have an ESCALATED event.
+ *
+ * @param actorId  – the target actor to query escalations for
+ * @param limit    – max results (default 50)
+ * @param offset   – pagination offset (default 0)
+ */
+export async function listEscalatedContracts(
+  actorId: string,
+  limit = 50,
+  offset = 0,
+) {
+  return db.reachContract.findMany({
+    where: {
+      targetId: actorId,
+      status: 'PROPOSED',
+      events: {
+        some: { type: 'ESCALATED' },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+    skip: offset,
+    include: {
+      initiator: { select: { id: true, handle: true, displayName: true, type: true } },
+      target: { select: { id: true, handle: true, displayName: true, type: true } },
+      events: { orderBy: { createdAt: 'asc' } },
+    },
+  });
+}
+
+/**
+ * Override a policy decision on a rejected contract.
+ *
+ * Only TARGET or ADMIN actors may override. Transitions REJECTED → PROPOSED
+ * (or optionally straight to ACTIVE) and records an OVERRIDDEN audit event.
+ *
+ * @param contractId  – contract to override
+ * @param actorId     – the actor performing the override (must be target)
+ * @param action      – 'REOPEN' puts it back to PROPOSED; 'ACCEPT' moves to ACTIVE
+ * @param note        – optional reason for the override
+ */
+export async function overrideContractDecision(
+  contractId: string,
+  actorId: string,
+  action: 'REOPEN' | 'ACCEPT',
+  note?: string,
+) {
+  const contract = await db.reachContract.findUnique({
+    where: { id: contractId },
+    include: {
+      events: { where: { type: 'REJECTED' }, take: 1, orderBy: { createdAt: 'desc' } },
+    },
+  });
+  if (!contract) throw new ReachError('Contract not found', 'CONTRACT_NOT_FOUND', 404);
+
+  // Only the target (or admin) may override.
+  if (contract.targetId !== actorId) {
+    throw new ReachError('Only the target actor can override a policy decision', 'FORBIDDEN', 403);
+  }
+
+  if (contract.status !== 'REJECTED') {
+    throw new ReachError(
+      `Cannot override a contract in ${contract.status} status (must be REJECTED)`,
+      'INVALID_OVERRIDE',
+      400,
+    );
+  }
+
+  return db.$transaction(async (tx) => {
+    // Step 1: Reopen — transition REJECTED → PROPOSED with override audit.
+    const reopened = await tx.reachContract.update({
+      where: { id: contractId },
+      data: {
+        status: 'PROPOSED',
+        resolvedAt: null, // clear resolution
+      },
+    });
+
+    await tx.reachContractEvent.create({
+      data: {
+        contractId,
+        type: 'OVERRIDDEN',
+        actor: 'TARGET',
+        note: note ?? 'Human override of policy decision',
+        metadata: {
+          previousStatus: 'REJECTED',
+          overrideAction: action,
+        } as Parameters<typeof tx.reachContractEvent.create>[0]['data']['metadata'],
+      },
+    });
+
+    // Step 2: If action is ACCEPT, immediately transition to ACTIVE.
+    if (action === 'ACCEPT') {
+      const accepted = await tx.reachContract.update({
+        where: { id: contractId },
+        data: {
+          status: 'ACTIVE',
+          routedAt: new Date(),
+        },
+      });
+
+      await tx.reachContractEvent.create({
+        data: {
+          contractId,
+          type: 'ACCEPTED',
+          actor: 'TARGET',
+          note: 'Accepted via human override',
+        },
+      });
+
+      return accepted;
+    }
+
+    return reopened;
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 

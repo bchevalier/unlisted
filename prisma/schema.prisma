@@ -380,6 +380,7 @@ enum ReachContractEventType {
   ESCALATED
   EXPIRED
   CANCELLED
+  OVERRIDDEN
 }
 
 enum ReachContractEventActor {
