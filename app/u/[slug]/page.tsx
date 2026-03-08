@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getPublicDoorBySlug } from '../../../features/direct/server/door';
+import { getTurnstileSiteKey } from '../../../lib/turnstile';
 import { KnockForm } from './knock-form';
 
 type DoorPageProps = {
@@ -21,6 +22,8 @@ export default async function DoorPage({ params }: DoorPageProps) {
     );
   }
 
+  const turnstileSiteKey = getTurnstileSiteKey();
+
   return (
     <main className="door-page">
       <header className="door-page__header">
@@ -30,7 +33,7 @@ export default async function DoorPage({ params }: DoorPageProps) {
       </header>
 
       <section className="door-page__body">
-        <KnockForm door={door} />
+        <KnockForm door={door} turnstileSiteKey={turnstileSiteKey} />
       </section>
 
       <footer className="door-page__footer">

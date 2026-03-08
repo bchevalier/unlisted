@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getRequestForCompletion } from '../../../features/direct/server/requests';
+import { getTurnstileSiteKey } from '../../../lib/turnstile';
 import { CompletionForm } from './completion-form';
 
 type CompletionPageProps = {
@@ -38,6 +39,7 @@ export default async function CompletionPage({ params }: CompletionPageProps) {
   }
 
   const { request } = result;
+  const turnstileSiteKey = getTurnstileSiteKey();
 
   return (
     <main className="door-page">
@@ -66,6 +68,7 @@ export default async function CompletionPage({ params }: CompletionPageProps) {
         <CompletionForm
           completionToken={token}
           categories={request.door.categories}
+          turnstileSiteKey={turnstileSiteKey}
         />
       </section>
 

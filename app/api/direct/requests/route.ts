@@ -14,7 +14,13 @@ export async function POST(request: Request) {
   try {
     const payload = await request.json();
     const ipAddress = extractClientIP(request);
-    const created = await createFormRequest(payload, { ipAddress });
+    const created = await createFormRequest(payload, {
+      ipAddress,
+      cfTurnstileToken: typeof payload['cf-turnstile-response'] === 'string'
+        ? payload['cf-turnstile-response']
+        : null,
+      honeypot: typeof payload._hp_website === 'string' ? payload._hp_website : null
+    });
 
     return Response.json({ ok: true, request: created }, { status: 201 });
   } catch (error) {

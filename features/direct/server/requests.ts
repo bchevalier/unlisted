@@ -15,6 +15,7 @@ import {
   notifyKnockerAccepted,
   notifyKnockerExpired
 } from '../../../lib/notifications';
+import { verifyTurnstileToken } from '../../../lib/turnstile';
 
 const formRequestSchema = z.object({
   doorSlug: z.string().trim().min(1),
@@ -350,7 +351,21 @@ function sendNewRequestNotificationToKeeper(
   });
 }
 
-export async function createFormRequest(input: unknown, options?: { ipAddress?: string | null }) {
+export async function createFormRequest(
+  input: unknown,
+  options?: { ipAddress?: string | null; cfTurnstileToken?: string | null; honeypot?: string | null }
+) {
+  // Honeypot check — bots auto-fill hidden fields, humans leave them empty
+  if (options?.honeypot && options.honeypot.trim().length > 0) {
+    throw new DirectValidationError('Unable to submit request at this time.', 403);
+  }
+
+  // Turnstile CAPTCHA verification (skipped when not configured)
+  const turnstileResult = await verifyTurnstileToken(options?.cfTurnstileToken, options?.ipAddress);
+  if (!turnstileResult.ok) {
+    throw new DirectValidationError(turnstileResult.error, 403);
+  }
+
   const payload = formRequestSchema.parse(input);
 
   const door = await db.door.findUnique({
@@ -723,7 +738,21 @@ export async function getRequestForCompletion(completionToken: string): Promise<
   };
 }
 
-export async function completeEmailRequest(input: unknown) {
+export async function completeEmailRequest(
+  input: unknown,
+  options?: { ipAddress?: string | null; cfTurnstileToken?: string | null; honeypot?: string | null }
+) {
+  // Honeypot check
+  if (options?.honeypot && options.honeypot.trim().length > 0) {
+    throw new DirectValidationError('Unable to submit request at this time.', 403);
+  }
+
+  // Turnstile CAPTCHA verification (skipped when not configured)
+  const turnstileResult = await verifyTurnstileToken(options?.cfTurnstileToken, options?.ipAddress);
+  if (!turnstileResult.ok) {
+    throw new DirectValidationError(turnstileResult.error, 403);
+  }
+
   const payload = emailCompletionSchema.parse(input);
 
   const request = await db.request.findUnique({

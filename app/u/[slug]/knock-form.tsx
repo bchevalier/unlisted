@@ -1,10 +1,11 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { PublicDoor } from '../../../features/direct/types';
 
 type KnockFormProps = {
   door: PublicDoor;
+  turnstileSiteKey?: string | null;
 };
 
 type SubmitState =
@@ -13,9 +14,76 @@ type SubmitState =
   | { kind: 'error'; message: string }
   | { kind: 'success'; requestToken: string };
 
-export function KnockForm({ door }: KnockFormProps) {
+// ---------------------------------------------------------------------------
+// Turnstile widget hook
+// ---------------------------------------------------------------------------
+
+function useTurnstile(siteKey: string | null | undefined) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const tokenRef = useRef<string | null>(null);
+  const widgetIdRef = useRef<string | null>(null);
+
+  const getToken = useCallback(() => tokenRef.current, []);
+
+  const reset = useCallback(() => {
+    tokenRef.current = null;
+    const w = window as unknown as { turnstile?: { reset: (id: string) => void } };
+    const wid = widgetIdRef.current;
+    if (wid && w.turnstile) {
+      w.turnstile.reset(wid);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!siteKey) return;
+    const key = siteKey; // narrow for closure
+
+    // Render widget once Turnstile script is loaded
+    function renderWidget() {
+      if (!containerRef.current) return;
+      const w = window as unknown as {
+        turnstile?: {
+          render: (
+            el: HTMLElement,
+            opts: { sitekey: string; callback: (t: string) => void; 'expired-callback': () => void; theme: string }
+          ) => string;
+        };
+      };
+      if (!w.turnstile) return;
+
+      widgetIdRef.current = w.turnstile.render(containerRef.current, {
+        sitekey: key,
+        callback: (t: string) => { tokenRef.current = t; },
+        'expired-callback': () => { tokenRef.current = null; },
+        theme: 'light'
+      });
+    }
+
+    // Load Turnstile script if not already present
+    const existingScript = document.querySelector('script[src*="turnstile"]');
+    if (existingScript) {
+      renderWidget();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async = true;
+    script.onload = renderWidget;
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup is not critical — Turnstile handles its own lifecycle
+    };
+  }, [siteKey]);
+
+  return { containerRef, getToken, reset };
+}
+
+export function KnockForm({ door, turnstileSiteKey }: KnockFormProps) {
   const [categoryKey, setCategoryKey] = useState(door.categories[0]?.key ?? '');
   const [submitState, setSubmitState] = useState<SubmitState>({ kind: 'idle' });
+  const turnstile = useTurnstile(turnstileSiteKey);
 
   const category = useMemo(
     () => door.categories.find((item) => item.key === categoryKey) ?? door.categories[0],
@@ -31,6 +99,12 @@ export function KnockForm({ door }: KnockFormProps) {
 
     const form = event.currentTarget;
     const data = new FormData(form);
+
+    // Honeypot value (should be empty for real users)
+    const honeypot = String(data.get('_hp_website') ?? '');
+
+    // Turnstile token
+    const cfToken = turnstile.getToken();
 
     const fields: Record<string, string> = {};
     for (const field of category.fields) {
@@ -50,7 +124,9 @@ export function KnockForm({ door }: KnockFormProps) {
           senderEmail: String(data.get('senderEmail') ?? '').trim(),
           title: String(data.get('title') ?? '').trim(),
           message: String(data.get('message') ?? '').trim(),
-          fields
+          fields,
+          _hp_website: honeypot,
+          'cf-turnstile-response': cfToken
         })
       });
 
@@ -61,6 +137,8 @@ export function KnockForm({ door }: KnockFormProps) {
       };
 
       if (!response.ok || !payload.ok || !payload.request) {
+        // Reset Turnstile on failure so user can retry
+        turnstile.reset();
         setSubmitState({ kind: 'error', message: payload.error ?? 'Unable to submit request.' });
         return;
       }
@@ -68,6 +146,7 @@ export function KnockForm({ door }: KnockFormProps) {
       form.reset();
       setSubmitState({ kind: 'success', requestToken: payload.request.requestToken });
     } catch {
+      turnstile.reset();
       setSubmitState({ kind: 'error', message: 'Unexpected error. Please try again.' });
     }
   }
@@ -78,6 +157,12 @@ export function KnockForm({ door }: KnockFormProps) {
 
   return (
     <form className="knock-form" onSubmit={onSubmit}>
+      {/* Honeypot field — hidden from real users, filled by bots */}
+      <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', top: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }}>
+        <label htmlFor="_hp_website">Website</label>
+        <input type="text" id="_hp_website" name="_hp_website" tabIndex={-1} autoComplete="off" />
+      </div>
+
       <div className="knock-form__row">
         <label htmlFor="category">Category</label>
         <select
@@ -144,6 +229,11 @@ export function KnockForm({ door }: KnockFormProps) {
             ))}
           </div>
         </fieldset>
+      ) : null}
+
+      {/* Cloudflare Turnstile widget (renders only when site key is configured) */}
+      {turnstileSiteKey ? (
+        <div ref={turnstile.containerRef} className="knock-form__turnstile" />
       ) : null}
 
       <button type="submit" disabled={submitState.kind === 'submitting'}>

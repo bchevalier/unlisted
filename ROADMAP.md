@@ -170,7 +170,7 @@ Tasks should be checked only when implemented and verified.
 - [x] Prevent blocked senders from submitting requests
 - [ ] Add abuse report button
 - [ ] Store abuse reports for admin review
-- [ ] Add CAPTCHA or bot protection on public entry
+- [x] Add CAPTCHA or bot protection on public entry
 
 ---
 
