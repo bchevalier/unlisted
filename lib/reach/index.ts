@@ -24,6 +24,7 @@ export {
   ReachPolicyCreateSchema,
   ReachContractCreateSchema,
   AgentMetaSchema,
+  PolicyFiltersSchema,
 } from './contracts';
 
 export type {
@@ -37,6 +38,7 @@ export type {
   ReachPolicyCreate,
   ReachContractCreate,
   AgentMeta,
+  PolicyFilters,
 } from './contracts';
 
 export { evaluatePolicies, evaluatePoliciesWithTrace } from './policy-engine';

@@ -125,6 +125,30 @@ export const AgentMetaSchema = z.object({
 export type AgentMeta = z.infer<typeof AgentMetaSchema>;
 
 // ---------------------------------------------------------------------------
+// Policy filter schemas (validated shapes for policy-engine filter criteria)
+// ---------------------------------------------------------------------------
+
+/**
+ * Typed schema for the policy `filters` JSON field.
+ *
+ * All criteria use AND logic in the policy engine:
+ *   - requiredTags   — proposal must have at least one matching tag
+ *   - excludeTags    — proposal must NOT have any of these tags
+ *   - purposeKeywords— purpose must contain at least one keyword (case-insensitive)
+ *   - initiatorTypes — initiator actor type must be one of these
+ *
+ * Missing/empty criteria are treated as "no constraint" (pass-through).
+ */
+export const PolicyFiltersSchema = z.object({
+  requiredTags: z.array(z.string().min(1).max(100)).max(50).optional(),
+  excludeTags: z.array(z.string().min(1).max(100)).max(50).optional(),
+  purposeKeywords: z.array(z.string().max(200)).max(30).optional(),
+  initiatorTypes: z.array(z.enum(REACH_ACTOR_TYPES)).optional(),
+}).strict();
+
+export type PolicyFilters = z.infer<typeof PolicyFiltersSchema>;
+
+// ---------------------------------------------------------------------------
 // Actor schemas
 // ---------------------------------------------------------------------------
 
@@ -152,7 +176,10 @@ export const ReachPolicyCreateSchema = z.object({
   requireVerifiedSender: z.boolean().default(false),
   autoAcceptMatching: z.boolean().default(false),
   escalateToHuman: z.boolean().default(false),
-  filters: z.record(z.unknown()).optional(),
+  filters: z.record(z.unknown()).optional().refine(
+    (val) => val === undefined || PolicyFiltersSchema.safeParse(val).success,
+    { message: 'Invalid filter shape — see PolicyFiltersSchema for allowed criteria' },
+  ),
   priority: z.number().int().default(0),
 });
 
@@ -162,6 +189,8 @@ export const ReachContractCreateSchema = z.object({
   purpose: z.string().min(1).max(1000),
   message: z.string().max(5000).optional(),
   structuredData: z.record(z.unknown()).optional(),
+  /** Optional tags for policy-engine filter matching (requiredTags / excludeTags). */
+  tags: z.array(z.string().min(1).max(100)).max(20).optional(),
   expiresInHours: z.number().int().positive().max(720).optional(), // max 30 days
 });
 

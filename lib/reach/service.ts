@@ -590,6 +590,7 @@ export async function proposeContract(
       initiatorType: initiator.type as ReachActorType,
       initiatorVerified: !!initiator.userId, // linked users count as verified
       purpose: data.purpose,
+      tags: data.tags,
     },
     weeklyCount,
   );

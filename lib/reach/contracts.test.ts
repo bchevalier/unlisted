@@ -5,6 +5,7 @@ import {
   ReachActorCreateSchema,
   ReachPolicyCreateSchema,
   ReachContractCreateSchema,
+  PolicyFiltersSchema,
   CONTRACT_TRANSITIONS,
   REACH_CONTRACT_STATUSES,
 } from './contracts';
@@ -285,5 +286,151 @@ describe('ReachContractCreateSchema', () => {
     expect(() =>
       ReachContractCreateSchema.parse({ ...validContract, purpose: '' }),
     ).toThrow();
+  });
+
+  it('accepts tags array', () => {
+    const result = ReachContractCreateSchema.parse({
+      ...validContract,
+      tags: ['urgent', 'partnership'],
+    });
+    expect(result.tags).toEqual(['urgent', 'partnership']);
+  });
+
+  it('accepts contract without tags', () => {
+    const result = ReachContractCreateSchema.parse(validContract);
+    expect(result.tags).toBeUndefined();
+  });
+
+  it('rejects tags with empty strings', () => {
+    expect(() =>
+      ReachContractCreateSchema.parse({ ...validContract, tags: [''] }),
+    ).toThrow();
+  });
+
+  it('rejects more than 20 tags', () => {
+    const tooMany = Array.from({ length: 21 }, (_, i) => `tag-${i}`);
+    expect(() =>
+      ReachContractCreateSchema.parse({ ...validContract, tags: tooMany }),
+    ).toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// PolicyFiltersSchema
+// ---------------------------------------------------------------------------
+
+describe('PolicyFiltersSchema', () => {
+  it('accepts valid filter with requiredTags', () => {
+    const result = PolicyFiltersSchema.parse({ requiredTags: ['urgent', 'vip'] });
+    expect(result.requiredTags).toEqual(['urgent', 'vip']);
+  });
+
+  it('accepts valid filter with excludeTags', () => {
+    const result = PolicyFiltersSchema.parse({ excludeTags: ['spam', 'test'] });
+    expect(result.excludeTags).toEqual(['spam', 'test']);
+  });
+
+  it('accepts valid filter with purposeKeywords', () => {
+    const result = PolicyFiltersSchema.parse({ purposeKeywords: ['invest', 'funding'] });
+    expect(result.purposeKeywords).toEqual(['invest', 'funding']);
+  });
+
+  it('accepts valid filter with initiatorTypes', () => {
+    const result = PolicyFiltersSchema.parse({ initiatorTypes: ['HUMAN', 'AI_AGENT'] });
+    expect(result.initiatorTypes).toEqual(['HUMAN', 'AI_AGENT']);
+  });
+
+  it('accepts compound filter with all criteria', () => {
+    const filter = {
+      requiredTags: ['urgent'],
+      excludeTags: ['spam'],
+      purposeKeywords: ['invest'],
+      initiatorTypes: ['HUMAN' as const],
+    };
+    expect(PolicyFiltersSchema.parse(filter)).toEqual(filter);
+  });
+
+  it('accepts empty object (no constraints)', () => {
+    expect(PolicyFiltersSchema.parse({})).toEqual({});
+  });
+
+  it('rejects unknown filter keys (strict mode)', () => {
+    expect(() =>
+      PolicyFiltersSchema.parse({ unknownKey: ['value'] }),
+    ).toThrow();
+  });
+
+  it('rejects requiredTags with non-string elements', () => {
+    expect(() =>
+      PolicyFiltersSchema.parse({ requiredTags: [123] }),
+    ).toThrow();
+  });
+
+  it('rejects requiredTags with empty strings', () => {
+    expect(() =>
+      PolicyFiltersSchema.parse({ requiredTags: [''] }),
+    ).toThrow();
+  });
+
+  it('rejects requiredTags with more than 50 entries', () => {
+    const tooMany = Array.from({ length: 51 }, (_, i) => `tag-${i}`);
+    expect(() =>
+      PolicyFiltersSchema.parse({ requiredTags: tooMany }),
+    ).toThrow();
+  });
+
+  it('rejects invalid initiatorTypes', () => {
+    expect(() =>
+      PolicyFiltersSchema.parse({ initiatorTypes: ['ROBOT'] }),
+    ).toThrow();
+  });
+
+  it('rejects non-array requiredTags', () => {
+    expect(() =>
+      PolicyFiltersSchema.parse({ requiredTags: 'not-array' }),
+    ).toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ReachPolicyCreateSchema — filter validation integration
+// ---------------------------------------------------------------------------
+
+describe('ReachPolicyCreateSchema — filter validation', () => {
+  const validPolicy = {
+    name: 'Test policy',
+    contractTypes: ['HUMAN_HUMAN'] as const,
+    action: 'ACCEPT' as const,
+  };
+
+  it('accepts policy with valid typed filters', () => {
+    const result = ReachPolicyCreateSchema.parse({
+      ...validPolicy,
+      filters: { requiredTags: ['vip'], purposeKeywords: ['invest'] },
+    });
+    expect(result.filters).toEqual({ requiredTags: ['vip'], purposeKeywords: ['invest'] });
+  });
+
+  it('rejects policy with malformed filters (unknown keys)', () => {
+    expect(() =>
+      ReachPolicyCreateSchema.parse({
+        ...validPolicy,
+        filters: { badKey: true },
+      }),
+    ).toThrow();
+  });
+
+  it('rejects policy with malformed filters (non-array requiredTags)', () => {
+    expect(() =>
+      ReachPolicyCreateSchema.parse({
+        ...validPolicy,
+        filters: { requiredTags: 'not-an-array' },
+      }),
+    ).toThrow();
+  });
+
+  it('accepts policy without filters', () => {
+    const result = ReachPolicyCreateSchema.parse(validPolicy);
+    expect(result.filters).toBeUndefined();
   });
 });
