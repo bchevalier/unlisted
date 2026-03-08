@@ -7,6 +7,7 @@ services:
     buildCommand: npm install && npm run build
     startCommand: npm run start
     autoDeploy: true
+    healthCheckPath: /api/reach/health
     envVars:
       - key: NODE_ENV
         value: production
@@ -17,4 +18,50 @@ services:
       - key: NEXTAUTH_SECRET
         sync: false
       - key: DATABASE_URL
+        sync: false
+      # Reach pilot
+      - key: ENABLE_REACH
+        value: "true"
+      - key: CRON_SECRET
+        sync: false
+      # Reach safety tuning (optional — sensible defaults built in)
+      - key: REACH_ACTOR_RATE_LIMIT_MAX
+        value: "30"
+      - key: REACH_ACTOR_RATE_LIMIT_WINDOW_MINUTES
+        value: "60"
+      - key: REACH_PAIR_COOLDOWN_MINUTES
+        value: "60"
+
+  # Reach contract expiry — runs every 15 minutes
+  - type: cron
+    name: reach-contract-expiry
+    env: node
+    plan: free
+    region: oregon
+    schedule: "*/15 * * * *"
+    buildCommand: ""
+    startCommand: |
+      curl -sf -X POST "$APP_URL/api/reach/contracts/expire" \
+        -H "Authorization: Bearer $CRON_SECRET" || echo "Reach expiry failed"
+    envVars:
+      - key: APP_URL
+        sync: false
+      - key: CRON_SECRET
+        sync: false
+
+  # Direct request expiry — runs every 15 minutes
+  - type: cron
+    name: direct-request-expiry
+    env: node
+    plan: free
+    region: oregon
+    schedule: "*/15 * * * *"
+    buildCommand: ""
+    startCommand: |
+      curl -sf -X POST "$APP_URL/api/direct/requests/expire" \
+        -H "Authorization: Bearer $CRON_SECRET" || echo "Direct expiry failed"
+    envVars:
+      - key: APP_URL
+        sync: false
+      - key: CRON_SECRET
         sync: false

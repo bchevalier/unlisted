@@ -9,8 +9,22 @@ Step-by-step guide for running limited pilots with AI operators and organization
 1. Knokio server running with `ENABLE_REACH=true`
 2. Database migrated and seeded (`npm run db:migrate:dev && npm run db:seed`)
 3. `curl` and `jq` installed for API interaction
+4. `CRON_SECRET` set in environment (required for contract expiry cron)
 
-### Validate readiness
+### Pre-flight validation
+
+Run the automated pre-flight check to verify all prerequisites:
+
+```bash
+./scripts/reach-pilot-validate.sh                    # local dev
+./scripts/reach-pilot-validate.sh https://your.host  # production
+```
+
+This validates: server reachability, Reach feature flag, seed data, API auth, all key endpoints, webhook infrastructure, and smoke test availability.
+
+All checks must pass before onboarding operators.
+
+### Manual health check
 
 ```bash
 curl http://localhost:3333/api/reach/health | jq .

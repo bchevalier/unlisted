@@ -316,6 +316,17 @@ Reach operates with strict isolation from Direct:
 
 For step-by-step operator onboarding, see **[Reach-Pilot-Runbook.md](./Reach-Pilot-Runbook.md)**.
 
+### Pre-flight validation
+
+Before onboarding any operators, run the pre-flight check:
+
+```bash
+./scripts/reach-pilot-validate.sh                    # local dev (http://localhost:3333)
+./scripts/reach-pilot-validate.sh https://your.host  # production URL
+```
+
+This checks 10 prerequisites: server reachability, feature flag, seed data, API auth, endpoints, webhook infra, and more. All checks must pass.
+
 ### Smoke test
 
 Run the end-to-end pilot smoke test to validate the full contract lifecycle:
@@ -326,9 +337,24 @@ Run the end-to-end pilot smoke test to validate the full contract lifecycle:
 CLEANUP=1 ./scripts/reach-pilot-smoke.sh          # auto-remove test actor after run
 ```
 
+### Production deployment (Render)
+
+The `render.yaml` blueprint includes:
+- Web service with Reach env vars (`ENABLE_REACH`, rate limits)
+- Cron job for Reach contract expiry (every 15 minutes)
+- Cron job for Direct request expiry (every 15 minutes)
+- Health check path pointing to `/api/reach/health`
+
+Required secrets to set in Render dashboard:
+- `CRON_SECRET` — shared auth for cron endpoints
+- `APP_URL` — public URL of the deployed service
+- All other secrets from `.env.example`
+
 ### Contract expiry cron
 
-Stale contracts require periodic cleanup. Add a cron job hitting the expiry endpoint:
+Stale contracts require periodic cleanup. On Render, this is handled automatically by the `reach-contract-expiry` cron service defined in `render.yaml`.
+
+For non-Render deployments, add a cron job:
 
 ```bash
 # Every 15 minutes
