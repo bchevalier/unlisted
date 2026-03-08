@@ -164,10 +164,10 @@ Tasks should be checked only when implemented and verified.
 
 ## 10. Abuse Prevention & Safety
 
-- [ ] Implement IP-based rate limiting
-- [ ] Implement sender-based rate limiting
-- [ ] Add blocklist per door
-- [ ] Prevent blocked senders from submitting requests
+- [x] Implement IP-based rate limiting
+- [x] Implement sender-based rate limiting
+- [x] Add blocklist per door
+- [x] Prevent blocked senders from submitting requests
 - [ ] Add abuse report button
 - [ ] Store abuse reports for admin review
 - [ ] Add CAPTCHA or bot protection on public entry
