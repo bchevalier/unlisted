@@ -13,6 +13,7 @@ import {
   ReachActorCreateSchema,
   ReachPolicyCreateSchema,
   ReachContractCreateSchema,
+  AgentMetaSchema,
 } from './contracts';
 import type {
   ReachActorCreate,
@@ -22,6 +23,7 @@ import type {
   ReachContractEventType,
   ReachContractEventActor,
   ReachActorType,
+  AgentMeta,
 } from './contracts';
 import { evaluatePolicies } from './policy-engine';
 import type { PolicyRecord } from './policy-engine';
@@ -53,6 +55,27 @@ export class ReachError extends Error {
 export async function createActor(input: ReachActorCreate, userId?: string) {
   const data = ReachActorCreateSchema.parse(input);
 
+  // AI_AGENT actors must provide agentMeta for identity/trust.
+  if (data.type === 'AI_AGENT') {
+    if (!data.agentMeta) {
+      throw new ReachError(
+        'AI_AGENT actors must provide agentMeta (operatorName required)',
+        'AGENT_META_REQUIRED',
+        400,
+      );
+    }
+    AgentMetaSchema.parse(data.agentMeta);
+  }
+
+  // Non-AI_AGENT actors should not provide agentMeta.
+  if (data.type !== 'AI_AGENT' && data.agentMeta) {
+    throw new ReachError(
+      'agentMeta is only valid for AI_AGENT actors',
+      'AGENT_META_NOT_ALLOWED',
+      400,
+    );
+  }
+
   const existing = await db.reachActor.findUnique({ where: { handle: data.handle } });
   if (existing) {
     throw new ReachError('Handle already taken', 'HANDLE_TAKEN', 409);
@@ -62,6 +85,21 @@ export async function createActor(input: ReachActorCreate, userId?: string) {
     const linked = await db.reachActor.findUnique({ where: { userId } });
     if (linked) {
       throw new ReachError('User already has an actor', 'USER_ALREADY_ACTOR', 409);
+    }
+  }
+
+  // Validate apiKeyScopes contain only known permission names.
+  const scopes = data.apiKeyScopes ?? [];
+  if (scopes.length > 0) {
+    const { REACH_PERMISSIONS } = await import('./permissions');
+    const validScopes = new Set<string>(REACH_PERMISSIONS);
+    const invalid = scopes.filter((s) => !validScopes.has(s));
+    if (invalid.length > 0) {
+      throw new ReachError(
+        `Invalid API key scopes: ${invalid.join(', ')}`,
+        'INVALID_KEY_SCOPES',
+        400,
+      );
     }
   }
 
@@ -82,6 +120,10 @@ export async function createActor(input: ReachActorCreate, userId?: string) {
       capabilities: (data.capabilities ?? undefined) as Parameters<typeof db.reachActor.create>[0]['data']['capabilities'],
       endpoint: data.endpoint ?? null,
       apiKeyHash: apiKeyHash ?? null,
+      apiKeyScopes: scopes,
+      agentMeta: data.type === 'AI_AGENT' && data.agentMeta
+        ? (data.agentMeta as Parameters<typeof db.reachActor.create>[0]['data']['agentMeta'])
+        : undefined,
     },
   });
 
@@ -112,6 +154,7 @@ export const ReachActorUpdateSchema = z.object({
   displayName: z.string().min(1).max(200).optional(),
   capabilities: z.record(z.unknown()).optional(),
   endpoint: z.string().url().optional().nullable(),
+  agentMeta: AgentMetaSchema.partial().optional(),
 });
 
 export type ReachActorUpdate = z.infer<typeof ReachActorUpdateSchema>;
@@ -122,12 +165,22 @@ export async function updateActor(actorId: string, input: ReachActorUpdate) {
   const actor = await db.reachActor.findUnique({ where: { id: actorId } });
   if (!actor) throw new ReachError('Actor not found', 'ACTOR_NOT_FOUND', 404);
 
+  // agentMeta updates are only valid for AI_AGENT actors.
+  if (data.agentMeta !== undefined && actor.type !== 'AI_AGENT') {
+    throw new ReachError('agentMeta can only be updated on AI_AGENT actors', 'AGENT_META_NOT_ALLOWED', 400);
+  }
+
   const updateData: Record<string, unknown> = {};
   if (data.displayName !== undefined) updateData.displayName = data.displayName;
   if (data.capabilities !== undefined) {
     updateData.capabilities = data.capabilities as Parameters<typeof db.reachActor.update>[0]['data']['capabilities'];
   }
   if (data.endpoint !== undefined) updateData.endpoint = data.endpoint;
+  if (data.agentMeta !== undefined) {
+    // Merge with existing agentMeta to allow partial updates.
+    const existingMeta = (actor.agentMeta as Record<string, unknown>) ?? {};
+    updateData.agentMeta = { ...existingMeta, ...data.agentMeta } as Parameters<typeof db.reachActor.update>[0]['data']['agentMeta'];
+  }
 
   if (Object.keys(updateData).length === 0) {
     return actor; // nothing to update

@@ -438,6 +438,8 @@ model ReachActor {
   capabilities Json? // AI: skill tags, supported intents, etc.
   endpoint     String? // AI/org: webhook or API callback URL
   apiKeyHash   String? // hashed API key for headless actors
+  apiKeyScopes String[]       @default([]) // empty = full access; non-empty = limited to listed scopes
+  agentMeta    Json? // AI_AGENT only: { operatorName, operatorUrl, modelId, version, deploymentId }
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 

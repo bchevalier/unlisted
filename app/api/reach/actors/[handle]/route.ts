@@ -46,6 +46,7 @@ export async function GET(
       isActive: actor.isActive,
       capabilities: actor.capabilities,
       endpoint: actor.endpoint,
+      agentMeta: actor.agentMeta ?? undefined,
       createdAt: actor.createdAt,
     },
   });

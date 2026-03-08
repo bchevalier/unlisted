@@ -23,6 +23,7 @@ export {
   ReachActorCreateSchema,
   ReachPolicyCreateSchema,
   ReachContractCreateSchema,
+  AgentMetaSchema,
 } from './contracts';
 
 export type {
@@ -35,6 +36,7 @@ export type {
   ReachActorCreate,
   ReachPolicyCreate,
   ReachContractCreate,
+  AgentMeta,
 } from './contracts';
 
 export { evaluatePolicies, evaluatePoliciesWithTrace } from './policy-engine';

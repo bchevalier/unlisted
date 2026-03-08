@@ -105,6 +105,29 @@ export function validateActorTypes(
 // Zod schemas for API validation
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Agent identity metadata (AI_AGENT only)
+// ---------------------------------------------------------------------------
+
+export const AgentMetaSchema = z.object({
+  /** Name of the operator / owner running this agent. */
+  operatorName: z.string().min(1).max(200),
+  /** URL of the operator (e.g. company website). */
+  operatorUrl: z.string().url().optional(),
+  /** Model identifier (e.g. "gpt-4o", "claude-sonnet-4-20250514"). */
+  modelId: z.string().max(200).optional(),
+  /** Version string for the agent deployment. */
+  version: z.string().max(100).optional(),
+  /** Unique deployment / instance identifier. */
+  deploymentId: z.string().max(200).optional(),
+});
+
+export type AgentMeta = z.infer<typeof AgentMetaSchema>;
+
+// ---------------------------------------------------------------------------
+// Actor schemas
+// ---------------------------------------------------------------------------
+
 export const ReachActorCreateSchema = z.object({
   type: z.enum(REACH_ACTOR_TYPES),
   handle: z
@@ -115,6 +138,10 @@ export const ReachActorCreateSchema = z.object({
   displayName: z.string().min(1).max(200),
   capabilities: z.record(z.unknown()).optional(),
   endpoint: z.string().url().optional(),
+  /** Required for AI_AGENT actors. Structured agent identity metadata. */
+  agentMeta: AgentMetaSchema.optional(),
+  /** Permission scopes for the generated API key. Empty = full access. */
+  apiKeyScopes: z.array(z.string()).optional(),
 });
 
 export const ReachPolicyCreateSchema = z.object({

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { reachDisabledResponse, unauthorizedResponse } from './auth';
+import type { ReachAuthResult } from './auth';
 
 // ---------------------------------------------------------------------------
 // reachDisabledResponse
@@ -12,7 +13,6 @@ describe('reachDisabledResponse', () => {
 
   it('returns null when Reach is enabled (default)', () => {
     vi.stubEnv('ENABLE_REACH', 'true');
-    // Re-import to pick up env change — but since isReachEnabled reads env directly, it works.
     const result = reachDisabledResponse();
     expect(result).toBeNull();
   });
@@ -36,5 +36,37 @@ describe('unauthorizedResponse', () => {
     const body = await response.json();
     expect(body.ok).toBe(false);
     expect(body.error).toBe('Authentication required');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ReachAuthResult shape
+// ---------------------------------------------------------------------------
+
+describe('ReachAuthResult interface', () => {
+  it('supports delegation fields', () => {
+    const auth: ReachAuthResult = {
+      actorId: 'org-1',
+      actorType: 'ORGANIZATION',
+      userId: null,
+      delegatorActorId: 'agent-1',
+      delegatorActorType: 'AI_AGENT',
+      apiKeyScopes: ['CONTRACT_PROPOSE', 'CONTRACT_READ'],
+    };
+
+    expect(auth.delegatorActorId).toBe('agent-1');
+    expect(auth.delegatorActorType).toBe('AI_AGENT');
+    expect(auth.apiKeyScopes).toHaveLength(2);
+  });
+
+  it('supports basic auth without delegation', () => {
+    const auth: ReachAuthResult = {
+      actorId: 'actor-1',
+      actorType: 'HUMAN',
+      userId: 'user-1',
+    };
+
+    expect(auth.delegatorActorId).toBeUndefined();
+    expect(auth.apiKeyScopes).toBeUndefined();
   });
 });

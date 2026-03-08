@@ -44,6 +44,8 @@ export async function POST(request: Request) {
           displayName: actor.displayName,
           isActive: actor.isActive,
           endpoint: actor.endpoint,
+          agentMeta: actor.agentMeta ?? undefined,
+          apiKeyScopes: actor.apiKeyScopes?.length ? actor.apiKeyScopes : undefined,
           createdAt: actor.createdAt,
         },
         // Only returned once, for headless actors.

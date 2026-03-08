@@ -97,7 +97,7 @@ const SELF_PERMISSIONS: readonly ReachPermission[] = [
 // ---------------------------------------------------------------------------
 
 export interface AuthzContext {
-  /** The authenticated actor making the request. */
+  /** The authenticated actor making the request (may be the delegator if acting via delegation). */
   callerId: string;
   callerType: string;
   /** The target actor being acted upon. */
@@ -108,6 +108,8 @@ export interface AuthzContext {
   orgRole?: ReachOrgRole;
   /** Whether the caller is acting on their own actor (direct access). */
   isSelf: boolean;
+  /** When acting via X-Reach-Act-As delegation, the original actor ID (for audit). */
+  delegatorActorId?: string;
 }
 
 /**
@@ -115,7 +117,11 @@ export interface AuthzContext {
  *
  * Checks:
  *   1. Direct ownership (caller is the target actor)
- *   2. Org membership (caller is a member of the target org)
+ *   2. Delegation (caller is acting on behalf of an org via X-Reach-Act-As)
+ *   3. Org membership (caller is a member of the target org)
+ *
+ * Scoped API keys: if the auth result has non-empty apiKeyScopes, the
+ * effective permissions are intersected with those scopes.
  *
  * Returns null if the caller has no relationship to the target.
  */
@@ -123,41 +129,87 @@ export async function resolveAuthz(
   auth: ReachAuthResult,
   targetActorId: string,
 ): Promise<AuthzContext | null> {
-  // 1. Direct self-access.
+  let authz: AuthzContext | null = null;
+
+  // 1. Direct self-access (including delegation — if acting as the org, actorId is already the org).
   if (auth.actorId === targetActorId) {
-    return {
-      callerId: auth.actorId,
-      callerType: auth.actorType,
-      targetActorId,
-      permissions: new Set(SELF_PERMISSIONS),
-      isSelf: true,
-    };
+    // When delegating, resolve permissions via the delegator's org membership role.
+    if (auth.delegatorActorId) {
+      const membership = await db.reachOrgMember.findUnique({
+        where: {
+          orgId_memberId: {
+            orgId: targetActorId,
+            memberId: auth.delegatorActorId,
+          },
+        },
+        select: { role: true, isActive: true },
+      });
+
+      if (membership && membership.isActive) {
+        const role = membership.role as ReachOrgRole;
+        authz = {
+          callerId: auth.delegatorActorId,
+          callerType: auth.delegatorActorType ?? auth.actorType,
+          targetActorId,
+          permissions: new Set(ORG_ROLE_PERMISSIONS[role]),
+          orgRole: role,
+          isSelf: false,
+          delegatorActorId: auth.delegatorActorId,
+        };
+      }
+    } else {
+      authz = {
+        callerId: auth.actorId,
+        callerType: auth.actorType,
+        targetActorId,
+        permissions: new Set(SELF_PERMISSIONS),
+        isSelf: true,
+      };
+    }
   }
 
   // 2. Org membership: check if the target is an ORGANIZATION and caller is a member.
-  const membership = await db.reachOrgMember.findUnique({
-    where: {
-      orgId_memberId: {
-        orgId: targetActorId,
-        memberId: auth.actorId,
+  if (!authz) {
+    const lookupMemberId = auth.delegatorActorId ?? auth.actorId;
+    const membership = await db.reachOrgMember.findUnique({
+      where: {
+        orgId_memberId: {
+          orgId: targetActorId,
+          memberId: lookupMemberId,
+        },
       },
-    },
-    select: { role: true, isActive: true },
-  });
+      select: { role: true, isActive: true },
+    });
 
-  if (membership && membership.isActive) {
-    const role = membership.role as ReachOrgRole;
-    return {
-      callerId: auth.actorId,
-      callerType: auth.actorType,
-      targetActorId,
-      permissions: new Set(ORG_ROLE_PERMISSIONS[role]),
-      orgRole: role,
-      isSelf: false,
-    };
+    if (membership && membership.isActive) {
+      const role = membership.role as ReachOrgRole;
+      authz = {
+        callerId: lookupMemberId,
+        callerType: auth.delegatorActorType ?? auth.actorType,
+        targetActorId,
+        permissions: new Set(ORG_ROLE_PERMISSIONS[role]),
+        orgRole: role,
+        isSelf: false,
+        ...(auth.delegatorActorId ? { delegatorActorId: auth.delegatorActorId } : {}),
+      };
+    }
   }
 
-  return null;
+  if (!authz) return null;
+
+  // 3. Enforce scoped API key restrictions.
+  if (auth.apiKeyScopes && auth.apiKeyScopes.length > 0) {
+    const scopeSet = new Set<string>(auth.apiKeyScopes);
+    const restricted = new Set<ReachPermission>();
+    for (const perm of authz.permissions) {
+      if (scopeSet.has(perm)) {
+        restricted.add(perm);
+      }
+    }
+    authz = { ...authz, permissions: restricted };
+  }
+
+  return authz;
 }
 
 /**
