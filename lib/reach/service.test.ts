@@ -49,7 +49,7 @@ vi.mock('./router', () => ({
   dispatchContract: vi.fn().mockResolvedValue(undefined),
 }));
 
-import { fulfillContract, deactivateActorWithCascade, expireStaleContracts, ReachError } from './service';
+import { fulfillContract, deactivateActorWithCascade, expireStaleContracts } from './service';
 
 // ---------------------------------------------------------------------------
 // fulfillContract

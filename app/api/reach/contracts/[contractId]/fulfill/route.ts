@@ -41,7 +41,7 @@ export async function POST(
   }
 
   // Only target (or org member of target with CONTRACT_ACT) can fulfill.
-  let actorId = contract.targetId;
+  const actorId = contract.targetId;
   let canFulfill = contract.targetId === auth.actorId;
   if (!canFulfill) {
     const targetAuthz = await resolveAuthz(auth, contract.targetId);

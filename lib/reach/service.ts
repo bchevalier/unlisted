@@ -668,6 +668,7 @@ export async function getContract(contractId: string) {
 
 /**
  * List contracts for an actor (as initiator or target).
+ * Returns contracts + totalCount for proper client-side pagination.
  */
 export async function listContracts(
   actorId: string,
@@ -683,16 +684,21 @@ export async function listContracts(
 
   if (status) where.status = status;
 
-  return db.reachContract.findMany({
-    where,
-    orderBy: { createdAt: 'desc' },
-    take: limit,
-    skip: offset,
-    include: {
-      initiator: { select: { id: true, handle: true, displayName: true, type: true } },
-      target: { select: { id: true, handle: true, displayName: true, type: true } },
-    },
-  });
+  const [contracts, totalCount] = await Promise.all([
+    db.reachContract.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
+      include: {
+        initiator: { select: { id: true, handle: true, displayName: true, type: true } },
+        target: { select: { id: true, handle: true, displayName: true, type: true } },
+      },
+    }),
+    db.reachContract.count({ where }),
+  ]);
+
+  return { contracts, totalCount };
 }
 
 /**
@@ -902,7 +908,8 @@ export async function deactivateActorWithCascade(actorId: string) {
 
 /**
  * List contracts that have been escalated to human review.
- * Returns contracts in PROPOSED status that have an ESCALATED event.
+ * Returns contracts in PROPOSED status that have an ESCALATED event,
+ * plus totalCount for pagination.
  *
  * @param actorId  – the target actor to query escalations for
  * @param limit    – max results (default 50)
@@ -913,23 +920,30 @@ export async function listEscalatedContracts(
   limit = 50,
   offset = 0,
 ) {
-  return db.reachContract.findMany({
-    where: {
-      targetId: actorId,
-      status: 'PROPOSED',
-      events: {
-        some: { type: 'ESCALATED' },
+  const where = {
+    targetId: actorId,
+    status: 'PROPOSED' as const,
+    events: {
+      some: { type: 'ESCALATED' as const },
+    },
+  };
+
+  const [contracts, totalCount] = await Promise.all([
+    db.reachContract.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
+      include: {
+        initiator: { select: { id: true, handle: true, displayName: true, type: true } },
+        target: { select: { id: true, handle: true, displayName: true, type: true } },
+        events: { orderBy: { createdAt: 'asc' } },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-    take: limit,
-    skip: offset,
-    include: {
-      initiator: { select: { id: true, handle: true, displayName: true, type: true } },
-      target: { select: { id: true, handle: true, displayName: true, type: true } },
-      events: { orderBy: { createdAt: 'asc' } },
-    },
-  });
+    }),
+    db.reachContract.count({ where }),
+  ]);
+
+  return { contracts, totalCount };
 }
 
 /**

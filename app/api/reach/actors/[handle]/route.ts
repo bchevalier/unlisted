@@ -1,12 +1,14 @@
 /**
- * GET   /api/reach/actors/:handle — Look up an actor by handle (public).
- * PATCH /api/reach/actors/:handle — Update actor profile (auth + ACTOR_UPDATE).
+ * GET    /api/reach/actors/:handle — Look up an actor by handle (public).
+ * PATCH  /api/reach/actors/:handle — Update actor profile (auth + ACTOR_UPDATE).
+ * DELETE /api/reach/actors/:handle — Deactivate actor + cascade cancel in-flight contracts (auth + ACTOR_DEACTIVATE).
  */
 
 import { ZodError } from 'zod';
 import {
   getActorByHandle,
   updateActor,
+  deactivateActorWithCascade,
   ReachActorUpdateSchema,
   ReachError,
 } from '../../../../../lib/reach';
@@ -100,6 +102,50 @@ export async function PATCH(
       );
     }
     console.error('[reach/actors/:handle PATCH]', error);
+    return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ handle: string }> },
+) {
+  const blocked = reachDisabledResponse();
+  if (blocked) return blocked;
+
+  const auth = await authenticateReachRequest(request);
+  if (!auth) return unauthorizedResponse();
+
+  const { handle } = await params;
+  const actor = await getActorByHandle(handle);
+  if (!actor) {
+    return Response.json({ ok: false, error: 'Actor not found' }, { status: 404 });
+  }
+
+  const authz = await resolveAuthz(auth, actor.id);
+  const denied = requirePermission(authz, 'ACTOR_DEACTIVATE');
+  if (denied) return denied;
+
+  try {
+    const result = await deactivateActorWithCascade(actor.id);
+
+    return Response.json({
+      ok: true,
+      actor: {
+        id: result.actor.id,
+        handle: result.actor.handle,
+        isActive: result.actor.isActive,
+      },
+      cancelledContracts: result.cancelledContracts,
+    });
+  } catch (error) {
+    if (error instanceof ReachError) {
+      return Response.json(
+        { ok: false, error: error.message, code: error.code },
+        { status: error.statusCode },
+      );
+    }
+    console.error('[reach/actors/:handle DELETE]', error);
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

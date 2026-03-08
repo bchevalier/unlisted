@@ -87,11 +87,15 @@ export async function GET(request: Request) {
 
     // If ?escalated=true, return only contracts pending human review.
     if (escalated) {
-      const contracts = await listEscalatedContracts(forActorId, limit, offset);
-      return Response.json({ ok: true, contracts });
+      const { contracts, totalCount } = await listEscalatedContracts(forActorId, limit, offset);
+      return Response.json({
+        ok: true,
+        contracts,
+        pagination: { totalCount, limit, offset },
+      });
     }
 
-    const contracts = await listContracts(
+    const { contracts, totalCount } = await listContracts(
       forActorId,
       role,
       status || undefined,
@@ -99,7 +103,11 @@ export async function GET(request: Request) {
       offset,
     );
 
-    return Response.json({ ok: true, contracts });
+    return Response.json({
+      ok: true,
+      contracts,
+      pagination: { totalCount, limit, offset },
+    });
   } catch (error) {
     console.error('[reach/contracts GET]', error);
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });

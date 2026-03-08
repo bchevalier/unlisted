@@ -2,7 +2,8 @@
  * PATCH  /api/reach/policies/:policyId — Update a policy.
  * DELETE /api/reach/policies/:policyId — Deactivate a policy.
  *
- * Auth required: caller must own the actor that owns the policy.
+ * Auth required: caller must own the actor that owns the policy,
+ * or have POLICY_WRITE permission via org membership.
  */
 
 import { ZodError } from 'zod';
@@ -14,6 +15,7 @@ import {
   reachDisabledResponse,
   unauthorizedResponse,
 } from '../../../../../lib/reach/auth';
+import { resolveAuthz, requirePermission } from '../../../../../lib/reach/permissions';
 
 const PolicyUpdateSchema = ReachPolicyCreateSchema.partial().omit({ name: true });
 
@@ -29,7 +31,7 @@ export async function PATCH(
 
   const { policyId } = await params;
 
-  // Verify ownership.
+  // Verify policy exists.
   const policy = await db.reachPolicy.findUnique({
     where: { id: policyId },
     select: { id: true, actorId: true },
@@ -37,9 +39,11 @@ export async function PATCH(
   if (!policy) {
     return Response.json({ ok: false, error: 'Policy not found' }, { status: 404 });
   }
-  if (policy.actorId !== auth.actorId) {
-    return Response.json({ ok: false, error: 'Forbidden' }, { status: 403 });
-  }
+
+  // RBAC check: direct ownership or org membership with POLICY_WRITE.
+  const authz = await resolveAuthz(auth, policy.actorId);
+  const denied = requirePermission(authz, 'POLICY_WRITE');
+  if (denied) return denied;
 
   try {
     const body = await request.json();
@@ -84,9 +88,11 @@ export async function DELETE(
   if (!policy) {
     return Response.json({ ok: false, error: 'Policy not found' }, { status: 404 });
   }
-  if (policy.actorId !== auth.actorId) {
-    return Response.json({ ok: false, error: 'Forbidden' }, { status: 403 });
-  }
+
+  // RBAC check: direct ownership or org membership with POLICY_WRITE.
+  const authz = await resolveAuthz(auth, policy.actorId);
+  const denied = requirePermission(authz, 'POLICY_WRITE');
+  if (denied) return denied;
 
   try {
     await deactivatePolicy(policyId);
