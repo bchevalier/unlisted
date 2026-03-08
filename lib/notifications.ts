@@ -288,6 +288,55 @@ export async function notifyKnockerAutoReply(input: AutoReplyNotification): Prom
 }
 
 // ---------------------------------------------------------------------------
+// Notification: Digest summary → Keeper
+// ---------------------------------------------------------------------------
+
+export type DigestNotification = {
+  keeperEmail: string;
+  doorName: string;
+  doorSlug: string;
+  pendingCount: number;
+  newSinceLastDigest: number;
+  sampleSenders: string[];
+};
+
+export async function notifyKeeperDigest(input: DigestNotification): Promise<void> {
+  const inboxUrl = `${appUrl()}/direct/inbox?slug=${encodeURIComponent(input.doorSlug)}`;
+  const senderList = input.sampleSenders.length > 0
+    ? input.sampleSenders.join(', ')
+    : 'anonymous senders';
+
+  const subject = `${input.doorName}: ${input.newSinceLastDigest} new request${input.newSinceLastDigest === 1 ? '' : 's'} waiting`;
+
+  const text = [
+    `Your Knokio door "${input.doorName}" has ${input.pendingCount} pending request${input.pendingCount === 1 ? '' : 's'}.`,
+    `${input.newSinceLastDigest} arrived since your last digest.`,
+    '',
+    `Recent senders: ${senderList}`,
+    '',
+    `Review them in your inbox:`,
+    inboxUrl,
+    '',
+    '— Knokio'
+  ].join('\n');
+
+  const sendersHtml = input.sampleSenders.length > 0
+    ? input.sampleSenders.map((s) => escapeHtml(s)).join(', ')
+    : 'anonymous senders';
+
+  const html = `
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
+  <p>Your Knokio door <strong>${escapeHtml(input.doorName)}</strong> has <strong>${input.pendingCount}</strong> pending request${input.pendingCount === 1 ? '' : 's'}.</p>
+  <p>${input.newSinceLastDigest} arrived since your last digest.</p>
+  <p style="color: #666;">Recent senders: ${sendersHtml}</p>
+  <p><a href="${escapeHtml(inboxUrl)}" style="display: inline-block; padding: 10px 20px; background: #111; color: #fff; text-decoration: none; border-radius: 6px;">Review in Inbox</a></p>
+  <p style="margin-top: 24px; color: #999; font-size: 13px;">— Knokio</p>
+</div>`.trim();
+
+  await safeSend({ to: input.keeperEmail, subject, text, html });
+}
+
+// ---------------------------------------------------------------------------
 // Notification: Request expired → Knocker
 // ---------------------------------------------------------------------------
 

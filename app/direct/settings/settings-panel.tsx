@@ -12,6 +12,8 @@ type SettingsPanelProps = {
           weeklyRequestCap: number | null;
           revealMethod: 'NONE' | 'EMAIL' | 'URL';
           revealValue: string | null;
+          notifyNewRequest: boolean;
+          notifyDigest: boolean;
         }
       | null;
     categories: Array<{
@@ -109,7 +111,9 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
               weeklyRequestCap:
                 isPaid || !data.get('weeklyRequestCap') ? null : Number(data.get('weeklyRequestCap')),
               revealMethod: String(data.get('revealMethod') ?? 'NONE'),
-              revealValue: String(data.get('revealValue') ?? '').trim() || null
+              revealValue: String(data.get('revealValue') ?? '').trim() || null,
+              notifyNewRequest: data.get('notifyNewRequest') === 'on',
+              notifyDigest: data.get('notifyDigest') === 'on'
             });
 
             alert('Door settings saved');
@@ -158,6 +162,26 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
             Contact reveal value
             <input name="revealValue" type="text" defaultValue={door.settings?.revealValue ?? ''} />
           </label>
+
+          <fieldset style={{ border: '1px solid #ddd', padding: '12px', margin: '16px 0' }}>
+            <legend>Notification preferences</legend>
+            <label>
+              <input
+                type="checkbox"
+                name="notifyNewRequest"
+                defaultChecked={door.settings?.notifyNewRequest ?? true}
+              />{' '}
+              Email me on each new request
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                name="notifyDigest"
+                defaultChecked={door.settings?.notifyDigest ?? false}
+              />{' '}
+              Send periodic digest summary
+            </label>
+          </fieldset>
 
           <button type="submit">Save door settings</button>
         </form>

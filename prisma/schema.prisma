@@ -183,6 +183,7 @@ model DoorSettings {
   // Notification preferences
   notifyNewRequest Boolean            @default(true)
   notifyDigest     Boolean            @default(false)
+  lastDigestSentAt DateTime?
 
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
