@@ -87,6 +87,7 @@ model User {
   identities        AuthIdentity[]
   authTokens        AuthToken[]
   recoveryCodes     TwoFactorRecoveryCode[]
+  reachActor        ReachActor?
 }
 
 model AuthIdentity {
@@ -267,4 +268,144 @@ model RequestEvent {
   request Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
 
   @@index([requestId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Reach domain model
+// ---------------------------------------------------------------------------
+
+enum ReachActorType {
+  HUMAN
+  AI_AGENT
+  ORGANIZATION
+}
+
+enum ReachContractType {
+  HUMAN_HUMAN
+  HUMAN_AI
+  AI_HUMAN
+  AI_AI
+}
+
+enum ReachContractStatus {
+  PROPOSED
+  ACTIVE
+  FULFILLED
+  REJECTED
+  CANCELLED
+  EXPIRED
+}
+
+enum ReachPolicyAction {
+  ACCEPT
+  REJECT
+  ROUTE
+  ESCALATE
+}
+
+enum ReachContractEventType {
+  CREATED
+  ROUTED
+  ACCEPTED
+  REJECTED
+  FULFILLED
+  ESCALATED
+  EXPIRED
+  CANCELLED
+}
+
+enum ReachContractEventActor {
+  SYSTEM
+  INITIATOR
+  TARGET
+  ADMIN
+}
+
+/// A reachable entity in the Reach network.
+/// Humans link to an existing User; AI agents and orgs may be headless.
+model ReachActor {
+  id           String         @id @default(cuid())
+  userId       String?        @unique
+  type         ReachActorType
+  handle       String         @unique
+  displayName  String
+  isActive     Boolean        @default(true)
+  capabilities Json?          // AI: skill tags, supported intents, etc.
+  endpoint     String?        // AI/org: webhook or API callback URL
+  apiKeyHash   String?        // hashed API key for headless actors
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  user                User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  policies            ReachPolicy[]
+  initiatedContracts  ReachContract[] @relation("ContractInitiator")
+  receivedContracts   ReachContract[] @relation("ContractTarget")
+
+  @@index([type, isActive])
+}
+
+/// Policy that governs how inbound reach requests are handled for an actor.
+model ReachPolicy {
+  id                    String           @id @default(cuid())
+  actorId               String
+  name                  String
+  isActive              Boolean          @default(true)
+  contractTypes         ReachContractType[] // which contract types this policy covers
+  action                ReachPolicyAction @default(ACCEPT)
+  maxWeeklyInbound      Int?
+  requireVerifiedSender Boolean          @default(false)
+  autoAcceptMatching    Boolean          @default(false)
+  escalateToHuman       Boolean          @default(false) // AI actors: flag for human override
+  filters               Json?            // structured matching criteria (tags, intents, etc.)
+  priority              Int              @default(0)      // higher = evaluated first
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+
+  actor     ReachActor      @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  contracts ReachContract[]
+
+  @@index([actorId, isActive, priority])
+}
+
+/// A reach interaction between two actors, governed by a matched policy.
+model ReachContract {
+  id             String              @id @default(cuid())
+  type           ReachContractType
+  status         ReachContractStatus @default(PROPOSED)
+  initiatorId    String
+  targetId       String
+  policyId       String?
+  purpose        String              // short description of what the reach is about
+  message        String?             // optional freeform message from initiator
+  structuredData Json?               // typed payload (varies by contract type)
+  responseData   Json?               // target's response payload
+  routedAt       DateTime?
+  resolvedAt     DateTime?
+  expiresAt      DateTime?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  initiator ReachActor           @relation("ContractInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
+  target    ReachActor           @relation("ContractTarget", fields: [targetId], references: [id], onDelete: Cascade)
+  policy    ReachPolicy?         @relation(fields: [policyId], references: [id], onDelete: SetNull)
+  events    ReachContractEvent[]
+
+  @@index([initiatorId, status, createdAt])
+  @@index([targetId, status, createdAt])
+  @@index([status, expiresAt])
+}
+
+/// Audit trail for reach contract lifecycle transitions.
+model ReachContractEvent {
+  id         String                  @id @default(cuid())
+  contractId String
+  type       ReachContractEventType
+  actor      ReachContractEventActor @default(SYSTEM)
+  note       String?
+  metadata   Json?
+  createdAt  DateTime                @default(now())
+
+  contract ReachContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@index([contractId, createdAt])
 }
