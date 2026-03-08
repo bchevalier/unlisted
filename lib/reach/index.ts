@@ -117,6 +117,11 @@ export type {
 export {
   dispatchContract,
   deliverWebhook,
+  deliverWebhookWithSecret,
+  getContractDeliveryStatus,
+  isCircuitOpen,
+  getCircuitState,
+  resetCircuitBreakers,
 } from './router';
 
 export type {
@@ -124,6 +129,7 @@ export type {
   ContractPayload,
   WebhookPayload,
   DeliveryResult,
+  ContractDeliveryStatus,
 } from './router';
 
 // Pilot metrics

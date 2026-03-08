@@ -5,16 +5,26 @@
  * orchestrator delivers the contract to the target actor via the appropriate
  * channel:
  *
+ *   - AI_AGENT / ORGANIZATION targets → multi-webhook system (per-actor webhooks
+ *     with individual signing secrets and delivery logging), with fallback to
+ *     the legacy single endpoint on actor.endpoint
  *   - HUMAN targets → email notification to the linked user
- *   - AI_AGENT / ORGANIZATION targets → webhook POST to registered endpoint
  *
  * Delivery is fire-and-forget from the caller's perspective: failures are
  * recorded as events but never block the contract flow.
+ *
+ * ## Circuit Breaker
+ *
+ * Webhooks that accumulate consecutive failures are automatically disabled
+ * to prevent wasting delivery attempts on dead endpoints. The breaker tracks
+ * per-webhook failure counts and trips after CIRCUIT_BREAKER_THRESHOLD
+ * consecutive failures, pausing the webhook for CIRCUIT_BREAKER_COOLDOWN_MS.
  */
 
 import crypto from 'node:crypto';
 import { db } from '../db';
-import type { ReachContractEventActor } from './contracts';
+import type { ReachContractEventActor, ReachContractEventType } from './contracts';
+import { dispatchWebhookEvent } from './webhooks';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -55,7 +65,7 @@ export interface WebhookPayload {
   event: 'contract.routed' | 'contract.accepted' | 'contract.escalated';
   contract: ContractPayload;
   timestamp: string;
-  /** HMAC-SHA256 of the payload body, keyed on the target actor's API key hash */
+  /** HMAC-SHA256 of the payload body, keyed on the webhook's signing secret hash */
   signature?: string;
 }
 
@@ -65,6 +75,34 @@ export interface DeliveryResult {
   statusCode?: number;
   error?: string;
   attempts: number;
+  /** Number of webhooks that received delivery (multi-webhook fan-out). */
+  webhooksFired?: number;
+  /** Number of webhooks that succeeded. */
+  webhooksSucceeded?: number;
+}
+
+/** Per-contract delivery status summary (for the delivery status API). */
+export interface ContractDeliveryStatus {
+  contractId: string;
+  deliveries: Array<{
+    channel: string;
+    success: boolean;
+    statusCode: number | null;
+    error: string | null;
+    attempts: number;
+    timestamp: string;
+    policyAction: string;
+  }>;
+  webhookDeliveries: Array<{
+    webhookId: string;
+    event: string;
+    status: string;
+    httpStatus: number | null;
+    attempts: number;
+    lastError: string | null;
+    deliveredAt: string | null;
+    createdAt: string;
+  }>;
 }
 
 // ---------------------------------------------------------------------------
@@ -75,6 +113,76 @@ const WEBHOOK_TIMEOUT_MS = 10_000;
 const WEBHOOK_MAX_RETRIES = 2; // total attempts = 1 + retries
 const WEBHOOK_RETRY_DELAY_MS = 1_000;
 
+/** After this many consecutive failures, a webhook is auto-disabled. */
+const CIRCUIT_BREAKER_THRESHOLD = 5;
+/** How long (ms) before a tripped webhook is eligible for a probe attempt. */
+const CIRCUIT_BREAKER_COOLDOWN_MS = 30 * 60 * 1000; // 30 minutes
+
+// ---------------------------------------------------------------------------
+// Circuit breaker state (in-memory, per-process)
+// ---------------------------------------------------------------------------
+
+interface CircuitState {
+  consecutiveFailures: number;
+  lastFailureAt: number;
+  tripped: boolean;
+}
+
+/** In-memory circuit breaker state keyed by webhook ID. */
+const circuitBreakers = new Map<string, CircuitState>();
+
+/**
+ * Check whether a webhook's circuit breaker allows delivery.
+ * If tripped, allows a single probe attempt after the cooldown window.
+ */
+export function isCircuitOpen(webhookId: string): boolean {
+  const state = circuitBreakers.get(webhookId);
+  if (!state || !state.tripped) return false;
+
+  // Allow a probe attempt after cooldown.
+  if (Date.now() - state.lastFailureAt >= CIRCUIT_BREAKER_COOLDOWN_MS) {
+    return false; // half-open: allow one attempt
+  }
+
+  return true; // circuit is open, block delivery
+}
+
+/**
+ * Record a delivery outcome for circuit breaker tracking.
+ */
+export function recordCircuitOutcome(webhookId: string, success: boolean): void {
+  if (success) {
+    // Reset on success.
+    circuitBreakers.delete(webhookId);
+    return;
+  }
+
+  const state = circuitBreakers.get(webhookId) ?? {
+    consecutiveFailures: 0,
+    lastFailureAt: 0,
+    tripped: false,
+  };
+
+  state.consecutiveFailures++;
+  state.lastFailureAt = Date.now();
+
+  if (state.consecutiveFailures >= CIRCUIT_BREAKER_THRESHOLD) {
+    state.tripped = true;
+  }
+
+  circuitBreakers.set(webhookId, state);
+}
+
+/** Get circuit breaker state (for diagnostics / testing). */
+export function getCircuitState(webhookId: string): CircuitState | undefined {
+  return circuitBreakers.get(webhookId);
+}
+
+/** Reset all circuit breakers (for testing). */
+export function resetCircuitBreakers(): void {
+  circuitBreakers.clear();
+}
+
 // ---------------------------------------------------------------------------
 // Main orchestrator
 // ---------------------------------------------------------------------------
@@ -84,6 +192,10 @@ const WEBHOOK_RETRY_DELAY_MS = 1_000;
  *
  * Called internally by `proposeContract()` after the policy engine has
  * matched and the contract is created. Delivery is async and non-blocking.
+ *
+ * For AI_AGENT and ORGANIZATION targets, prefers the multi-webhook system
+ * (per-actor webhooks with individual signing). Falls back to the legacy
+ * single endpoint on actor.endpoint only when no webhooks are configured.
  *
  * @param contractId   - the contract to deliver
  * @param policyAction - the action decided by the policy engine (ACCEPT/ROUTE/ESCALATE)
@@ -148,9 +260,9 @@ export async function dispatchContract(
 
   let result: DeliveryResult;
 
-  // AI_AGENT and ORGANIZATION actors with endpoints get webhook delivery.
-  if ((target.actorType === 'AI_AGENT' || target.actorType === 'ORGANIZATION') && target.endpoint) {
-    result = await deliverWebhook(target.endpoint, eventName, payload);
+  // AI_AGENT and ORGANIZATION actors: prefer multi-webhook system.
+  if (target.actorType === 'AI_AGENT' || target.actorType === 'ORGANIZATION') {
+    result = await deliverViaWebhooks(target, eventName, payload);
   }
   // HUMAN actors with linked user get email notification.
   else if (target.actorType === 'HUMAN' && target.userId) {
@@ -168,17 +280,130 @@ export async function dispatchContract(
 }
 
 // ---------------------------------------------------------------------------
-// Webhook delivery (AI_AGENT / ORGANIZATION)
+// Multi-webhook delivery (AI_AGENT / ORGANIZATION)
 // ---------------------------------------------------------------------------
 
 /**
- * POST a webhook payload to the target's registered endpoint.
+ * Deliver a contract via the multi-webhook system.
+ *
+ * Loads all active webhooks for the target actor that subscribe to the
+ * relevant event, delivers in parallel with per-webhook signing and
+ * circuit breaker protection, and logs delivery outcomes.
+ *
+ * Falls back to the legacy single endpoint if no webhooks are configured.
+ */
+async function deliverViaWebhooks(
+  target: DeliveryTarget,
+  event: string,
+  payload: ContractPayload,
+): Promise<DeliveryResult> {
+  // Load active webhooks for this actor.
+  const webhooks = await db.reachWebhook.findMany({
+    where: {
+      actorId: target.actorId,
+      isActive: true,
+    },
+    select: {
+      id: true,
+      url: true,
+      secretHash: true,
+      events: true,
+    },
+  });
+
+  // Map the routing event name to the event type stored in webhook subscriptions.
+  const eventType = routingEventToEventType(event);
+
+  // Filter to webhooks that subscribe to this event (empty events = all).
+  const matching = webhooks.filter(
+    (wh) => wh.events.length === 0 || (eventType && wh.events.includes(eventType)),
+  );
+
+  // If no multi-webhooks configured, fall back to legacy single endpoint.
+  if (matching.length === 0) {
+    if (target.endpoint) {
+      return deliverWebhook(target.endpoint, event, payload);
+    }
+    return { channel: 'none', success: false, error: 'No delivery channel (no webhooks or endpoint)', attempts: 0 };
+  }
+
+  // Fan-out delivery to all matching webhooks.
+  const results = await Promise.allSettled(
+    matching.map((wh) => deliverToWebhookWithCircuitBreaker(wh, event, payload)),
+  );
+
+  let totalAttempts = 0;
+  let succeeded = 0;
+  let lastError: string | undefined;
+  let lastStatus: number | undefined;
+
+  for (const r of results) {
+    if (r.status === 'fulfilled') {
+      totalAttempts += r.value.attempts;
+      if (r.value.success) {
+        succeeded++;
+        lastStatus = r.value.statusCode;
+      } else {
+        lastError = r.value.error;
+        lastStatus = r.value.statusCode;
+      }
+    } else {
+      lastError = r.reason instanceof Error ? r.reason.message : String(r.reason);
+    }
+  }
+
+  return {
+    channel: 'webhook',
+    success: succeeded > 0,
+    statusCode: lastStatus,
+    error: succeeded === 0 ? lastError : undefined,
+    attempts: totalAttempts,
+    webhooksFired: matching.length,
+    webhooksSucceeded: succeeded,
+  };
+}
+
+/**
+ * Deliver to a single webhook with circuit breaker protection.
+ * Skips delivery if the circuit is open, records outcome for breaker tracking.
+ */
+async function deliverToWebhookWithCircuitBreaker(
+  webhook: { id: string; url: string; secretHash: string | null },
+  event: string,
+  contract: ContractPayload,
+): Promise<DeliveryResult> {
+  // Circuit breaker check.
+  if (isCircuitOpen(webhook.id)) {
+    return {
+      channel: 'webhook',
+      success: false,
+      error: `Circuit breaker open for webhook ${webhook.id}`,
+      attempts: 0,
+    };
+  }
+
+  const result = await deliverWebhookWithSecret(
+    webhook.url,
+    event,
+    contract,
+    webhook.secretHash,
+  );
+
+  // Record outcome for circuit breaker.
+  recordCircuitOutcome(webhook.id, result.success);
+
+  return result;
+}
+
+/**
+ * POST a webhook payload to an endpoint with per-webhook signing.
  * Retries on transient failures (5xx, network errors).
  */
-export async function deliverWebhook(
+export async function deliverWebhookWithSecret(
   endpoint: string,
   event: string,
   contract: ContractPayload,
+  secretHash: string | null,
 ): Promise<DeliveryResult> {
   const webhookPayload: WebhookPayload = {
     event: event as WebhookPayload['event'],
@@ -186,12 +411,11 @@ export async function deliverWebhook(
     timestamp: new Date().toISOString(),
   };
 
-  // Sign the payload body.
+  // Sign the payload body with the per-webhook secret hash.
   const body = JSON.stringify(webhookPayload);
-  const webhookSecret = process.env.REACH_WEBHOOK_SECRET;
-  if (webhookSecret) {
+  if (secretHash) {
     webhookPayload.signature = crypto
-      .createHmac('sha256', webhookSecret)
+      .createHmac('sha256', secretHash)
       .update(body)
       .digest('hex');
   }
@@ -264,6 +488,19 @@ export async function deliverWebhook(
     error: `Failed after ${WEBHOOK_MAX_RETRIES + 1} attempts: ${lastError}`,
     attempts: WEBHOOK_MAX_RETRIES + 1,
   };
+}
+
+/**
+ * Legacy single-endpoint webhook delivery (backward compatibility).
+ * Used when an AI_AGENT/ORGANIZATION has no multi-webhooks configured
+ * but has a single endpoint on the actor record.
+ */
+export async function deliverWebhook(
+  endpoint: string,
+  event: string,
+  contract: ContractPayload,
+): Promise<DeliveryResult> {
+  return deliverWebhookWithSecret(endpoint, event, contract, null);
 }
 
 // ---------------------------------------------------------------------------
@@ -384,6 +621,90 @@ async function sendReachNotificationEmail(
 }
 
 // ---------------------------------------------------------------------------
+// Delivery status query
+// ---------------------------------------------------------------------------
+
+/**
+ * Get a unified delivery status for a contract.
+ *
+ * Combines:
+ *   - Contract events with delivery metadata (from `recordDeliveryEvent`)
+ *   - Webhook delivery records from the multi-webhook system
+ *
+ * Useful for debugging and for operators to see why a contract
+ * wasn't delivered or which webhooks succeeded/failed.
+ */
+export async function getContractDeliveryStatus(
+  contractId: string,
+): Promise<ContractDeliveryStatus | null> {
+  const contract = await db.reachContract.findUnique({
+    where: { id: contractId },
+    select: { id: true },
+  });
+
+  if (!contract) return null;
+
+  // 1. Get delivery events from contract event log.
+  const events = await db.reachContractEvent.findMany({
+    where: {
+      contractId,
+      type: 'ROUTED',
+    },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      metadata: true,
+      createdAt: true,
+    },
+  });
+
+  const deliveries = events
+    .filter((e) => e.metadata && typeof e.metadata === 'object')
+    .map((e) => {
+      const m = e.metadata as Record<string, unknown>;
+      return {
+        channel: String(m.deliveryChannel ?? 'unknown'),
+        success: Boolean(m.deliverySuccess),
+        statusCode: typeof m.deliveryStatusCode === 'number' ? m.deliveryStatusCode : null,
+        error: typeof m.deliveryError === 'string' ? m.deliveryError : null,
+        attempts: typeof m.deliveryAttempts === 'number' ? m.deliveryAttempts : 0,
+        timestamp: e.createdAt.toISOString(),
+        policyAction: String(m.policyAction ?? 'unknown'),
+      };
+    });
+
+  // 2. Get webhook delivery records from the multi-webhook system.
+  const webhookDeliveries = await db.reachWebhookDelivery.findMany({
+    where: { contractId },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      webhookId: true,
+      event: true,
+      status: true,
+      httpStatus: true,
+      attempts: true,
+      lastError: true,
+      deliveredAt: true,
+      createdAt: true,
+    },
+  });
+
+  return {
+    contractId,
+    deliveries,
+    webhookDeliveries: webhookDeliveries.map((wd) => ({
+      webhookId: wd.webhookId,
+      event: wd.event,
+      status: wd.status,
+      httpStatus: wd.httpStatus,
+      attempts: wd.attempts,
+      lastError: wd.lastError,
+      deliveredAt: wd.deliveredAt?.toISOString() ?? null,
+      createdAt: wd.createdAt.toISOString(),
+    })),
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Delivery event recording
 // ---------------------------------------------------------------------------
 
@@ -399,6 +720,10 @@ async function recordDeliveryEvent(
   result: DeliveryResult,
   policyAction: string,
 ): Promise<void> {
+  const channelDetail = result.webhooksFired !== undefined
+    ? `${result.channel} (${result.webhooksSucceeded}/${result.webhooksFired} webhooks)`
+    : `${result.channel} (${result.attempts} attempt${result.attempts === 1 ? '' : 's'})`;
+
   try {
     await db.reachContractEvent.create({
       data: {
@@ -406,14 +731,16 @@ async function recordDeliveryEvent(
         type: 'ROUTED' as const,
         actor: 'SYSTEM' as ReachContractEventActor,
         note: result.success
-          ? `Delivered via ${result.channel} (${result.attempts} attempt${result.attempts === 1 ? '' : 's'})`
-          : `Delivery failed via ${result.channel}: ${result.error}`,
+          ? `Delivered via ${channelDetail}`
+          : `Delivery failed via ${channelDetail}: ${result.error}`,
         metadata: {
           deliveryChannel: result.channel,
           deliverySuccess: result.success,
           deliveryAttempts: result.attempts,
           deliveryStatusCode: result.statusCode ?? null,
           deliveryError: result.error ?? null,
+          webhooksFired: result.webhooksFired ?? null,
+          webhooksSucceeded: result.webhooksSucceeded ?? null,
           policyAction,
         } as Parameters<typeof db.reachContractEvent.create>[0]['data']['metadata'],
       },
@@ -438,6 +765,20 @@ function policyActionToEvent(action: string): string {
     default:
       return 'contract.routed';
   }
+}
+
+/**
+ * Map a routing event name (e.g. 'contract.accepted') to a ReachContractEventType
+ * for matching against webhook subscriptions.
+ */
+function routingEventToEventType(event: string): ReachContractEventType | null {
+  const map: Record<string, ReachContractEventType> = {
+    'contract.accepted': 'ACCEPTED',
+    'contract.routed': 'ROUTED',
+    'contract.escalated': 'ESCALATED',
+    'contract.created': 'CREATED',
+  };
+  return map[event] ?? null;
 }
 
 function escapeHtml(text: string): string {
