@@ -194,8 +194,9 @@ Tasks should be checked only when implemented and verified.
 - [x] Implement Reach request contracts (human↔human, human↔AI, AI↔human, AI↔AI)
 - [x] Implement policy-based automatic routing (no human admin intervention in normal flow)
 - [x] Add optional human override/escalation only for policy exceptions
-- [ ] Add org/system integrations (API-first inbound + outbound hooks)
-- [ ] Add Reach pilot metrics (path length, time-to-qualified-counterparty, one-hop success)
+- [x] Add org/system integrations (API-first inbound + outbound hooks)
+- [x] Add Reach pilot metrics (path length, time-to-qualified-counterparty, one-hop success)
+- [x] Add Reach pilot packaging (seed data, documentation, health endpoint, env config)
 - [ ] Run limited pilots with AI operators and organization ops teams
 
 ---
