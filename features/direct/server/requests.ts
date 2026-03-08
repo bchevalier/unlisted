@@ -404,6 +404,20 @@ export async function createFormRequest(input: unknown, options?: { ipAddress?: 
   });
 }
 
+const COMPLETION_TOKEN_EXPIRY_HOURS = 72;
+
+function generateCompletionToken(): string {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+function hasRequiredFields(
+  categories: Array<{
+    fields: Array<{ required: boolean }>;
+  }>
+): boolean {
+  return categories.some((cat) => cat.fields.some((f) => f.required));
+}
+
 export async function createEmailRequest(input: unknown) {
   const payload = emailRequestSchema.parse(input);
 
@@ -428,11 +442,27 @@ export async function createEmailRequest(input: unknown) {
       door: {
         select: {
           id: true,
+          slug: true,
           isEnabled: true,
           plan: true,
+          displayName: true,
           settings: {
             select: {
               weeklyRequestCap: true
+            }
+          },
+          categories: {
+            where: { isEnabled: true },
+            select: {
+              id: true,
+              key: true,
+              label: true,
+              fields: {
+                select: {
+                  key: true,
+                  required: true
+                }
+              }
             }
           }
         }
@@ -460,15 +490,29 @@ export async function createEmailRequest(input: unknown) {
     throw new DirectValidationError('Email body is empty after quote/signature stripping');
   }
 
-  return db.request.create({
+  // Detect whether any enabled category has required fields
+  const requiresCompletion = hasRequiredFields(emailAlias.door.categories);
+
+  const completionToken = requiresCompletion ? generateCompletionToken() : null;
+  const completionExpiresAt = requiresCompletion
+    ? new Date(Date.now() + COMPLETION_TOKEN_EXPIRY_HOURS * 60 * 60 * 1000)
+    : null;
+
+  const status = requiresCompletion
+    ? RequestStatus.AWAITING_COMPLETION
+    : RequestStatus.PENDING;
+
+  const created = await db.request.create({
     data: {
       doorId: emailAlias.door.id,
       source: RequestSource.EMAIL,
-      status: RequestStatus.PENDING,
+      status,
       senderName,
       senderEmail,
       title: normalizeOptional(payload.subject),
       message: cleanedMessage,
+      completionToken,
+      completionExpiresAt,
       structuredData: {
         to: payload.to,
         from: payload.from,
@@ -478,7 +522,186 @@ export async function createEmailRequest(input: unknown) {
         create: {
           type: RequestEventType.CREATED,
           actor: RequestEventActor.SYSTEM,
-          note: 'Inbound email created request'
+          note: requiresCompletion
+            ? 'Inbound email created request — awaiting form completion'
+            : 'Inbound email created request'
+        }
+      }
+    },
+    select: {
+      id: true,
+      requestToken: true,
+      status: true,
+      completionToken: true
+    }
+  });
+
+  const appUrl = process.env.APP_URL ?? 'http://localhost:3000';
+
+  return {
+    ...created,
+    completionRequired: requiresCompletion,
+    completionUrl: requiresCompletion
+      ? `${appUrl}/complete/${completionToken}`
+      : null
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Email completion (required-field form submission via completion link)
+// ---------------------------------------------------------------------------
+
+const emailCompletionSchema = z.object({
+  completionToken: z.string().trim().min(1),
+  categoryKey: z.string().trim().min(1),
+  fields: z.record(z.string(), z.string()).default({})
+});
+
+export async function getRequestForCompletion(completionToken: string) {
+  const request = await db.request.findUnique({
+    where: { completionToken },
+    select: {
+      id: true,
+      status: true,
+      senderName: true,
+      senderEmail: true,
+      title: true,
+      message: true,
+      completionExpiresAt: true,
+      door: {
+        select: {
+          slug: true,
+          displayName: true,
+          headline: true,
+          categories: {
+            where: { isEnabled: true },
+            orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+            select: {
+              key: true,
+              label: true,
+              description: true,
+              fields: {
+                orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+                select: {
+                  key: true,
+                  label: true,
+                  type: true,
+                  required: true,
+                  placeholder: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+
+  if (!request) {
+    return null;
+  }
+
+  if (request.status !== RequestStatus.AWAITING_COMPLETION) {
+    return { expired: true, reason: 'already_completed' as const };
+  }
+
+  if (request.completionExpiresAt && request.completionExpiresAt < new Date()) {
+    return { expired: true, reason: 'token_expired' as const };
+  }
+
+  return {
+    expired: false,
+    request: {
+      senderName: request.senderName,
+      senderEmail: request.senderEmail,
+      title: request.title,
+      message: request.message,
+      door: request.door
+    }
+  };
+}
+
+export async function completeEmailRequest(input: unknown) {
+  const payload = emailCompletionSchema.parse(input);
+
+  const request = await db.request.findUnique({
+    where: { completionToken: payload.completionToken },
+    select: {
+      id: true,
+      status: true,
+      doorId: true,
+      completionExpiresAt: true,
+      door: {
+        select: {
+          categories: {
+            where: { key: payload.categoryKey, isEnabled: true },
+            select: {
+              id: true,
+              key: true,
+              fields: {
+                select: {
+                  key: true,
+                  label: true,
+                  type: true,
+                  required: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+
+  if (!request) {
+    throw new DirectValidationError('Invalid completion token');
+  }
+
+  if (request.status !== RequestStatus.AWAITING_COMPLETION) {
+    throw new DirectValidationError('Request already completed', 409);
+  }
+
+  if (request.completionExpiresAt && request.completionExpiresAt < new Date()) {
+    throw new DirectValidationError('Completion link has expired', 410);
+  }
+
+  const category = request.door.categories[0];
+  if (!category) {
+    throw new DirectValidationError('Category unavailable');
+  }
+
+  // Validate required fields
+  const sanitizedFields: Record<string, string> = {};
+  for (const field of category.fields) {
+    const value = (payload.fields[field.key] ?? '').trim();
+
+    if (field.required && value.length === 0) {
+      throw new DirectValidationError(`Missing required field: ${field.label}`);
+    }
+
+    if (!validateFieldByType(field.type, value)) {
+      throw new DirectValidationError(`Invalid value for ${field.label}`);
+    }
+
+    if (value.length > 0) {
+      sanitizedFields[field.key] = value;
+    }
+  }
+
+  // Transition to PENDING with structured data, clear completion token
+  return db.request.update({
+    where: { id: request.id },
+    data: {
+      status: RequestStatus.PENDING,
+      categoryId: category.id,
+      structuredData: sanitizedFields,
+      completionToken: null,
+      completionExpiresAt: null,
+      events: {
+        create: {
+          type: RequestEventType.CREATED,
+          actor: RequestEventActor.SYSTEM,
+          note: 'Email sender completed required fields via form'
         }
       }
     },
