@@ -179,6 +179,11 @@ model DoorSettings {
   weeklyRequestCap Int?
   revealMethod     ContactRevealMethod @default(NONE)
   revealValue      String?
+
+  // Notification preferences
+  notifyNewRequest Boolean            @default(true)
+  notifyDigest     Boolean            @default(false)
+
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
 

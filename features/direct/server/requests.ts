@@ -47,7 +47,9 @@ const updateDoorSettingsSchema = z.object({
   autoReplyMessage: z.string().trim().max(1000).optional(),
   weeklyRequestCap: z.number().int().positive().max(5000).nullable(),
   revealMethod: z.enum([ContactRevealMethod.NONE, ContactRevealMethod.EMAIL, ContactRevealMethod.URL]),
-  revealValue: z.string().trim().max(500).nullable()
+  revealValue: z.string().trim().max(500).nullable(),
+  notifyNewRequest: z.boolean().optional(),
+  notifyDigest: z.boolean().optional()
 });
 
 const updateDoorPlanSchema = z.object({
@@ -326,10 +328,13 @@ function sendNewRequestNotificationToKeeper(
     select: {
       slug: true,
       displayName: true,
-      user: { select: { email: true } }
+      user: { select: { email: true } },
+      settings: { select: { notifyNewRequest: true } }
     }
   }).then((door) => {
     if (!door?.user?.email) return;
+    // Respect keeper notification preference (default true when no settings row)
+    if (door.settings && !door.settings.notifyNewRequest) return;
     notifyKeeperNewRequest({
       keeperEmail: door.user.email,
       doorName: door.displayName,
@@ -926,7 +931,9 @@ export async function listRequestsByDoorSlugForKeeper(
           autoReplyMessage: true,
           weeklyRequestCap: true,
           revealMethod: true,
-          revealValue: true
+          revealValue: true,
+          notifyNewRequest: true,
+          notifyDigest: true
         }
       },
       categories: {
@@ -1140,6 +1147,11 @@ export async function updateDoorSettingsForKeeper(userId: string, input: unknown
 
   const normalizedWeeklyCap = door.plan === DoorPlan.PAID ? null : payload.weeklyRequestCap;
 
+  const notificationFields = {
+    ...(payload.notifyNewRequest !== undefined && { notifyNewRequest: payload.notifyNewRequest }),
+    ...(payload.notifyDigest !== undefined && { notifyDigest: payload.notifyDigest })
+  };
+
   return db.doorSettings.upsert({
     where: { doorId: door.id },
     update: {
@@ -1147,7 +1159,8 @@ export async function updateDoorSettingsForKeeper(userId: string, input: unknown
       autoReplyMessage: normalizeOptional(payload.autoReplyMessage),
       weeklyRequestCap: normalizedWeeklyCap,
       revealMethod: payload.revealMethod,
-      revealValue: normalizeOptional(payload.revealValue)
+      revealValue: normalizeOptional(payload.revealValue),
+      ...notificationFields
     },
     create: {
       doorId: door.id,
@@ -1155,7 +1168,8 @@ export async function updateDoorSettingsForKeeper(userId: string, input: unknown
       autoReplyMessage: normalizeOptional(payload.autoReplyMessage),
       weeklyRequestCap: normalizedWeeklyCap,
       revealMethod: payload.revealMethod,
-      revealValue: normalizeOptional(payload.revealValue)
+      revealValue: normalizeOptional(payload.revealValue),
+      ...notificationFields
     }
   });
 }

@@ -135,15 +135,15 @@ Tasks should be checked only when implemented and verified.
 
 ## 8. Outbound Notifications
 
-- [ ] Configure outbound email provider
-- [ ] Create email templates (new request)
-- [ ] Create email templates (request accepted)
-- [ ] Create email templates (request expired)
-- [ ] Send notification on new request
-- [ ] Send notification on request acceptance
-- [ ] Send notification on expiration
+- [x] Configure outbound email provider
+- [x] Create email templates (new request)
+- [x] Create email templates (request accepted)
+- [x] Create email templates (request expired)
+- [x] Send notification on new request
+- [x] Send notification on request acceptance
+- [x] Send notification on expiration
 - [ ] Implement optional digest notifications
-- [ ] Respect user notification preferences
+- [x] Respect user notification preferences
 
 ---
 
