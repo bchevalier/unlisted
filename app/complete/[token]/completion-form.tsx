@@ -185,7 +185,7 @@ export function CompletionForm({ completionToken, categories, turnstileSiteKey }
 
       {category.fields.length > 0 ? (
         <fieldset>
-          <legend>Required information</legend>
+          <legend>Additional information</legend>
           <div className="knock-form__grid">
             {category.fields.map((field) => (
               <label key={field.key}>

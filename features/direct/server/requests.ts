@@ -13,6 +13,8 @@ import { db } from '../../../lib/db';
 import {
   notifyKeeperNewRequest,
   notifyKnockerAccepted,
+  notifyKnockerAutoReply,
+  notifyKnockerCompletionRequired,
   notifyKnockerExpired
 } from '../../../lib/notifications';
 import { verifyTurnstileToken } from '../../../lib/turnstile';
@@ -523,7 +525,9 @@ export async function createEmailRequest(input: unknown) {
           displayName: true,
           settings: {
             select: {
-              weeklyRequestCap: true
+              weeklyRequestCap: true,
+              autoReplyEnabled: true,
+              autoReplyMessage: true
             }
           },
           categories: {
@@ -612,17 +616,40 @@ export async function createEmailRequest(input: unknown) {
   });
 
   const appUrl = process.env.APP_URL ?? 'http://localhost:3000';
+  const normalizedTitle = normalizeOptional(payload.subject);
 
-  // Fire-and-forget: notify keeper when email request is immediately PENDING
-  // (AWAITING_COMPLETION requests notify later, when the form is completed)
-  if (!requiresCompletion) {
+  if (requiresCompletion) {
+    // Fire-and-forget: email the sender with the completion link
+    const completionUrl = `${appUrl}/complete/${completionToken}`;
+    notifyKnockerCompletionRequired({
+      knockerEmail: senderEmail,
+      doorName: emailAlias.door.displayName,
+      completionUrl,
+      subject: normalizedTitle
+    }).catch((err) => {
+      console.error('[notification:completion-required-failed]', err);
+    });
+  } else {
+    // Fire-and-forget: notify keeper of new email request
     sendNewRequestNotificationToKeeper(emailAlias.door.id, {
       categoryLabel: null,
       senderName,
       senderEmail,
-      title: normalizeOptional(payload.subject),
+      title: normalizedTitle,
       messagePreview: cleanedMessage
     });
+
+    // Fire-and-forget: send auto-reply to sender if enabled
+    if (emailAlias.door.settings?.autoReplyEnabled && senderEmail) {
+      notifyKnockerAutoReply({
+        knockerEmail: senderEmail,
+        doorName: emailAlias.door.displayName,
+        autoReplyMessage: emailAlias.door.settings.autoReplyMessage,
+        subject: normalizedTitle
+      }).catch((err) => {
+        console.error('[notification:auto-reply-failed]', err);
+      });
+    }
   }
 
   return {

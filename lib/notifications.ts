@@ -206,6 +206,88 @@ export async function notifyKnockerAccepted(input: RequestAcceptedNotification):
 }
 
 // ---------------------------------------------------------------------------
+// Notification: Completion required → Knocker (email sender)
+// ---------------------------------------------------------------------------
+
+export type CompletionRequiredNotification = {
+  knockerEmail: string;
+  doorName: string;
+  completionUrl: string;
+  subject: string | null;
+};
+
+export async function notifyKnockerCompletionRequired(input: CompletionRequiredNotification): Promise<void> {
+  const emailSubject = input.subject
+    ? `Re: ${input.subject}`
+    : `Your message to ${input.doorName} — additional info needed`;
+
+  const text = [
+    `Thanks for reaching out to "${input.doorName}" via Knokio.`,
+    '',
+    `This door requires a bit more information before your request can be reviewed.`,
+    `Please complete the short form below:`,
+    '',
+    input.completionUrl,
+    '',
+    `This link expires in 72 hours.`,
+    '',
+    '— Knokio'
+  ].join('\n');
+
+  const html = `
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
+  <p>Thanks for reaching out to <strong>${escapeHtml(input.doorName)}</strong> via Knokio.</p>
+  <p>This door requires a bit more information before your request can be reviewed. Please complete the short form below:</p>
+  <p style="margin: 20px 0;">
+    <a href="${escapeHtml(input.completionUrl)}" style="display: inline-block; padding: 10px 20px; background: #111; color: #fff; text-decoration: none; border-radius: 6px;">Complete Your Request</a>
+  </p>
+  <p style="color: #666; font-size: 13px;">This link expires in 72 hours.</p>
+  <p style="margin-top: 24px; color: #999; font-size: 13px;">— Knokio</p>
+</div>`.trim();
+
+  await safeSend({ to: input.knockerEmail, subject: emailSubject, text, html });
+}
+
+// ---------------------------------------------------------------------------
+// Notification: Auto-reply acknowledgment → Knocker (email sender)
+// ---------------------------------------------------------------------------
+
+export type AutoReplyNotification = {
+  knockerEmail: string;
+  doorName: string;
+  autoReplyMessage: string | null;
+  subject: string | null;
+};
+
+export async function notifyKnockerAutoReply(input: AutoReplyNotification): Promise<void> {
+  const emailSubject = input.subject
+    ? `Re: ${input.subject}`
+    : `Your message to ${input.doorName} was received`;
+
+  const customMessage = input.autoReplyMessage?.trim();
+
+  const text = [
+    customMessage
+      ? customMessage
+      : `Your message to "${input.doorName}" has been received and is now pending review.`,
+    '',
+    '— Knokio'
+  ].join('\n');
+
+  const bodyHtml = customMessage
+    ? `<p>${escapeHtml(customMessage).replace(/\n/g, '<br>')}</p>`
+    : `<p>Your message to <strong>${escapeHtml(input.doorName)}</strong> has been received and is now pending review.</p>`;
+
+  const html = `
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
+  ${bodyHtml}
+  <p style="margin-top: 24px; color: #999; font-size: 13px;">— Knokio</p>
+</div>`.trim();
+
+  await safeSend({ to: input.knockerEmail, subject: emailSubject, text, html });
+}
+
+// ---------------------------------------------------------------------------
 // Notification: Request expired → Knocker
 // ---------------------------------------------------------------------------
 
