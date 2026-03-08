@@ -156,9 +156,11 @@ Examples:
 
 ## Status
 
-This repository currently focuses on **Knokio (Direct)** only.
+This repository runs a **two-client model**:
+- **Knokio Direct** (protected core)
+- **Knokio Reach** (parallel pilot track)
 
-Networked features and routing are intentionally out of scope until the core door works reliably.
+Direct and Reach are developed and tested in parallel, with strict isolation guardrails so Reach changes cannot degrade Direct clarity, privacy, or trust.
 
 ## Environment configuration
 

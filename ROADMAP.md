@@ -1,7 +1,8 @@
-# Knokio — V1 Roadmap (Direct Only)
+# Knokio — V1 Roadmap (Direct + Reach Pilot)
 
 This roadmap defines the full scope of Knokio V1.
-It focuses exclusively on **Knokio (Direct)** with **email proxy support**.
+It ships **Knokio Direct** as the protected core while running **Knokio Reach** as a parallel pilot track, with strict isolation guardrails.
+Direct accepts both **structured form requests** and **email-shaped requests** via Knokio email aliases.
 
 Each checkbox represents a discrete task suitable for an AI agent.
 Tasks should be checked only when implemented and verified.
@@ -14,8 +15,9 @@ Tasks should be checked only when implemented and verified.
 - [x] Configure environment variables and secrets management
 - [x] Set up deployment environment
 - [x] Provision managed PostgreSQL database
-- [ ] Configure database migration tooling
+- [x] Configure database migration tooling
 - [ ] Set up basic authentication (signup, login, sessions)
+- [ ] Add Direct/Reach feature flags and runtime isolation for parallel testing
 
 ---
 
@@ -180,6 +182,19 @@ Tasks should be checked only when implemented and verified.
 
 ---
 
+## 11R. Reach Pilot (Parallel Track)
+
+- [ ] Create Reach client routes and navigation isolation (`/reach/*`)
+- [ ] Keep Reach behind feature flags by default
+- [ ] Implement Reach request contracts (human↔human, human↔AI, AI↔human, AI↔AI)
+- [ ] Implement policy-based automatic routing (no human admin intervention in normal flow)
+- [ ] Add optional human override/escalation only for policy exceptions
+- [ ] Add org/system integrations (API-first inbound + outbound hooks)
+- [ ] Add Reach pilot metrics (path length, time-to-qualified-counterparty, one-hop success)
+- [ ] Run limited pilots with AI operators and organization ops teams
+
+---
+
 ## 12. Observability & Hardening
 
 - [ ] Configure error tracking
@@ -210,13 +225,12 @@ Tasks should be checked only when implemented and verified.
 
 The following are explicitly out of scope for V1:
 
-- Knokio Reach
-- User discovery or browsing
+- Open/public user discovery or browsing (Reach stays opt-in and policy-gated)
 - Messaging or chat threads
 - Scheduling or calendar integration
 - Reputation or ratings
-- Teams or organizations
-- AI-based moderation or matching
+- Full team/organization workspace UX
+- AI-based moderation or matching autonomy without human policy controls
 
 ---
 
