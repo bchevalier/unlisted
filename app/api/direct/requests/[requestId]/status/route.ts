@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     }
 
     if (error instanceof DirectValidationError) {
-      return Response.json({ ok: false, error: error.message }, { status: 400 });
+      return Response.json({ ok: false, error: error.message }, { status: error.statusCode });
     }
 
     console.error(error);

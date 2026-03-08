@@ -160,11 +160,12 @@ model Door {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  settings    DoorSettings?
-  categories  Category[]
-  emailAliases EmailAlias[]
-  requests    Request[]
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  settings        DoorSettings?
+  categories      Category[]
+  emailAliases    EmailAlias[]
+  requests        Request[]
+  blockedSenders  DoorBlockedSender[]
 
   @@index([slug, isEnabled])
 }
@@ -181,6 +182,19 @@ model DoorSettings {
   updatedAt        DateTime           @updatedAt
 
   door Door @relation(fields: [doorId], references: [id], onDelete: Cascade)
+}
+
+model DoorBlockedSender {
+  id        String   @id @default(cuid())
+  doorId    String
+  email     String
+  reason    String?
+  createdAt DateTime @default(now())
+
+  door Door @relation(fields: [doorId], references: [id], onDelete: Cascade)
+
+  @@unique([doorId, email])
+  @@index([doorId])
 }
 
 model Category {
@@ -242,6 +256,7 @@ model Request {
   status         RequestStatus @default(PENDING)
   senderName     String?
   senderEmail    String?
+  ipHash         String?
   title          String?
   message        String
   structuredData Json?
@@ -254,6 +269,8 @@ model Request {
   events   RequestEvent[]
 
   @@index([doorId, status, createdAt])
+  @@index([doorId, ipHash, createdAt])
+  @@index([doorId, senderEmail, createdAt])
 }
 
 model RequestEvent {

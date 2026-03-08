@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import {
   CategoryFieldType,
   ContactRevealMethod,
@@ -63,7 +64,14 @@ const updateFieldSchema = z.object({
   required: z.boolean()
 });
 
-export class DirectValidationError extends Error {}
+export class DirectValidationError extends Error {
+  readonly statusCode: number;
+
+  constructor(message: string, statusCode = 400) {
+    super(message);
+    this.statusCode = statusCode;
+  }
+}
 
 const FREE_DEFAULT_WEEKLY_REQUEST_CAP = 50;
 const FREE_DEFAULT_CATEGORY_WEEKLY_CAP = 20;
@@ -165,7 +173,7 @@ async function enforceDoorWeeklyCap(doorId: string, weeklyCap: number | null | u
   });
 
   if (count >= weeklyCap) {
-    throw new DirectValidationError('Door weekly request cap reached');
+    throw new DirectValidationError('Door weekly request cap reached', 429);
   }
 }
 
@@ -185,7 +193,7 @@ async function enforceCategoryWeeklyCap(categoryId: string, weeklyCap: number | 
   });
 
   if (count >= weeklyCap) {
-    throw new DirectValidationError('Category weekly request cap reached');
+    throw new DirectValidationError('Category weekly request cap reached', 429);
   }
 }
 
@@ -210,11 +218,90 @@ async function enforceInboundEmailSenderRateLimit(doorId: string, senderEmail: s
   });
 
   if (count >= maxRequests) {
-    throw new DirectValidationError('Inbound sender rate limit reached');
+    throw new DirectValidationError('Inbound sender rate limit reached', 429);
   }
 }
 
-export async function createFormRequest(input: unknown) {
+// ---------------------------------------------------------------------------
+// Public entry abuse controls
+// ---------------------------------------------------------------------------
+
+const FORM_IP_RATE_LIMIT_WINDOW_MINUTES = 15;
+const FORM_IP_RATE_LIMIT_MAX = 10;
+const FORM_SENDER_RATE_LIMIT_WINDOW_MINUTES = 60;
+const FORM_SENDER_RATE_LIMIT_MAX = 5;
+
+function hashForRateLimit(value: string): string {
+  return crypto.createHash('sha256').update(value).digest('hex');
+}
+
+async function enforceFormIPRateLimit(doorId: string, ipHash: string) {
+  const windowMinutes = Number(process.env.FORM_IP_RATE_LIMIT_WINDOW_MINUTES ?? FORM_IP_RATE_LIMIT_WINDOW_MINUTES);
+  const maxRequests = Number(process.env.FORM_IP_RATE_LIMIT_MAX ?? FORM_IP_RATE_LIMIT_MAX);
+
+  if (Number.isNaN(windowMinutes) || Number.isNaN(maxRequests) || windowMinutes <= 0 || maxRequests <= 0) {
+    return;
+  }
+
+  const since = new Date(Date.now() - windowMinutes * 60 * 1000);
+  const count = await db.request.count({
+    where: {
+      doorId,
+      ipHash,
+      createdAt: { gte: since }
+    }
+  });
+
+  if (count >= maxRequests) {
+    throw new DirectValidationError('Too many requests from this address. Try again later.', 429);
+  }
+}
+
+async function enforceFormSenderRateLimit(doorId: string, senderEmail: string) {
+  const windowMinutes = Number(process.env.FORM_SENDER_RATE_LIMIT_WINDOW_MINUTES ?? FORM_SENDER_RATE_LIMIT_WINDOW_MINUTES);
+  const maxRequests = Number(process.env.FORM_SENDER_RATE_LIMIT_MAX ?? FORM_SENDER_RATE_LIMIT_MAX);
+
+  if (Number.isNaN(windowMinutes) || Number.isNaN(maxRequests) || windowMinutes <= 0 || maxRequests <= 0) {
+    return;
+  }
+
+  const since = new Date(Date.now() - windowMinutes * 60 * 1000);
+  const count = await db.request.count({
+    where: {
+      doorId,
+      source: RequestSource.FORM,
+      senderEmail: senderEmail.toLowerCase(),
+      createdAt: { gte: since }
+    }
+  });
+
+  if (count >= maxRequests) {
+    throw new DirectValidationError('Too many requests from this email. Try again later.', 429);
+  }
+}
+
+async function enforceBlocklist(doorId: string, senderEmail: string | null | undefined) {
+  if (!senderEmail) {
+    return;
+  }
+
+  const blocked = await db.doorBlockedSender.findUnique({
+    where: {
+      doorId_email: {
+        doorId,
+        email: senderEmail.toLowerCase()
+      }
+    },
+    select: { id: true }
+  });
+
+  if (blocked) {
+    // Return generic message — don't reveal blocklist existence
+    throw new DirectValidationError('Unable to submit request at this time.', 403);
+  }
+}
+
+export async function createFormRequest(input: unknown, options?: { ipAddress?: string | null }) {
   const payload = formRequestSchema.parse(input);
 
   const door = await db.door.findUnique({
@@ -254,6 +341,19 @@ export async function createFormRequest(input: unknown) {
     throw new DirectValidationError('Category unavailable');
   }
 
+  // Abuse controls: blocklist → IP rate limit → sender rate limit → caps
+  const normalizedSenderEmail = normalizeOptional(payload.senderEmail);
+  await enforceBlocklist(door.id, normalizedSenderEmail);
+
+  const ipHash = options?.ipAddress ? hashForRateLimit(options.ipAddress) : null;
+  if (ipHash) {
+    await enforceFormIPRateLimit(door.id, ipHash);
+  }
+
+  if (normalizedSenderEmail) {
+    await enforceFormSenderRateLimit(door.id, normalizedSenderEmail);
+  }
+
   if (door.plan === DoorPlan.FREE) {
     await enforceDoorWeeklyCap(door.id, door.settings?.weeklyRequestCap);
     await enforceCategoryWeeklyCap(category.id, category.weeklyCap);
@@ -283,7 +383,8 @@ export async function createFormRequest(input: unknown) {
       source: RequestSource.FORM,
       status: RequestStatus.PENDING,
       senderName: normalizeOptional(payload.senderName),
-      senderEmail: normalizeOptional(payload.senderEmail),
+      senderEmail: normalizedSenderEmail,
+      ipHash,
       title: normalizeOptional(payload.title),
       message: payload.message,
       structuredData: sanitizedFields,
@@ -345,6 +446,9 @@ export async function createEmailRequest(input: unknown) {
 
   const senderEmail = extractEmailAddress(payload.from);
   const senderName = extractSenderName(payload.from);
+
+  // Abuse controls: blocklist first, then rate limits
+  await enforceBlocklist(emailAlias.door.id, senderEmail);
 
   if (emailAlias.door.plan === DoorPlan.FREE) {
     await enforceDoorWeeklyCap(emailAlias.door.id, emailAlias.door.settings?.weeklyRequestCap);
@@ -795,6 +899,104 @@ export async function updateCategoryFieldForKeeper(userId: string, input: unknow
     where: { id: field.id },
     data: {
       required: payload.required
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Blocklist management (keeper-facing)
+// ---------------------------------------------------------------------------
+
+const addBlockedSenderSchema = z.object({
+  doorSlug: z.string().trim().min(1),
+  email: z.string().trim().email(),
+  reason: z.string().trim().max(500).optional()
+});
+
+const removeBlockedSenderSchema = z.object({
+  doorSlug: z.string().trim().min(1),
+  email: z.string().trim().email()
+});
+
+export async function addBlockedSenderForKeeper(userId: string, input: unknown) {
+  const payload = addBlockedSenderSchema.parse(input);
+
+  const door = await db.door.findFirst({
+    where: { slug: payload.doorSlug, userId },
+    select: { id: true }
+  });
+
+  if (!door) {
+    throw new DirectValidationError('Door not found');
+  }
+
+  const email = payload.email.toLowerCase();
+
+  const existing = await db.doorBlockedSender.findUnique({
+    where: { doorId_email: { doorId: door.id, email } },
+    select: { id: true }
+  });
+
+  if (existing) {
+    return { added: false, email };
+  }
+
+  await db.doorBlockedSender.create({
+    data: {
+      doorId: door.id,
+      email,
+      reason: normalizeOptional(payload.reason)
+    }
+  });
+
+  return { added: true, email };
+}
+
+export async function removeBlockedSenderForKeeper(userId: string, input: unknown) {
+  const payload = removeBlockedSenderSchema.parse(input);
+
+  const door = await db.door.findFirst({
+    where: { slug: payload.doorSlug, userId },
+    select: { id: true }
+  });
+
+  if (!door) {
+    throw new DirectValidationError('Door not found');
+  }
+
+  const email = payload.email.toLowerCase();
+
+  const existing = await db.doorBlockedSender.findUnique({
+    where: { doorId_email: { doorId: door.id, email } },
+    select: { id: true }
+  });
+
+  if (!existing) {
+    return { removed: false, email };
+  }
+
+  await db.doorBlockedSender.delete({ where: { id: existing.id } });
+
+  return { removed: true, email };
+}
+
+export async function listBlockedSendersForKeeper(userId: string, doorSlug: string) {
+  const door = await db.door.findFirst({
+    where: { slug: doorSlug, userId },
+    select: { id: true }
+  });
+
+  if (!door) {
+    throw new DirectValidationError('Door not found');
+  }
+
+  return db.doorBlockedSender.findMany({
+    where: { doorId: door.id },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      email: true,
+      reason: true,
+      createdAt: true
     }
   });
 }

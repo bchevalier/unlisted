@@ -1,10 +1,20 @@
 import { ZodError } from 'zod';
 import { createFormRequest, DirectValidationError } from '../../../../features/direct/server/requests';
 
+function extractClientIP(request: Request): string | null {
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    return forwarded.split(',')[0]?.trim() ?? null;
+  }
+
+  return request.headers.get('x-real-ip')?.trim() || null;
+}
+
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
-    const created = await createFormRequest(payload);
+    const ipAddress = extractClientIP(request);
+    const created = await createFormRequest(payload, { ipAddress });
 
     return Response.json({ ok: true, request: created }, { status: 201 });
   } catch (error) {
@@ -13,7 +23,7 @@ export async function POST(request: Request) {
     }
 
     if (error instanceof DirectValidationError) {
-      return Response.json({ ok: false, error: error.message }, { status: 400 });
+      return Response.json({ ok: false, error: error.message }, { status: error.statusCode });
     }
 
     console.error(error);
