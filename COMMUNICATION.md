@@ -24,6 +24,19 @@ Every external message should reinforce the same core story:
 
 ---
 
+## Message stack (by format)
+
+### 1) One-liner
+**Knokio makes you reachable without making you searchable.**
+
+### 2) 30-second pitch
+Knokio is a consent-based coordination layer. Knokio Direct filters inbound so people protect attention and reduce noise. Knokio Reach helps find and reach the right human or AI agent in one intentional step. Privacy is default: no public profile browsing, no automatic contact exposure.
+
+### 3) 2-minute pitch
+Most outreach channels maximize volume, not quality. Knokio flips that model. With Knokio Direct, inbound is structured, filtered, and policy-based, so users stay reachable without inbox chaos. With Knokio Reach, coordination distance collapses: the right requester can reach the right human or AI agent through a clear, auditable, one-hop request path. The privacy layer is non-negotiable: users are reachable without being publicly searchable, and private contact details are revealed only through consented workflow states.
+
+---
+
 ## Message hierarchy
 
 ### Primary promise
@@ -65,6 +78,59 @@ Every external message should reinforce the same core story:
 
 ---
 
+## Punchline bank (approved)
+
+1. **Reachable without searchable.**
+2. **Protect attention. Compress reach. Preserve privacy.**
+3. **The right knock opens the right door.**
+4. **From inbox chaos to intentional coordination.**
+5. **One hop to the right human.**
+6. **One hop to the right agent.**
+7. **Private by default. Reachable by design.**
+8. **No public profile browsing. No contact leakage.**
+9. **Better signal, less noise.**
+10. **Human uniqueness, AI speed, consent at the core.**
+11. **Your inbox is not a public API.**
+12. **Turn outreach volume into outcome quality.**
+13. **The 6-degrees wall is optional now.**
+14. **Don’t expose your contacts. Expose a door.**
+15. **Knokio Direct protects focus.**
+16. **Knokio Reach accelerates coordination.**
+17. **Consent is the new routing layer.**
+18. **Reach anyone, on terms that respect everyone.**
+19. **Public access is easy. Trusted access is better.**
+20. **Be available, not vulnerable.**
+
+---
+
+## Numbers for communication (evidence policy)
+
+### Rule #1 — Never fabricate proof
+Only publish numbers that are measured and timestamped.
+
+### Rule #2 — Label clearly
+- **Measured:** backed by live product data
+- **Pilot target:** internal goal, not yet validated
+- **Operating commitment:** execution plan metric
+
+### Current operating commitments (already set)
+- **3-pillar narrative:** attention, reach, privacy
+- **4 interaction flows:** H→H, H→AI, AI→H, AI→AI
+- **90-day GTM:** phased launch model
+- **Resource split:** 60–70% Direct, 20–30% Reach, 10% viral experiments
+
+### Pilot targets for proof-driven messaging (to validate)
+- **-50%** low-intent inbound per active Direct user
+- **-35%** median triage time
+- **2x** signal-to-noise ratio improvement
+- **<10%** contact-detail exposure rate on inbound flows
+- **-40%** time-to-qualified-counterparty in Reach pilots
+- **>60%** one-hop successful route rate in Reach pilots
+
+> Do not market these as achieved until measured.
+
+---
+
 ## Language rules
 
 ### Always include (where relevant)
@@ -97,16 +163,6 @@ Preferred structure for most content:
 2. Knokio mechanism in one line
 3. Measurable outcome in one line
 4. CTA
-
----
-
-## Reusable tagline options
-
-- “Protect attention. Compress reach.”
-- “From noisy outreach to intentional coordination.”
-- “Reach anyone on terms that respect everyone.”
-- “Human uniqueness, agent speed, consent by default.”
-- “Reachable without searchable.”
 
 ---
 
@@ -145,4 +201,5 @@ Before shipping any message, verify:
 - Does it preserve consent/privacy positioning?
 - Does it clearly state that profiles are not publicly browsable by default?
 - Does it highlight human uniqueness in the AI loop?
+- Are numbers tagged as measured vs pilot targets?
 - Is the CTA clear and audience-specific?
