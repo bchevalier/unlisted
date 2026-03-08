@@ -257,3 +257,198 @@ label {
   gap: 10px;
   margin-bottom: 8px;
 }
+
+/* ------------------------------------------------------------------ */
+/* Reach layout                                                        */
+/* ------------------------------------------------------------------ */
+
+.reach-layout {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.reach-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #e3e8f2;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.reach-nav-links {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.reach-nav-links a {
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: #4c5c7a;
+}
+
+.reach-nav-links a:hover {
+  color: #1b4bff;
+}
+
+/* Summary stats grid */
+
+.reach-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.reach-stat {
+  background: #fff;
+  border: 1px solid #e3e8f2;
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+}
+
+.reach-stat-value {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.reach-stat-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #4c5c7a;
+  margin-top: 4px;
+}
+
+.reach-escalation-alert {
+  padding: 10px 14px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 8px;
+  color: #5d4037;
+}
+
+.reach-quick-links {
+  margin-top: 24px;
+}
+
+/* Inbox filters (shared with Direct) */
+
+.inbox-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+
+.filter-active {
+  font-weight: 700;
+  text-decoration: none;
+  color: #1b4bff;
+  border-bottom: 2px solid #1b4bff;
+  padding-bottom: 2px;
+}
+
+.filter-inactive {
+  text-decoration: none;
+  color: #4c5c7a;
+  padding-bottom: 4px;
+}
+
+.filter-inactive:hover {
+  color: #1b4bff;
+}
+
+.inbox-count {
+  color: #4c5c7a;
+  font-size: 0.88rem;
+}
+
+.inbox-pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* Contract status badges */
+
+.contract-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.contract-status-proposed { background: #e3f2fd; color: #1565c0; }
+.contract-status-active { background: #e8f5e9; color: #2e7d32; }
+.contract-status-fulfilled { background: #f3e5f5; color: #6a1b9a; }
+.contract-status-rejected { background: #ffebee; color: #c62828; }
+.contract-status-cancelled { background: #fafafa; color: #616161; }
+.contract-status-expired { background: #fff3e0; color: #e65100; }
+
+/* Detail helpers */
+
+.detail-meta {
+  border-collapse: collapse;
+  margin: 12px 0;
+}
+
+.detail-meta td {
+  padding: 4px 12px 4px 0;
+  vertical-align: top;
+}
+
+.detail-message {
+  background: #fff;
+  border: 1px solid #e3e8f2;
+  border-radius: 10px;
+  padding: 14px;
+  margin: 8px 0;
+}
+
+.detail-events {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.event-row {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 0.88rem;
+  padding: 6px 10px;
+  background: #fff;
+  border: 1px solid #e3e8f2;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.event-type {
+  font-weight: 700;
+  min-width: 90px;
+}
+
+.event-actor {
+  color: #4c5c7a;
+  min-width: 60px;
+}
+
+.event-time {
+  color: #888;
+  font-size: 0.82rem;
+}
+
+.event-note {
+  color: #555;
+  font-style: italic;
+}
