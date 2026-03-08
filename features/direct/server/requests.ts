@@ -315,8 +315,15 @@ async function enforceBlocklist(doorId: string, senderEmail: string | null | und
 // Notification helpers (fire-and-forget — never block the main flow)
 // ---------------------------------------------------------------------------
 
-function sendNewRequestNotificationToKeeper(
-  doorId: string,
+type KeeperDoorInfo = {
+  slug: string;
+  displayName: string;
+  keeperEmail: string | null;
+  notifyNewRequest: boolean;
+};
+
+function sendNewRequestNotification(
+  door: KeeperDoorInfo,
   request: {
     categoryLabel: string | null;
     senderName: string | null;
@@ -325,31 +332,21 @@ function sendNewRequestNotificationToKeeper(
     messagePreview: string;
   }
 ) {
-  // Intentionally not awaited — fire-and-forget
-  db.door.findUnique({
-    where: { id: doorId },
-    select: {
-      slug: true,
-      displayName: true,
-      user: { select: { email: true } },
-      settings: { select: { notifyNewRequest: true } }
-    }
-  }).then((door) => {
-    if (!door?.user?.email) return;
-    // Respect keeper notification preference (default true when no settings row)
-    if (door.settings && !door.settings.notifyNewRequest) return;
-    notifyKeeperNewRequest({
-      keeperEmail: door.user.email,
-      doorName: door.displayName,
-      doorSlug: door.slug,
-      categoryLabel: request.categoryLabel,
-      senderName: request.senderName,
-      senderEmail: request.senderEmail,
-      title: request.title,
-      messagePreview: request.messagePreview
-    });
+  if (!door.keeperEmail) return;
+  // Respect keeper notification preference
+  if (!door.notifyNewRequest) return;
+
+  notifyKeeperNewRequest({
+    keeperEmail: door.keeperEmail,
+    doorName: door.displayName,
+    doorSlug: door.slug,
+    categoryLabel: request.categoryLabel,
+    senderName: request.senderName,
+    senderEmail: request.senderEmail,
+    title: request.title,
+    messagePreview: request.messagePreview
   }).catch((err) => {
-    console.error('[notification:new-request-lookup-failed]', err);
+    console.error('[notification:new-request-failed]', err);
   });
 }
 
@@ -374,10 +371,13 @@ export async function createFormRequest(
     where: { slug: payload.doorSlug },
     select: {
       id: true,
+      slug: true,
+      displayName: true,
       isEnabled: true,
       plan: true,
+      user: { select: { email: true } },
       settings: {
-        select: { weeklyRequestCap: true }
+        select: { weeklyRequestCap: true, notifyNewRequest: true }
       },
       categories: {
         where: { key: payload.categoryKey, isEnabled: true },
@@ -470,13 +470,21 @@ export async function createFormRequest(
   });
 
   // Fire-and-forget: notify keeper of new request
-  sendNewRequestNotificationToKeeper(door.id, {
-    categoryLabel: category.key,
-    senderName: normalizeOptional(payload.senderName),
-    senderEmail: normalizedSenderEmail,
-    title: normalizeOptional(payload.title),
-    messagePreview: payload.message
-  });
+  sendNewRequestNotification(
+    {
+      slug: door.slug,
+      displayName: door.displayName,
+      keeperEmail: door.user?.email ?? null,
+      notifyNewRequest: door.settings?.notifyNewRequest ?? true
+    },
+    {
+      categoryLabel: category.key,
+      senderName: normalizeOptional(payload.senderName),
+      senderEmail: normalizedSenderEmail,
+      title: normalizeOptional(payload.title),
+      messagePreview: payload.message
+    }
+  );
 
   return created;
 }
@@ -523,11 +531,13 @@ export async function createEmailRequest(input: unknown) {
           isEnabled: true,
           plan: true,
           displayName: true,
+          user: { select: { email: true } },
           settings: {
             select: {
               weeklyRequestCap: true,
               autoReplyEnabled: true,
-              autoReplyMessage: true
+              autoReplyMessage: true,
+              notifyNewRequest: true
             }
           },
           categories: {
@@ -633,13 +643,21 @@ export async function createEmailRequest(input: unknown) {
     });
   } else {
     // Fire-and-forget: notify keeper of new email request
-    sendNewRequestNotificationToKeeper(emailAlias.door.id, {
-      categoryLabel: null,
-      senderName,
-      senderEmail,
-      title: normalizedTitle,
-      messagePreview: cleanedMessage
-    });
+    sendNewRequestNotification(
+      {
+        slug: emailAlias.door.slug,
+        displayName: emailAlias.door.displayName,
+        keeperEmail: emailAlias.door.user?.email ?? null,
+        notifyNewRequest: emailAlias.door.settings?.notifyNewRequest ?? true
+      },
+      {
+        categoryLabel: null,
+        senderName,
+        senderEmail,
+        title: normalizedTitle,
+        messagePreview: cleanedMessage
+      }
+    );
 
     // Fire-and-forget: send auto-reply to sender if enabled
     if (emailAlias.door.settings?.autoReplyEnabled && senderEmail) {
@@ -795,11 +813,14 @@ export async function completeEmailRequest(
       structuredData: true,
       door: {
         select: {
+          slug: true,
           displayName: true,
+          user: { select: { email: true } },
           settings: {
             select: {
               autoReplyEnabled: true,
-              autoReplyMessage: true
+              autoReplyMessage: true,
+              notifyNewRequest: true
             }
           },
           categories: {
@@ -893,13 +914,21 @@ export async function completeEmailRequest(
   });
 
   // Fire-and-forget: notify keeper of new request
-  sendNewRequestNotificationToKeeper(request.doorId, {
-    categoryLabel: category.key,
-    senderName: completed.senderName,
-    senderEmail: completed.senderEmail,
-    title: completed.title,
-    messagePreview: completed.message
-  });
+  sendNewRequestNotification(
+    {
+      slug: request.door.slug,
+      displayName: request.door.displayName,
+      keeperEmail: request.door.user?.email ?? null,
+      notifyNewRequest: request.door.settings?.notifyNewRequest ?? true
+    },
+    {
+      categoryLabel: category.key,
+      senderName: completed.senderName,
+      senderEmail: completed.senderEmail,
+      title: completed.title,
+      messagePreview: completed.message
+    }
+  );
 
   // Fire-and-forget: send auto-reply to knocker if enabled
   if (request.door.settings?.autoReplyEnabled && request.senderEmail) {

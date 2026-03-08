@@ -5,6 +5,9 @@
  * aggregates pending request counts and recent senders, then sends
  * a single summary email per door. Updates `lastDigestSentAt` to
  * prevent duplicate sends.
+ *
+ * Optimized to batch count queries across doors instead of running
+ * individual count queries per door (avoids N+1 pattern).
  */
 
 import { RequestStatus } from '@prisma/client';
@@ -44,67 +47,92 @@ export async function sendDigestNotifications(options?: { batchSize?: number }) 
     return { sent: 0, skipped: 0 };
   }
 
-  let sent = 0;
-  let skipped = 0;
+  // Filter to doors with valid keeper emails
+  const eligibleDoors = doors.filter((d) => d.user?.email);
+  if (eligibleDoors.length === 0) {
+    return { sent: 0, skipped: doors.length };
+  }
 
-  for (const door of doors) {
-    if (!door.user?.email) {
-      skipped++;
-      continue;
-    }
+  const doorIds = eligibleDoors.map((d) => d.id);
 
-    const since = door.settings?.lastDigestSentAt ?? new Date(0);
+  // Batch query: pending counts per door (single query instead of N)
+  const pendingCounts = await db.request.groupBy({
+    by: ['doorId'],
+    where: {
+      doorId: { in: doorIds },
+      status: RequestStatus.PENDING
+    },
+    _count: { id: true }
+  });
+  const pendingByDoor = new Map(pendingCounts.map((r) => [r.doorId, r._count.id]));
 
-    // Count new requests since last digest
-    const newCount = await db.request.count({
-      where: {
-        doorId: door.id,
-        createdAt: { gt: since }
+  // Batch query: new request counts per door since their respective lastDigestSentAt
+  // We need per-door cutoff dates, so use a raw query for efficiency
+  const oldestSince = eligibleDoors.reduce((oldest, d) => {
+    const since = d.settings?.lastDigestSentAt ?? new Date(0);
+    return since < oldest ? since : oldest;
+  }, new Date());
+
+  // Get all new requests since the oldest digest timestamp, then group in JS
+  const recentRequests = await db.request.findMany({
+    where: {
+      doorId: { in: doorIds },
+      createdAt: { gt: oldestSince }
+    },
+    select: {
+      doorId: true,
+      createdAt: true,
+      senderName: true,
+      senderEmail: true
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+
+  // Build per-door new counts and sample senders
+  const doorSinceMap = new Map(
+    eligibleDoors.map((d) => [d.id, d.settings?.lastDigestSentAt ?? new Date(0)])
+  );
+
+  const newCountByDoor = new Map<string, number>();
+  const sendersByDoor = new Map<string, string[]>();
+
+  for (const req of recentRequests) {
+    const since = doorSinceMap.get(req.doorId);
+    if (!since || req.createdAt <= since) continue;
+
+    newCountByDoor.set(req.doorId, (newCountByDoor.get(req.doorId) ?? 0) + 1);
+
+    const senderName = req.senderName ?? req.senderEmail;
+    if (senderName) {
+      const existing = sendersByDoor.get(req.doorId) ?? [];
+      if (existing.length < DIGEST_SAMPLE_SENDERS) {
+        existing.push(senderName);
+        sendersByDoor.set(req.doorId, existing);
       }
-    });
+    }
+  }
 
-    // Skip if nothing new
+  let sent = 0;
+  let skipped = doors.length - eligibleDoors.length; // already skipped doors without email
+
+  for (const door of eligibleDoors) {
+    const newCount = newCountByDoor.get(door.id) ?? 0;
     if (newCount === 0) {
       skipped++;
       continue;
     }
 
-    // Total pending count
-    const pendingCount = await db.request.count({
-      where: {
-        doorId: door.id,
-        status: RequestStatus.PENDING
-      }
-    });
-
-    // Skip if no pending requests (all may have been handled already)
+    const pendingCount = pendingByDoor.get(door.id) ?? 0;
     if (pendingCount === 0) {
       skipped++;
       continue;
     }
 
-    // Sample recent senders for context
-    const recentRequests = await db.request.findMany({
-      where: {
-        doorId: door.id,
-        createdAt: { gt: since },
-        senderName: { not: null }
-      },
-      orderBy: { createdAt: 'desc' },
-      take: DIGEST_SAMPLE_SENDERS,
-      select: {
-        senderName: true,
-        senderEmail: true
-      }
-    });
-
-    const sampleSenders = recentRequests
-      .map((r) => r.senderName ?? r.senderEmail)
-      .filter((name): name is string => name !== null);
+    const sampleSenders = sendersByDoor.get(door.id) ?? [];
 
     try {
       await notifyKeeperDigest({
-        keeperEmail: door.user.email,
+        keeperEmail: door.user!.email,
         doorName: door.displayName,
         doorSlug: door.slug,
         pendingCount,

@@ -15,6 +15,7 @@ type EmailPayload = {
   subject: string;
   text: string;
   html?: string;
+  headers?: Record<string, string>;
 };
 
 function notificationFrom(): string {
@@ -46,7 +47,8 @@ async function sendEmail(payload: EmailPayload): Promise<boolean> {
       to: [payload.to],
       subject: payload.subject,
       text: payload.text,
-      html: payload.html
+      html: payload.html,
+      ...(payload.headers && { headers: payload.headers })
     })
   });
 
@@ -85,6 +87,19 @@ function escapeHtml(text: string): string {
 function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength).trimEnd() + '…';
+}
+
+/**
+ * Build List-Unsubscribe headers for keeper notification emails.
+ * Points to the keeper's settings page where they can toggle preferences.
+ * Follows RFC 2369 (List-Unsubscribe) and RFC 8058 (List-Unsubscribe-Post).
+ */
+function keeperUnsubscribeHeaders(doorSlug: string): Record<string, string> {
+  const settingsUrl = `${appUrl()}/direct/settings?slug=${encodeURIComponent(doorSlug)}`;
+  return {
+    'List-Unsubscribe': `<${settingsUrl}>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -140,7 +155,13 @@ export async function notifyKeeperNewRequest(input: NewRequestNotification): Pro
   <p style="margin-top: 24px; color: #999; font-size: 13px;">— Knokio</p>
 </div>`.trim();
 
-  await safeSend({ to: input.keeperEmail, subject, text, html });
+  await safeSend({
+    to: input.keeperEmail,
+    subject,
+    text,
+    html,
+    headers: keeperUnsubscribeHeaders(input.doorSlug)
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -333,7 +354,13 @@ export async function notifyKeeperDigest(input: DigestNotification): Promise<voi
   <p style="margin-top: 24px; color: #999; font-size: 13px;">— Knokio</p>
 </div>`.trim();
 
-  await safeSend({ to: input.keeperEmail, subject, text, html });
+  await safeSend({
+    to: input.keeperEmail,
+    subject,
+    text,
+    html,
+    headers: keeperUnsubscribeHeaders(input.doorSlug)
+  });
 }
 
 // ---------------------------------------------------------------------------
