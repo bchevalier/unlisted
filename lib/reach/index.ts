@@ -215,6 +215,9 @@ export {
   listDeliveries,
   dispatchWebhookEvent,
   pingWebhook,
+  retryDelivery,
+  getWebhookHealthStats,
+  getActorWebhookHealth,
   ReachWebhookCreateSchema,
   ReachWebhookUpdateSchema,
 } from './webhooks';
@@ -224,4 +227,5 @@ export type {
   ReachWebhookUpdate,
   WebhookEventPayload,
   SignedWebhookPayload,
+  WebhookHealthStats,
 } from './webhooks';

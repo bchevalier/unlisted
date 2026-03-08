@@ -7,6 +7,8 @@ type WebhookDetailActionsProps = {
   webhookId: string;
   actorHandle: string;
   isActive: boolean;
+  /** When set, renders only a retry button for this specific delivery. */
+  retryDeliveryId?: string;
 };
 
 type ActionState = 'idle' | 'loading' | 'error';
@@ -15,15 +17,73 @@ export function WebhookDetailActions({
   webhookId,
   actorHandle,
   isActive,
+  retryDeliveryId,
 }: WebhookDetailActionsProps) {
   const router = useRouter();
   const [state, setState] = useState<ActionState>('idle');
   const [error, setError] = useState<string | null>(null);
   const [rotatedSecret, setRotatedSecret] = useState<string | null>(null);
   const [pingResult, setPingResult] = useState<string | null>(null);
+  const [retryResult, setRetryResult] = useState<string | null>(null);
 
   const baseUrl = `/api/reach/actors/${actorHandle}/webhooks/${webhookId}`;
 
+  async function retryDelivery() {
+    if (!retryDeliveryId) return;
+    setState('loading');
+    setError(null);
+    setRetryResult(null);
+    try {
+      const response = await fetch(baseUrl, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ action: 'retry-delivery', deliveryId: retryDeliveryId }),
+      });
+      const data = await response.json().catch(() => ({ error: 'Unknown error' }));
+      if (!response.ok) {
+        setError(data.error ?? `Failed (HTTP ${response.status})`);
+        setState('error');
+        return;
+      }
+      setRetryResult(
+        data.retry?.success
+          ? `✓ Retry succeeded (HTTP ${data.retry.httpStatus ?? '?'})`
+          : `✗ Retry failed: ${data.retry?.error ?? 'unknown'}`,
+      );
+      setState('idle');
+      router.refresh();
+    } catch {
+      setError('Network error');
+      setState('error');
+    }
+  }
+
+  // Retry-only mode: render inline retry button for a specific delivery.
+  if (retryDeliveryId) {
+    const disabled = state === 'loading';
+    return (
+      <span style={{ display: 'inline-block', marginTop: 4 }}>
+        <button
+          onClick={retryDelivery}
+          disabled={disabled || !isActive}
+          className="policy-btn-toggle"
+          style={{ fontSize: 12, padding: '2px 8px' }}
+        >
+          {state === 'loading' ? '…' : '↻ Retry'}
+        </button>
+        {retryResult && (
+          <span style={{ marginLeft: 8, fontSize: 12, color: retryResult.startsWith('✓') ? '#2e7d32' : '#d32f2f' }}>
+            {retryResult}
+          </span>
+        )}
+        {error && (
+          <span style={{ marginLeft: 8, fontSize: 12, color: '#d32f2f' }}>{error}</span>
+        )}
+      </span>
+    );
+  }
+
+  // Full actions mode.
   async function toggleActive() {
     setState('loading');
     setError(null);
@@ -91,12 +151,12 @@ export function WebhookDetailActions({
         return;
       }
       setPingResult(
-        data.ping?.status === 'ok'
-          ? `✓ Ping successful (${data.ping.durationMs ?? '?'}ms)`
-          : `Ping returned: ${JSON.stringify(data.ping)}`,
+        data.ping?.success
+          ? `✓ Ping successful (${data.ping.latencyMs ?? '?'}ms)`
+          : `✗ Ping failed: ${data.ping?.error ?? 'unknown'}`,
       );
       setState('idle');
-      router.refresh(); // refresh delivery log
+      router.refresh();
     } catch {
       setError('Network error');
       setState('error');
@@ -143,7 +203,9 @@ export function WebhookDetailActions({
       </p>
 
       {pingResult && (
-        <p style={{ color: '#2e7d32', fontSize: 13 }}>{pingResult}</p>
+        <p style={{ color: pingResult.startsWith('✓') ? '#2e7d32' : '#d32f2f', fontSize: 13 }}>
+          {pingResult}
+        </p>
       )}
 
       {rotatedSecret && (

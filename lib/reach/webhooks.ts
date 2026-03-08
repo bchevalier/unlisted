@@ -542,6 +542,304 @@ export async function pingWebhook(webhookId: string): Promise<{
 }
 
 // ---------------------------------------------------------------------------
+// Delivery retry
+// ---------------------------------------------------------------------------
+
+/**
+ * Retry a failed webhook delivery.
+ *
+ * Loads the original delivery record and its associated webhook, then
+ * re-sends the stored payload. Creates a new delivery record for the
+ * retry attempt so both the original failure and the retry outcome are
+ * visible in the delivery log.
+ *
+ * Only deliveries with status 'failed' can be retried.
+ *
+ * @param deliveryId - the delivery to retry
+ * @returns the new delivery outcome
+ */
+export async function retryDelivery(deliveryId: string): Promise<{
+  success: boolean;
+  newDeliveryId: string;
+  httpStatus?: number;
+  error?: string;
+}> {
+  const delivery = await db.reachWebhookDelivery.findUnique({
+    where: { id: deliveryId },
+    select: {
+      id: true,
+      webhookId: true,
+      contractId: true,
+      event: true,
+      status: true,
+      payload: true,
+    },
+  });
+
+  if (!delivery) {
+    throw new ReachError('Delivery not found', 'DELIVERY_NOT_FOUND', 404);
+  }
+
+  if (delivery.status === 'success') {
+    throw new ReachError('Delivery already succeeded', 'DELIVERY_ALREADY_SUCCEEDED', 400);
+  }
+
+  const webhook = await db.reachWebhook.findUnique({
+    where: { id: delivery.webhookId },
+    select: { id: true, url: true, secretHash: true, isActive: true },
+  });
+
+  if (!webhook) {
+    throw new ReachError('Webhook no longer exists', 'WEBHOOK_NOT_FOUND', 404);
+  }
+
+  if (!webhook.isActive) {
+    throw new ReachError('Webhook is inactive', 'WEBHOOK_INACTIVE', 400);
+  }
+
+  // Build the payload from stored data (or re-fetch contract if payload is empty).
+  let body: string;
+  let signature: string | undefined;
+
+  if (delivery.payload && typeof delivery.payload === 'object' && Object.keys(delivery.payload as Record<string, unknown>).length > 0) {
+    body = JSON.stringify(delivery.payload);
+  } else {
+    // Rebuild payload from contract.
+    const contract = await db.reachContract.findUnique({
+      where: { id: delivery.contractId },
+      include: {
+        initiator: { select: { handle: true, displayName: true, type: true } },
+        target: { select: { handle: true, displayName: true, type: true } },
+        events: { where: { type: delivery.event }, orderBy: { createdAt: 'desc' }, take: 1 },
+      },
+    });
+
+    if (!contract) {
+      throw new ReachError('Contract no longer exists', 'CONTRACT_NOT_FOUND', 404);
+    }
+
+    const latestEvent = contract.events[0];
+    const payload: WebhookEventPayload = {
+      event: `contract.${delivery.event.toLowerCase()}`,
+      contractId: contract.id,
+      contractType: contract.type,
+      contractStatus: contract.status,
+      purpose: contract.purpose,
+      message: contract.message,
+      initiator: {
+        handle: contract.initiator.handle,
+        displayName: contract.initiator.displayName,
+        type: contract.initiator.type,
+      },
+      target: {
+        handle: contract.target.handle,
+        displayName: contract.target.displayName,
+        type: contract.target.type,
+      },
+      eventType: delivery.event as ReachContractEventType,
+      eventActor: latestEvent?.actor ?? 'SYSTEM',
+      eventNote: latestEvent?.note ?? null,
+      timestamp: new Date().toISOString(),
+    };
+
+    body = JSON.stringify(payload);
+  }
+
+  // Sign.
+  if (webhook.secretHash) {
+    signature = crypto
+      .createHmac('sha256', webhook.secretHash)
+      .update(body)
+      .digest('hex');
+  }
+
+  // Create a new delivery record for the retry.
+  const retryDelivery = await db.reachWebhookDelivery.create({
+    data: {
+      webhookId: webhook.id,
+      contractId: delivery.contractId,
+      event: delivery.event,
+      status: 'pending',
+      attempts: 0,
+      payload: delivery.payload ?? ({} as Parameters<typeof db.reachWebhookDelivery.create>[0]['data']['payload']),
+    },
+  });
+
+  let lastError: string | undefined;
+  let lastStatus: number | undefined;
+  let success = false;
+  let actualAttempts = 0;
+
+  for (let attempt = 0; attempt <= WEBHOOK_MAX_RETRIES; attempt++) {
+    actualAttempts = attempt + 1;
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), WEBHOOK_TIMEOUT_MS);
+
+      const response = await fetch(webhook.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'Knokio-Reach/1.0',
+          'X-Knokio-Event': delivery.event.toLowerCase(),
+          'X-Knokio-Webhook-Id': webhook.id,
+          'X-Knokio-Delivery-Id': retryDelivery.id,
+          'X-Knokio-Retry-Of': deliveryId,
+          ...(signature ? { 'X-Knokio-Signature': signature } : {}),
+        },
+        body,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeout);
+      lastStatus = response.status;
+
+      if (response.ok) {
+        success = true;
+        break;
+      }
+
+      if (response.status >= 400 && response.status < 500) {
+        const responseBody = await response.text().catch(() => '');
+        lastError = `HTTP ${response.status}: ${responseBody.slice(0, 200)}`;
+        break;
+      }
+
+      lastError = `HTTP ${response.status}`;
+    } catch (err) {
+      lastError = err instanceof Error ? err.message : String(err);
+    }
+
+    if (attempt < WEBHOOK_MAX_RETRIES) {
+      await sleep(WEBHOOK_RETRY_DELAY_MS * (attempt + 1));
+    }
+  }
+
+  // Update the retry delivery record.
+  await db.reachWebhookDelivery.update({
+    where: { id: retryDelivery.id },
+    data: {
+      status: success ? 'success' : 'failed',
+      httpStatus: lastStatus ?? null,
+      attempts: actualAttempts,
+      lastError: success ? null : (lastError ?? null),
+      deliveredAt: success ? new Date() : null,
+    },
+  }).catch((err) => {
+    console.error('[reach:webhooks:retry:update]', err);
+  });
+
+  return {
+    success,
+    newDeliveryId: retryDelivery.id,
+    httpStatus: lastStatus,
+    error: success ? undefined : lastError,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Webhook health stats
+// ---------------------------------------------------------------------------
+
+export interface WebhookHealthStats {
+  webhookId: string;
+  totalDeliveries: number;
+  successCount: number;
+  failedCount: number;
+  pendingCount: number;
+  successRate: number; // 0–1
+  lastDeliveryAt: string | null;
+  lastSuccessAt: string | null;
+  lastFailureAt: string | null;
+  avgAttempts: number;
+}
+
+/**
+ * Compute delivery health statistics for a webhook.
+ *
+ * Queries all delivery records within the given window (default 7 days)
+ * and returns aggregate success/failure metrics.
+ */
+export async function getWebhookHealthStats(
+  webhookId: string,
+  windowDays = 7,
+): Promise<WebhookHealthStats> {
+  const since = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000);
+
+  const deliveries = await db.reachWebhookDelivery.findMany({
+    where: {
+      webhookId,
+      createdAt: { gte: since },
+    },
+    select: {
+      status: true,
+      attempts: true,
+      deliveredAt: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  let successCount = 0;
+  let failedCount = 0;
+  let pendingCount = 0;
+  let totalAttempts = 0;
+  let lastSuccessAt: Date | null = null;
+  let lastFailureAt: Date | null = null;
+
+  for (const d of deliveries) {
+    totalAttempts += d.attempts;
+
+    if (d.status === 'success') {
+      successCount++;
+      if (!lastSuccessAt || d.createdAt > lastSuccessAt) {
+        lastSuccessAt = d.deliveredAt ?? d.createdAt;
+      }
+    } else if (d.status === 'failed') {
+      failedCount++;
+      if (!lastFailureAt || d.createdAt > lastFailureAt) {
+        lastFailureAt = d.createdAt;
+      }
+    } else {
+      pendingCount++;
+    }
+  }
+
+  const total = deliveries.length;
+  const completed = successCount + failedCount;
+
+  return {
+    webhookId,
+    totalDeliveries: total,
+    successCount,
+    failedCount,
+    pendingCount,
+    successRate: completed > 0 ? successCount / completed : 0,
+    lastDeliveryAt: deliveries[0]?.createdAt.toISOString() ?? null,
+    lastSuccessAt: lastSuccessAt?.toISOString() ?? null,
+    lastFailureAt: lastFailureAt?.toISOString() ?? null,
+    avgAttempts: total > 0 ? totalAttempts / total : 0,
+  };
+}
+
+/**
+ * Compute aggregate health for all webhooks belonging to an actor.
+ */
+export async function getActorWebhookHealth(
+  actorId: string,
+  windowDays = 7,
+): Promise<WebhookHealthStats[]> {
+  const webhooks = await db.reachWebhook.findMany({
+    where: { actorId },
+    select: { id: true },
+  });
+
+  return Promise.all(
+    webhooks.map((wh) => getWebhookHealthStats(wh.id, windowDays)),
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 

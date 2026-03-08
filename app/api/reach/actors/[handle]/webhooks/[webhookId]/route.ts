@@ -25,6 +25,8 @@ import {
   rotateWebhookSecret,
   listDeliveries,
   pingWebhook,
+  retryDelivery,
+  getWebhookHealthStats,
   ReachWebhookUpdateSchema,
 } from '../../../../../../../lib/reach/webhooks';
 
@@ -79,6 +81,13 @@ export async function GET(
 
   try {
     const url = new URL(request.url);
+
+    // ?health=true to include delivery health stats.
+    if (url.searchParams.get('health') === 'true') {
+      const windowDays = Math.min(parseInt(url.searchParams.get('windowDays') || '7', 10), 90);
+      const health = await getWebhookHealthStats(resolved.webhookId, windowDays);
+      return Response.json({ ok: true, webhook: resolved.webhook, health });
+    }
 
     // ?deliveries=true to include recent delivery logs.
     if (url.searchParams.get('deliveries') === 'true') {
@@ -168,8 +177,20 @@ export async function POST(
       return Response.json({ ok: true, ping: result });
     }
 
+    if (action === 'retry-delivery') {
+      const deliveryId = (body as Record<string, unknown>).deliveryId;
+      if (typeof deliveryId !== 'string' || !deliveryId) {
+        return Response.json(
+          { ok: false, error: 'deliveryId is required' },
+          { status: 400 },
+        );
+      }
+      const result = await retryDelivery(deliveryId);
+      return Response.json({ ok: true, retry: result });
+    }
+
     return Response.json(
-      { ok: false, error: 'Unknown action. Supported: rotate-secret, ping' },
+      { ok: false, error: 'Unknown action. Supported: rotate-secret, ping, retry-delivery' },
       { status: 400 },
     );
   } catch (error) {

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireReachSession } from '../../../../../features/reach/server/session';
 import { db } from '../../../../../lib/db';
+import { getWebhookHealthStats } from '../../../../../lib/reach/webhooks';
 import { WebhookDetailActions } from './webhook-detail-actions';
 
 type WebhookDetailPageProps = {
@@ -35,24 +36,30 @@ export default async function WebhookDetailPage({ params }: WebhookDetailPagePro
     );
   }
 
-  // Fetch recent deliveries.
-  const deliveries = await db.reachWebhookDelivery.findMany({
-    where: { webhookId },
-    orderBy: { createdAt: 'desc' },
-    take: 20,
-    select: {
-      id: true,
-      event: true,
-      httpStatus: true,
-      status: true,
-      attempts: true,
-      lastError: true,
-      deliveredAt: true,
-      createdAt: true,
-    },
-  });
+  // Fetch health stats and recent deliveries in parallel.
+  const [health, deliveries] = await Promise.all([
+    getWebhookHealthStats(webhookId, 7),
+    db.reachWebhookDelivery.findMany({
+      where: { webhookId },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+      select: {
+        id: true,
+        event: true,
+        httpStatus: true,
+        status: true,
+        attempts: true,
+        lastError: true,
+        deliveredAt: true,
+        createdAt: true,
+      },
+    }),
+  ]);
 
   const events = webhook.events as string[];
+  const successPct = health.totalDeliveries > 0
+    ? `${(health.successRate * 100).toFixed(1)}%`
+    : '—';
 
   return (
     <main>
@@ -93,6 +100,45 @@ export default async function WebhookDetailPage({ params }: WebhookDetailPagePro
         </tbody>
       </table>
 
+      {health.totalDeliveries > 0 && (
+        <section style={{ margin: '16px 0' }}>
+          <h2>Health (last 7 days)</h2>
+          <table className="detail-meta">
+            <tbody>
+              <tr>
+                <td><strong>Success rate</strong></td>
+                <td>
+                  <span style={{ color: health.successRate >= 0.9 ? '#2e7d32' : health.successRate >= 0.5 ? '#e65100' : '#d32f2f' }}>
+                    {successPct}
+                  </span>
+                  {' '}({health.successCount}/{health.successCount + health.failedCount} deliveries)
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Total deliveries</strong></td>
+                <td>{health.totalDeliveries}{health.pendingCount > 0 ? ` (${health.pendingCount} pending)` : ''}</td>
+              </tr>
+              <tr>
+                <td><strong>Avg attempts</strong></td>
+                <td>{health.avgAttempts.toFixed(1)}</td>
+              </tr>
+              {health.lastSuccessAt && (
+                <tr>
+                  <td><strong>Last success</strong></td>
+                  <td>{new Date(health.lastSuccessAt).toLocaleString()}</td>
+                </tr>
+              )}
+              {health.lastFailureAt && (
+                <tr>
+                  <td><strong>Last failure</strong></td>
+                  <td style={{ color: '#d32f2f' }}>{new Date(health.lastFailureAt).toLocaleString()}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </section>
+      )}
+
       <WebhookDetailActions
         webhookId={webhook.id}
         actorHandle={session.actorHandle}
@@ -106,13 +152,14 @@ export default async function WebhookDetailPage({ params }: WebhookDetailPagePro
         ) : (
           <div className="inbox-list">
             {deliveries.map((delivery) => {
-              const isSuccess = delivery.status === 'DELIVERED';
+              const isSuccess = delivery.status === 'success';
+              const isFailed = delivery.status === 'failed';
               return (
                 <article key={delivery.id} className="inbox-card">
                   <header>
                     <p>
                       <span
-                        className={`contract-status contract-status-${isSuccess ? 'fulfilled' : 'rejected'}`}
+                        className={`contract-status contract-status-${isSuccess ? 'fulfilled' : isFailed ? 'rejected' : 'proposed'}`}
                       >
                         {delivery.status}
                       </span>
@@ -130,6 +177,14 @@ export default async function WebhookDetailPage({ params }: WebhookDetailPagePro
                     <p style={{ color: '#d32f2f', fontSize: 13 }}>
                       {delivery.lastError}
                     </p>
+                  )}
+                  {isFailed && (
+                    <WebhookDetailActions
+                      webhookId={webhook.id}
+                      actorHandle={session.actorHandle}
+                      isActive={webhook.isActive}
+                      retryDeliveryId={delivery.id}
+                    />
                   )}
                 </article>
               );

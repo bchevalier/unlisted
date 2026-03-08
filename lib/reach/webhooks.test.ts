@@ -17,6 +17,7 @@ const mockFns = vi.hoisted(() => ({
     create: vi.fn(),
     update: vi.fn(),
     findMany: vi.fn(),
+    findUnique: vi.fn(),
   },
   reachActor: {
     findUnique: vi.fn(),
@@ -38,6 +39,8 @@ import {
   dispatchWebhookEvent,
   listDeliveries,
   pingWebhook,
+  retryDelivery,
+  getWebhookHealthStats,
 } from './webhooks';
 
 // ---------------------------------------------------------------------------
@@ -450,5 +453,241 @@ describe('listDeliveries', () => {
         skip: 0,
       }),
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: Delivery retry
+// ---------------------------------------------------------------------------
+
+describe('retryDelivery', () => {
+  let originalFetch: typeof globalThis.fetch;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    originalFetch = globalThis.fetch;
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  it('retries a failed delivery and succeeds', async () => {
+    mockFns.reachWebhookDelivery.findUnique.mockResolvedValue({
+      id: 'del-1',
+      webhookId: 'wh-1',
+      contractId: 'contract-1',
+      event: 'ACCEPTED',
+      status: 'failed',
+      payload: { event: 'contract.accepted', contractId: 'contract-1' },
+    });
+
+    mockFns.reachWebhook.findUnique.mockResolvedValue({
+      id: 'wh-1',
+      url: 'https://example.com/hook',
+      secretHash: null,
+      isActive: true,
+    });
+
+    mockFns.reachWebhookDelivery.create.mockResolvedValue({ id: 'del-retry-1' });
+    mockFns.reachWebhookDelivery.update.mockResolvedValue({});
+
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+    }) as unknown as typeof fetch;
+
+    const result = await retryDelivery('del-1');
+
+    expect(result.success).toBe(true);
+    expect(result.newDeliveryId).toBe('del-retry-1');
+    expect(result.httpStatus).toBe(200);
+    expect(globalThis.fetch).toHaveBeenCalledOnce();
+
+    // Verify retry header is sent.
+    const fetchCall = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(fetchCall[1].headers['X-Knokio-Retry-Of']).toBe('del-1');
+  });
+
+  it('rejects when delivery not found', async () => {
+    mockFns.reachWebhookDelivery.findUnique.mockResolvedValue(null);
+
+    await expect(retryDelivery('missing')).rejects.toThrow('Delivery not found');
+  });
+
+  it('rejects when delivery already succeeded', async () => {
+    mockFns.reachWebhookDelivery.findUnique.mockResolvedValue({
+      id: 'del-1',
+      webhookId: 'wh-1',
+      contractId: 'contract-1',
+      event: 'ACCEPTED',
+      status: 'success',
+      payload: {},
+    });
+
+    await expect(retryDelivery('del-1')).rejects.toThrow('already succeeded');
+  });
+
+  it('rejects when webhook is inactive', async () => {
+    mockFns.reachWebhookDelivery.findUnique.mockResolvedValue({
+      id: 'del-1',
+      webhookId: 'wh-1',
+      contractId: 'contract-1',
+      event: 'ACCEPTED',
+      status: 'failed',
+      payload: {},
+    });
+
+    mockFns.reachWebhook.findUnique.mockResolvedValue({
+      id: 'wh-1',
+      url: 'https://example.com/hook',
+      secretHash: null,
+      isActive: false,
+    });
+
+    await expect(retryDelivery('del-1')).rejects.toThrow('inactive');
+  });
+
+  it('rebuilds payload from contract when stored payload is empty', async () => {
+    mockFns.reachWebhookDelivery.findUnique.mockResolvedValue({
+      id: 'del-1',
+      webhookId: 'wh-1',
+      contractId: 'contract-1',
+      event: 'ACCEPTED',
+      status: 'failed',
+      payload: {},
+    });
+
+    mockFns.reachWebhook.findUnique.mockResolvedValue({
+      id: 'wh-1',
+      url: 'https://example.com/hook',
+      secretHash: null,
+      isActive: true,
+    });
+
+    mockFns.reachContract.findUnique.mockResolvedValue({
+      id: 'contract-1',
+      type: 'HUMAN_HUMAN',
+      status: 'ACTIVE',
+      purpose: 'Test',
+      message: null,
+      initiator: { handle: 'alice', displayName: 'Alice', type: 'HUMAN' },
+      target: { handle: 'bob', displayName: 'Bob', type: 'HUMAN' },
+      events: [{ type: 'ACCEPTED', actor: 'TARGET', note: null }],
+    });
+
+    mockFns.reachWebhookDelivery.create.mockResolvedValue({ id: 'del-retry-1' });
+    mockFns.reachWebhookDelivery.update.mockResolvedValue({});
+
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+    }) as unknown as typeof fetch;
+
+    const result = await retryDelivery('del-1');
+    expect(result.success).toBe(true);
+
+    // Payload should have been rebuilt from contract.
+    const fetchCall = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+    const body = JSON.parse(fetchCall[1].body);
+    expect(body.contractId).toBe('contract-1');
+    expect(body.event).toBe('contract.accepted');
+  });
+
+  it('records failure on retry when endpoint returns 500', async () => {
+    mockFns.reachWebhookDelivery.findUnique.mockResolvedValue({
+      id: 'del-1',
+      webhookId: 'wh-1',
+      contractId: 'contract-1',
+      event: 'CREATED',
+      status: 'failed',
+      payload: { event: 'contract.created', contractId: 'contract-1' },
+    });
+
+    mockFns.reachWebhook.findUnique.mockResolvedValue({
+      id: 'wh-1',
+      url: 'https://example.com/hook',
+      secretHash: null,
+      isActive: true,
+    });
+
+    mockFns.reachWebhookDelivery.create.mockResolvedValue({ id: 'del-retry-1' });
+    mockFns.reachWebhookDelivery.update.mockResolvedValue({});
+
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 502,
+    }) as unknown as typeof fetch;
+
+    const result = await retryDelivery('del-1');
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('502');
+
+    // Delivery record should be updated as failed.
+    expect(mockFns.reachWebhookDelivery.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: 'failed' }),
+      }),
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: Webhook health stats
+// ---------------------------------------------------------------------------
+
+describe('getWebhookHealthStats', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('computes correct stats from delivery records', async () => {
+    const now = new Date();
+    const recent = new Date(now.getTime() - 1000 * 60 * 60); // 1 hour ago
+
+    mockFns.reachWebhookDelivery.findMany.mockResolvedValue([
+      { status: 'success', attempts: 1, deliveredAt: recent, createdAt: recent },
+      { status: 'success', attempts: 1, deliveredAt: recent, createdAt: recent },
+      { status: 'failed', attempts: 3, deliveredAt: null, createdAt: recent },
+      { status: 'success', attempts: 2, deliveredAt: recent, createdAt: recent },
+      { status: 'pending', attempts: 0, deliveredAt: null, createdAt: now },
+    ]);
+
+    const stats = await getWebhookHealthStats('wh-1', 7);
+
+    expect(stats.webhookId).toBe('wh-1');
+    expect(stats.totalDeliveries).toBe(5);
+    expect(stats.successCount).toBe(3);
+    expect(stats.failedCount).toBe(1);
+    expect(stats.pendingCount).toBe(1);
+    expect(stats.successRate).toBe(0.75); // 3 / (3+1)
+    expect(stats.avgAttempts).toBe(7 / 5); // (1+1+3+2+0) / 5
+    expect(stats.lastDeliveryAt).toBeTruthy();
+    expect(stats.lastSuccessAt).toBeTruthy();
+    expect(stats.lastFailureAt).toBeTruthy();
+  });
+
+  it('returns zero stats when no deliveries exist', async () => {
+    mockFns.reachWebhookDelivery.findMany.mockResolvedValue([]);
+
+    const stats = await getWebhookHealthStats('wh-1');
+
+    expect(stats.totalDeliveries).toBe(0);
+    expect(stats.successCount).toBe(0);
+    expect(stats.failedCount).toBe(0);
+    expect(stats.successRate).toBe(0);
+    expect(stats.lastDeliveryAt).toBeNull();
+    expect(stats.lastSuccessAt).toBeNull();
+    expect(stats.lastFailureAt).toBeNull();
+  });
+
+  it('returns 100% success rate when all deliveries succeed', async () => {
+    const recent = new Date();
+    mockFns.reachWebhookDelivery.findMany.mockResolvedValue([
+      { status: 'success', attempts: 1, deliveredAt: recent, createdAt: recent },
+      { status: 'success', attempts: 1, deliveredAt: recent, createdAt: recent },
+    ]);
+
+    const stats = await getWebhookHealthStats('wh-1');
+    expect(stats.successRate).toBe(1);
+    expect(stats.lastFailureAt).toBeNull();
   });
 });
