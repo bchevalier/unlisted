@@ -1,4 +1,5 @@
 import { PrismaClient, CategoryFieldType } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -6,12 +7,15 @@ const demoEmail = process.env.DEMO_KEEPER_EMAIL ?? 'john@knokio.local';
 const demoName = process.env.DEMO_KEEPER_NAME ?? 'John';
 const demoSlug = process.env.DEMO_DOOR_SLUG ?? 'john';
 const demoAlias = process.env.DEMO_DOOR_ALIAS ?? demoSlug;
+const demoPassword = process.env.DEMO_KEEPER_PASSWORD ?? 'changeme123456';
 
 async function main() {
+  const passwordHash = await bcrypt.hash(demoPassword, 12);
+
   const user = await prisma.user.upsert({
     where: { email: demoEmail },
-    update: { name: demoName },
-    create: { email: demoEmail, name: demoName }
+    update: { name: demoName, passwordHash },
+    create: { email: demoEmail, name: demoName, passwordHash }
   });
 
   const door = await prisma.door.upsert({
@@ -126,7 +130,9 @@ async function main() {
     }
   }
 
-  console.log(`Seed complete: door /u/${door.slug}, alias ${demoAlias}@knokio.io`);
+  console.log(
+    `Seed complete: door /u/${door.slug}, alias ${demoAlias}@knokio.io, login ${demoEmail} / ${demoPassword}`
+  );
 }
 
 main()

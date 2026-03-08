@@ -16,7 +16,7 @@ Tasks should be checked only when implemented and verified.
 - [x] Set up deployment environment
 - [x] Provision managed PostgreSQL database
 - [x] Configure database migration tooling
-- [ ] Set up basic authentication (signup, login, sessions)
+- [x] Set up basic authentication (signup, login, sessions)
 - [x] Add Direct/Reach feature flags and runtime isolation for parallel testing
 
 ---
@@ -69,22 +69,22 @@ Tasks should be checked only when implemented and verified.
 
 ## 4. Receiver Configuration
 
-- [ ] Create settings page shell
-- [ ] Enable / disable categories
-- [ ] Configure required fields per category
-- [ ] Configure per-category request caps
-- [ ] Configure global request caps
-- [ ] Configure contact reveal method (email or redirect URL)
+- [x] Create settings page shell
+- [x] Enable / disable categories
+- [x] Configure required fields per category
+- [x] Configure per-category request caps
+- [x] Configure global request caps
+- [x] Configure contact reveal method (email or redirect URL)
 - [ ] Display warnings when email proxy is disabled for a category
 
 ---
 
 ## 5. Request Inbox & Lifecycle
 
-- [ ] List requests by status (pending, accepted, declined, expired)
+- [x] List requests by status (pending, accepted, declined, expired)
 - [ ] Paginate request list
 - [ ] Display request detail view
-- [ ] Show structured request data
+- [x] Show structured request data
 - [x] Implement accept action
 - [x] Reveal contact details on accept
 - [x] Record accept event
@@ -116,16 +116,16 @@ Tasks should be checked only when implemented and verified.
 - [x] Parse recipient address (alias)
 - [x] Parse subject as request title
 - [x] Parse email body as request message
-- [ ] Strip quoted replies and signatures
+- [x] Strip quoted replies and signatures
 - [x] Reject CC/BCC emails
 - [x] Reject emails with attachments
 - [x] Map email alias to door
 - [x] Create request from email content
-- [ ] Enforce caps for email-submitted requests
+- [x] Enforce caps for email-submitted requests
 - [ ] Detect required-field categories
 - [ ] Send auto-reply requesting form completion when required
 - [ ] Generate one-time form completion links
-- [ ] Rate-limit inbound email per sender
+- [x] Rate-limit inbound email per sender
 
 ---
 

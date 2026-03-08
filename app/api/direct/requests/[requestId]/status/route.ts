@@ -1,15 +1,9 @@
 import { ZodError } from 'zod';
-import { DirectValidationError, updateRequestStatus } from '../../../../../../features/direct/server/requests';
-
-function isAuthorized(request: Request): boolean {
-  const expectedSecret = process.env.DIRECT_ADMIN_SECRET;
-  if (!expectedSecret) {
-    return true;
-  }
-
-  const receivedSecret = request.headers.get('x-knokio-admin-secret');
-  return receivedSecret === expectedSecret;
-}
+import {
+  DirectValidationError,
+  updateRequestStatusForKeeper
+} from '../../../../../../features/direct/server/requests';
+import { getKeeperSessionFromRequest } from '../../../../../../lib/keeper-auth';
 
 function extractRequestId(request: Request): string | null {
   const { pathname } = new URL(request.url);
@@ -20,8 +14,9 @@ function extractRequestId(request: Request): string | null {
 }
 
 export async function POST(request: Request) {
-  if (!isAuthorized(request)) {
-    return Response.json({ ok: false, error: 'Unauthorized admin request' }, { status: 401 });
+  const session = getKeeperSessionFromRequest(request);
+  if (!session) {
+    return Response.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   const requestId = extractRequestId(request);
@@ -31,7 +26,7 @@ export async function POST(request: Request) {
 
   try {
     const payload = await request.json();
-    const updated = await updateRequestStatus(requestId, payload);
+    const updated = await updateRequestStatusForKeeper(session.userId, requestId, payload);
     return Response.json({ ok: true, request: updated });
   } catch (error) {
     if (error instanceof ZodError) {

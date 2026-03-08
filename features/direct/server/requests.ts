@@ -1,5 +1,6 @@
 import {
   CategoryFieldType,
+  ContactRevealMethod,
   RequestEventActor,
   RequestEventType,
   RequestSource,
@@ -28,9 +29,37 @@ const emailRequestSchema = z.object({
   attachments: z.array(z.unknown()).optional()
 });
 
+const updateStatusSchema = z.object({
+  status: z.enum([RequestStatus.ACCEPTED, RequestStatus.DECLINED]),
+  note: z.string().trim().max(500).optional()
+});
+
+const updateDoorSettingsSchema = z.object({
+  doorSlug: z.string().trim().min(1),
+  autoReplyEnabled: z.boolean(),
+  autoReplyMessage: z.string().trim().max(1000).optional(),
+  weeklyRequestCap: z.number().int().positive().max(5000).nullable(),
+  revealMethod: z.enum([ContactRevealMethod.NONE, ContactRevealMethod.EMAIL, ContactRevealMethod.URL]),
+  revealValue: z.string().trim().max(500).nullable()
+});
+
+const updateCategorySchema = z.object({
+  doorSlug: z.string().trim().min(1),
+  categoryKey: z.string().trim().min(1),
+  isEnabled: z.boolean(),
+  weeklyCap: z.number().int().positive().max(5000).nullable()
+});
+
+const updateFieldSchema = z.object({
+  doorSlug: z.string().trim().min(1),
+  categoryKey: z.string().trim().min(1),
+  fieldKey: z.string().trim().min(1),
+  required: z.boolean()
+});
+
 export class DirectValidationError extends Error {}
 
-function normalizeOptional(value?: string): string | null {
+function normalizeOptional(value?: string | null): string | null {
   if (!value) {
     return null;
   }
@@ -43,6 +72,13 @@ function extractEmailAddress(raw: string): string {
   const trimmed = raw.trim();
   const match = trimmed.match(/<?([^<>\s]+@[^<>\s]+)>?/);
   return match?.[1]?.toLowerCase() ?? trimmed.toLowerCase();
+}
+
+function extractSenderName(raw: string): string | null {
+  const trimmed = raw.trim();
+  const match = trimmed.match(/^\s*"?([^"<]+)"?\s*<[^>]+>\s*$/);
+  const value = match?.[1]?.trim();
+  return value && value.length > 0 ? value : null;
 }
 
 function extractAlias(rawTo: string): string {
@@ -71,6 +107,104 @@ function validateFieldByType(type: CategoryFieldType, value: string): boolean {
   return true;
 }
 
+function stripQuotedAndSignature(text: string): string {
+  const lines = text.replace(/\r\n/g, '\n').split('\n');
+  const result: string[] = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    if (/^On .+wrote:$/i.test(trimmed)) {
+      break;
+    }
+
+    if (/^From:\s.+<.+>$/i.test(trimmed)) {
+      break;
+    }
+
+    if (trimmed.startsWith('>')) {
+      break;
+    }
+
+    if (trimmed === '--' || trimmed === '-- ') {
+      break;
+    }
+
+    if (/^Sent from my (iPhone|Android|Pixel)/i.test(trimmed)) {
+      break;
+    }
+
+    result.push(line);
+  }
+
+  return result.join('\n').trim();
+}
+
+async function enforceDoorWeeklyCap(doorId: string, weeklyCap: number | null | undefined) {
+  if (!weeklyCap || weeklyCap <= 0) {
+    return;
+  }
+
+  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const count = await db.request.count({
+    where: {
+      doorId,
+      createdAt: {
+        gte: since
+      }
+    }
+  });
+
+  if (count >= weeklyCap) {
+    throw new DirectValidationError('Door weekly request cap reached');
+  }
+}
+
+async function enforceCategoryWeeklyCap(categoryId: string, weeklyCap: number | null | undefined) {
+  if (!weeklyCap || weeklyCap <= 0) {
+    return;
+  }
+
+  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const count = await db.request.count({
+    where: {
+      categoryId,
+      createdAt: {
+        gte: since
+      }
+    }
+  });
+
+  if (count >= weeklyCap) {
+    throw new DirectValidationError('Category weekly request cap reached');
+  }
+}
+
+async function enforceInboundEmailSenderRateLimit(doorId: string, senderEmail: string) {
+  const windowMinutes = Number(process.env.EMAIL_SENDER_RATE_LIMIT_WINDOW_MINUTES ?? 60);
+  const maxRequests = Number(process.env.EMAIL_SENDER_RATE_LIMIT_MAX ?? 5);
+
+  if (Number.isNaN(windowMinutes) || Number.isNaN(maxRequests) || windowMinutes <= 0 || maxRequests <= 0) {
+    return;
+  }
+
+  const since = new Date(Date.now() - windowMinutes * 60 * 1000);
+  const count = await db.request.count({
+    where: {
+      doorId,
+      source: RequestSource.EMAIL,
+      senderEmail,
+      createdAt: {
+        gte: since
+      }
+    }
+  });
+
+  if (count >= maxRequests) {
+    throw new DirectValidationError('Inbound sender rate limit reached');
+  }
+}
+
 export async function createFormRequest(input: unknown) {
   const payload = formRequestSchema.parse(input);
 
@@ -79,6 +213,9 @@ export async function createFormRequest(input: unknown) {
     select: {
       id: true,
       isEnabled: true,
+      settings: {
+        select: { weeklyRequestCap: true }
+      },
       categories: {
         where: { key: payload.categoryKey, isEnabled: true },
         select: {
@@ -107,6 +244,9 @@ export async function createFormRequest(input: unknown) {
     throw new DirectValidationError('Category unavailable');
   }
 
+  await enforceDoorWeeklyCap(door.id, door.settings?.weeklyRequestCap);
+  await enforceCategoryWeeklyCap(category.id, category.weeklyCap);
+
   const sanitizedFields: Record<string, string> = {};
   for (const field of category.fields) {
     const value = (payload.fields[field.key] ?? '').trim();
@@ -124,7 +264,7 @@ export async function createFormRequest(input: unknown) {
     }
   }
 
-  const request = await db.request.create({
+  return db.request.create({
     data: {
       doorId: door.id,
       categoryId: category.id,
@@ -149,8 +289,6 @@ export async function createFormRequest(input: unknown) {
       status: true
     }
   });
-
-  return request;
 }
 
 export async function createEmailRequest(input: unknown) {
@@ -172,13 +310,17 @@ export async function createEmailRequest(input: unknown) {
   const emailAlias = await db.emailAlias.findUnique({
     where: { alias },
     select: {
-      id: true,
       alias: true,
       isEnabled: true,
       door: {
         select: {
           id: true,
-          isEnabled: true
+          isEnabled: true,
+          settings: {
+            select: {
+              weeklyRequestCap: true
+            }
+          }
         }
       }
     }
@@ -188,14 +330,26 @@ export async function createEmailRequest(input: unknown) {
     throw new DirectValidationError('Alias unavailable');
   }
 
-  const request = await db.request.create({
+  const senderEmail = extractEmailAddress(payload.from);
+  const senderName = extractSenderName(payload.from);
+
+  await enforceDoorWeeklyCap(emailAlias.door.id, emailAlias.door.settings?.weeklyRequestCap);
+  await enforceInboundEmailSenderRateLimit(emailAlias.door.id, senderEmail);
+
+  const cleanedMessage = stripQuotedAndSignature(payload.text);
+  if (!cleanedMessage) {
+    throw new DirectValidationError('Email body is empty after quote/signature stripping');
+  }
+
+  return db.request.create({
     data: {
       doorId: emailAlias.door.id,
       source: RequestSource.EMAIL,
       status: RequestStatus.PENDING,
-      senderEmail: extractEmailAddress(payload.from),
+      senderName,
+      senderEmail,
       title: normalizeOptional(payload.subject),
-      message: payload.text,
+      message: cleanedMessage,
       structuredData: {
         to: payload.to,
         from: payload.from,
@@ -215,24 +369,25 @@ export async function createEmailRequest(input: unknown) {
       status: true
     }
   });
-
-  return request;
 }
 
-const updateStatusSchema = z.object({
-  status: z.enum([RequestStatus.ACCEPTED, RequestStatus.DECLINED]),
-  note: z.string().trim().max(500).optional()
-});
-
-export async function updateRequestStatus(requestId: string, input: unknown) {
+export async function updateRequestStatusForKeeper(userId: string, requestId: string, input: unknown) {
   const payload = updateStatusSchema.parse(input);
 
   const existing = await db.request.findUnique({
     where: { id: requestId },
-    select: { id: true, status: true }
+    select: {
+      id: true,
+      status: true,
+      door: {
+        select: {
+          userId: true
+        }
+      }
+    }
   });
 
-  if (!existing) {
+  if (!existing || existing.door.userId !== userId) {
     throw new DirectValidationError('Request not found');
   }
 
@@ -259,13 +414,22 @@ export async function updateRequestStatus(requestId: string, input: unknown) {
   });
 }
 
-export async function listRequestsByDoorSlug(doorSlug: string) {
-  const door = await db.door.findUnique({
-    where: { slug: doorSlug },
+export async function listRequestsByDoorSlugForKeeper(userId: string, doorSlug: string) {
+  const door = await db.door.findFirst({
+    where: { slug: doorSlug, userId },
     select: {
       id: true,
       slug: true,
       displayName: true,
+      settings: {
+        select: {
+          autoReplyEnabled: true,
+          autoReplyMessage: true,
+          weeklyRequestCap: true,
+          revealMethod: true,
+          revealValue: true
+        }
+      },
       requests: {
         orderBy: { createdAt: 'desc' },
         take: 100,
@@ -283,23 +447,125 @@ export async function listRequestsByDoorSlug(doorSlug: string) {
             select: { label: true }
           }
         }
+      },
+      categories: {
+        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+        select: {
+          key: true,
+          label: true,
+          isEnabled: true,
+          weeklyCap: true,
+          fields: {
+            orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+            select: {
+              key: true,
+              label: true,
+              required: true
+            }
+          }
+        }
       }
     }
   });
 
-  if (!door) {
-    return null;
-  }
-
   return door;
 }
 
-export async function listDoorsForDirect() {
+export async function listDoorsForKeeper(userId: string) {
   return db.door.findMany({
+    where: { userId },
     orderBy: { createdAt: 'asc' },
     select: {
       slug: true,
       displayName: true
+    }
+  });
+}
+
+export async function updateDoorSettingsForKeeper(userId: string, input: unknown) {
+  const payload = updateDoorSettingsSchema.parse(input);
+
+  const door = await db.door.findFirst({
+    where: { slug: payload.doorSlug, userId },
+    select: { id: true }
+  });
+
+  if (!door) {
+    throw new DirectValidationError('Door not found');
+  }
+
+  return db.doorSettings.upsert({
+    where: { doorId: door.id },
+    update: {
+      autoReplyEnabled: payload.autoReplyEnabled,
+      autoReplyMessage: normalizeOptional(payload.autoReplyMessage),
+      weeklyRequestCap: payload.weeklyRequestCap,
+      revealMethod: payload.revealMethod,
+      revealValue: normalizeOptional(payload.revealValue)
+    },
+    create: {
+      doorId: door.id,
+      autoReplyEnabled: payload.autoReplyEnabled,
+      autoReplyMessage: normalizeOptional(payload.autoReplyMessage),
+      weeklyRequestCap: payload.weeklyRequestCap,
+      revealMethod: payload.revealMethod,
+      revealValue: normalizeOptional(payload.revealValue)
+    }
+  });
+}
+
+export async function updateCategoryForKeeper(userId: string, input: unknown) {
+  const payload = updateCategorySchema.parse(input);
+
+  const category = await db.category.findFirst({
+    where: {
+      key: payload.categoryKey,
+      door: {
+        slug: payload.doorSlug,
+        userId
+      }
+    },
+    select: { id: true }
+  });
+
+  if (!category) {
+    throw new DirectValidationError('Category not found');
+  }
+
+  return db.category.update({
+    where: { id: category.id },
+    data: {
+      isEnabled: payload.isEnabled,
+      weeklyCap: payload.weeklyCap
+    }
+  });
+}
+
+export async function updateCategoryFieldForKeeper(userId: string, input: unknown) {
+  const payload = updateFieldSchema.parse(input);
+
+  const field = await db.categoryField.findFirst({
+    where: {
+      key: payload.fieldKey,
+      category: {
+        key: payload.categoryKey,
+        door: {
+          slug: payload.doorSlug,
+          userId
+        }
+      }
+    },
+    select: { id: true }
+  });
+
+  if (!field) {
+    throw new DirectValidationError('Category field not found');
+  }
+
+  return db.categoryField.update({
+    where: { id: field.id },
+    data: {
+      required: payload.required
     }
   });
 }

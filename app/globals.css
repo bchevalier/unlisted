@@ -201,3 +201,47 @@ label {
 .request-actions {
   margin-top: 12px;
 }
+
+.auth-form {
+  max-width: 420px;
+  background: #fff;
+  border: 1px solid #e3e8f2;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.settings-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.settings-card {
+  background: #fff;
+  border: 1px solid #e3e8f2;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.settings-categories {
+  display: grid;
+  gap: 14px;
+}
+
+.settings-category {
+  border: 1px solid #e3e8f2;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.settings-category h3,
+.settings-category h4 {
+  margin-top: 0;
+}
+
+.settings-fields form {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}

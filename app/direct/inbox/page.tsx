@@ -1,5 +1,9 @@
 import Link from 'next/link';
-import { listDoorsForDirect, listRequestsByDoorSlug } from '../../../features/direct/server/requests';
+import {
+  listDoorsForKeeper,
+  listRequestsByDoorSlugForKeeper
+} from '../../../features/direct/server/requests';
+import { requireKeeperSession } from '../../../features/direct/server/session';
 import { RequestActions } from './request-actions';
 
 type DirectInboxPageProps = {
@@ -9,9 +13,10 @@ type DirectInboxPageProps = {
 };
 
 export default async function DirectInboxPage({ searchParams }: DirectInboxPageProps) {
+  const session = await requireKeeperSession('/direct/inbox');
   const resolvedSearchParams = (await searchParams) ?? {};
 
-  const doors = await listDoorsForDirect();
+  const doors = await listDoorsForKeeper(session.userId);
   const defaultSlug = doors[0]?.slug;
   const selectedSlug = resolvedSearchParams.slug ?? defaultSlug;
 
@@ -19,19 +24,17 @@ export default async function DirectInboxPage({ searchParams }: DirectInboxPageP
     return (
       <main>
         <h1>Knokio Direct Inbox</h1>
-        <p>
-          No doors exist yet. Seed data first with <code>npm run db:seed</code>.
-        </p>
+        <p>No doors exist yet. Create one from signup.</p>
       </main>
     );
   }
 
-  const door = await listRequestsByDoorSlug(selectedSlug);
+  const door = await listRequestsByDoorSlugForKeeper(session.userId, selectedSlug);
   if (!door) {
     return (
       <main>
         <h1>Knokio Direct Inbox</h1>
-        <p>Door not found.</p>
+        <p>Door not found or not owned by this account.</p>
       </main>
     );
   }
@@ -39,6 +42,9 @@ export default async function DirectInboxPage({ searchParams }: DirectInboxPageP
   return (
     <main>
       <h1>Knokio Direct Inbox</h1>
+      <p>
+        Signed in as <strong>{session.email}</strong>
+      </p>
       <p>
         Door: <strong>{door.displayName}</strong> ({door.slug})
       </p>
@@ -49,6 +55,13 @@ export default async function DirectInboxPage({ searchParams }: DirectInboxPageP
             {item.displayName}
           </Link>
         ))}
+      </p>
+
+      <p className="inbox-links">
+        <Link href={`/direct/settings?slug=${door.slug}`}>Settings</Link>
+        <Link href={`/u/${door.slug}`} target="_blank">
+          Open public door
+        </Link>
       </p>
 
       {door.requests.length === 0 ? (

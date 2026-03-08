@@ -168,10 +168,13 @@ Knokio Direct MVP foundation is implemented for development:
 
 - Public door route: `/u/:slug`
 - Dynamic structured form submission → pending requests
+- Keeper auth: `/direct/signup`, `/direct/login`, session cookie, `/api/direct/auth/*`
 - Keeper inbox view: `/direct/inbox?slug=:slug`
+- Keeper settings: `/direct/settings?slug=:slug`
 - Accept/decline actions with request events
 - Knocker status route: `/r/:token`
 - Inbound email webhook: `POST /api/direct/email/inbound`
+- Basic hardening: caps enforcement + inbound sender rate-limit + quote/signature stripping
 
 Quickstart (dev):
 
@@ -179,6 +182,7 @@ Quickstart (dev):
 2. `npm run db:seed`
 3. `npm run dev`
 4. Open `/direct`, `/u/john`, and `/direct/inbox?slug=john`
+5. Demo login (from seed default): `john@knokio.local / changeme123456`
 
 ## Environment configuration
 
