@@ -46,3 +46,21 @@ export type {
   PolicyNoMatch,
   PolicyEvaluation,
 } from './policy-engine';
+
+export {
+  // Service functions
+  createActor,
+  getActorByHandle,
+  getActorByUserId,
+  deactivateActor,
+  createPolicy,
+  listPolicies,
+  updatePolicy,
+  deactivatePolicy,
+  proposeContract,
+  transitionContract,
+  getContract,
+  listContracts,
+  expireStaleContracts,
+  ReachError,
+} from './service';
