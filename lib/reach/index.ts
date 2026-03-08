@@ -37,7 +37,7 @@ export type {
   ReachContractCreate,
 } from './contracts';
 
-export { evaluatePolicies } from './policy-engine';
+export { evaluatePolicies, evaluatePoliciesWithTrace } from './policy-engine';
 
 export type {
   PolicyRecord,
@@ -45,6 +45,9 @@ export type {
   PolicyMatchResult,
   PolicyNoMatch,
   PolicyEvaluation,
+  PolicySkipReason,
+  PolicyTraceEntry,
+  PolicyEvaluationTrace,
 } from './policy-engine';
 
 export {
