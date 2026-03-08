@@ -111,6 +111,42 @@ export async function createActor(input: ReachActorCreate, userId?: string) {
     apiKeyHash = crypto.createHash('sha256').update(apiKey).digest('hex');
   }
 
+  // Use a transaction when creating an ORGANIZATION so the creator is
+  // automatically enrolled as OWNER in the same atomic operation.
+  // For non-org actors a plain create is sufficient.
+  if (data.type === 'ORGANIZATION') {
+    const result = await db.$transaction(async (tx) => {
+      const newActor = await tx.reachActor.create({
+        data: {
+          userId: userId ?? null,
+          type: data.type,
+          handle: data.handle,
+          displayName: data.displayName,
+          capabilities: (data.capabilities ?? undefined) as Parameters<typeof db.reachActor.create>[0]['data']['capabilities'],
+          endpoint: data.endpoint ?? null,
+          apiKeyHash: apiKeyHash ?? null,
+          apiKeyScopes: scopes,
+        },
+      });
+
+      // If a creating actor is known (API key auth or session-linked user),
+      // auto-add them as OWNER so the org is immediately manageable.
+      if (data._creatorActorId) {
+        await tx.reachOrgMember.create({
+          data: {
+            orgId: newActor.id,
+            memberId: data._creatorActorId,
+            role: 'OWNER',
+          },
+        });
+      }
+
+      return newActor;
+    });
+
+    return { actor: result, apiKey };
+  }
+
   const actor = await db.reachActor.create({
     data: {
       userId: userId ?? null,

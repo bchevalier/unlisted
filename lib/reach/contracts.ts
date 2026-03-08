@@ -166,6 +166,12 @@ export const ReachActorCreateSchema = z.object({
   agentMeta: AgentMetaSchema.optional(),
   /** Permission scopes for the generated API key. Empty = full access. */
   apiKeyScopes: z.array(z.string()).optional(),
+  /**
+   * Internal: actor ID of the creator. When creating an ORGANIZATION the
+   * service layer uses this to auto-enroll the creator as OWNER.
+   * Not expected from external callers — injected by the API route.
+   */
+  _creatorActorId: z.string().optional(),
 });
 
 export const ReachPolicyCreateSchema = z.object({

@@ -45,6 +45,15 @@ export async function POST(request: Request) {
       userId = session.userId;
     }
 
+    // For ORGANIZATION actors, inject the creator's actor ID so the service
+    // layer can auto-enroll them as OWNER.
+    if (data.type === 'ORGANIZATION') {
+      const auth = await authenticateReachRequest(request);
+      if (auth) {
+        data._creatorActorId = auth.actorId;
+      }
+    }
+
     const { actor, apiKey } = await createActor(data, userId);
 
     return Response.json(
