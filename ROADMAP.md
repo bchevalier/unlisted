@@ -126,9 +126,9 @@ Tasks should be checked only when implemented and verified.
 - [x] Map email alias to door
 - [x] Create request from email content
 - [x] Enforce caps for email-submitted requests
-- [ ] Detect required-field categories
-- [ ] Send auto-reply requesting form completion when required
-- [ ] Generate one-time form completion links
+- [x] Detect required-field categories
+- [x] Send auto-reply requesting form completion when required
+- [x] Generate one-time form completion links
 - [x] Rate-limit inbound email per sender
 
 ---
