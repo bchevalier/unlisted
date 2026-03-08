@@ -25,6 +25,7 @@ import type {
 } from './contracts';
 import { evaluatePolicies } from './policy-engine';
 import type { PolicyRecord } from './policy-engine';
+import { dispatchContract } from './router';
 import * as crypto from 'crypto';
 
 // ---------------------------------------------------------------------------
@@ -252,7 +253,7 @@ export async function proposeContract(
     : null;
 
   // Create contract + initial event in a transaction.
-  const contract = await db.$transaction(async (tx) => {
+  const result = await db.$transaction(async (tx) => {
     const c = await tx.reachContract.create({
       data: {
         type: data.type,
@@ -294,7 +295,7 @@ export async function proposeContract(
           note: 'Auto-accepted by policy',
         },
       });
-      return updated;
+      return { contract: updated, shouldDispatch: true };
     }
 
     // ROUTE action → mark as routed but keep PROPOSED.
@@ -311,7 +312,7 @@ export async function proposeContract(
           note: 'Routed by policy',
         },
       });
-      return updated;
+      return { contract: updated, shouldDispatch: true };
     }
 
     // ESCALATE → mark as routed with escalation event.
@@ -328,7 +329,7 @@ export async function proposeContract(
           note: 'Escalated to human review',
         },
       });
-      return updated;
+      return { contract: updated, shouldDispatch: true };
     }
 
     // REJECT action from policy.
@@ -345,13 +346,20 @@ export async function proposeContract(
           note: 'Rejected by policy',
         },
       });
-      return updated;
+      return { contract: updated, shouldDispatch: false };
     }
 
-    return c;
+    return { contract: c, shouldDispatch: false };
   });
 
-  return contract;
+  // Dispatch delivery outside the transaction (fire-and-forget).
+  if (result.shouldDispatch) {
+    dispatchContract(result.contract.id, evaluation.action).catch((err) => {
+      console.error('[reach:proposeContract:dispatch]', err);
+    });
+  }
+
+  return result.contract;
 }
 
 /**

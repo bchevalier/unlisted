@@ -74,3 +74,15 @@ export {
 } from './auth';
 
 export type { ReachAuthResult } from './auth';
+
+export {
+  dispatchContract,
+  deliverWebhook,
+} from './router';
+
+export type {
+  DeliveryTarget,
+  ContractPayload,
+  WebhookPayload,
+  DeliveryResult,
+} from './router';
