@@ -1075,10 +1075,23 @@ export async function listRequestsByDoorSlugForKeeper(
     return null;
   }
 
-  // Count first so we can clamp page to valid range
-  const totalCount = await db.request.count({
-    where: { doorId: door.id, ...statusFilter }
+  // Fetch filtered count + per-status counts in parallel for fast inbox summary
+  const statusCountsRaw = await db.request.groupBy({
+    by: ['status'],
+    where: { doorId: door.id },
+    _count: { status: true }
   });
+
+  const statusCounts: Record<string, number> = {};
+  let grandTotal = 0;
+  for (const row of statusCountsRaw) {
+    statusCounts[row.status] = row._count.status;
+    grandTotal += row._count.status;
+  }
+
+  const totalCount = options?.status
+    ? (statusCounts[options.status] ?? 0)
+    : grandTotal;
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const clampedPage = Math.min(page, totalPages);
@@ -1113,7 +1126,8 @@ export async function listRequestsByDoorSlugForKeeper(
       pageSize,
       totalCount,
       totalPages
-    }
+    },
+    statusCounts
   };
 }
 
@@ -1341,23 +1355,28 @@ export async function expireStaleRequests(options?: { expiryDays?: number; batch
     door: { select: { displayName: true } }
   } as const;
 
-  // Two targeted queries instead of OR — each uses its optimal index
-  const halfBatch = Math.max(1, Math.floor(batchSize / 2));
-
+  // Two targeted queries — each uses its optimal index, full batchSize each
+  // to avoid under-fetching when one category has few/no stale records
   const [stalePending, staleCompletion] = await Promise.all([
     db.request.findMany({
       where: { status: RequestStatus.PENDING, createdAt: { lt: cutoff } },
       select: selectFields,
-      take: halfBatch
+      take: batchSize
     }),
     db.request.findMany({
       where: { status: RequestStatus.AWAITING_COMPLETION, completionExpiresAt: { lt: now } },
       select: selectFields,
-      take: halfBatch
+      take: batchSize
     })
   ]);
 
-  const stale = [...stalePending, ...staleCompletion];
+  // Deduplicate (shouldn't overlap, but defensive)
+  const seenIds = new Set<string>();
+  const stale = [...stalePending, ...staleCompletion].filter((r) => {
+    if (seenIds.has(r.id)) return false;
+    seenIds.add(r.id);
+    return true;
+  });
 
   if (stale.length === 0) {
     return { expired: 0 };
@@ -1366,6 +1385,7 @@ export async function expireStaleRequests(options?: { expiryDays?: number; batch
   const ids = stale.map((r) => r.id);
 
   // Batch update status + create events in a transaction
+  // Note: Prisma updateMany does NOT trigger @updatedAt, so we set it explicitly
   const result = await db.$transaction(async (tx) => {
     const updated = await tx.request.updateMany({
       where: {
@@ -1375,7 +1395,8 @@ export async function expireStaleRequests(options?: { expiryDays?: number; batch
       data: {
         status: RequestStatus.EXPIRED,
         completionToken: null,
-        completionExpiresAt: null
+        completionExpiresAt: null,
+        updatedAt: now
       }
     });
 

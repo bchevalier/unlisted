@@ -135,6 +135,26 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
 
       <RequestActions requestId={request.id} status={request.status} />
 
+      {request.status === 'ACCEPTED' && request.door.settings && (
+        <>
+          <h2>Contact Reveal</h2>
+          {request.door.settings.revealMethod === 'NONE' ? (
+            <p>No contact reveal configured for this door.</p>
+          ) : request.door.settings.revealMethod === 'EMAIL' ? (
+            <p>
+              Revealed email: <strong>{request.door.settings.revealValue ?? '(not set)'}</strong>
+            </p>
+          ) : request.door.settings.revealMethod === 'URL' ? (
+            <p>
+              Redirect URL:{' '}
+              <a href={request.door.settings.revealValue ?? '#'} target="_blank" rel="noopener noreferrer">
+                {request.door.settings.revealValue ?? '(not set)'}
+              </a>
+            </p>
+          ) : null}
+        </>
+      )}
+
       {request.events.length > 0 && (
         <>
           <h2>Event History</h2>

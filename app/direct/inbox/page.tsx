@@ -105,17 +105,20 @@ export default async function DirectInboxPage({ searchParams }: DirectInboxPageP
         </Link>
       </p>
 
-      {/* Status filter tabs */}
+      {/* Status filter tabs with counts */}
       <nav className="inbox-filters">
         {STATUS_OPTIONS.map((opt) => {
           const isActive = (opt.value === '' && !statusFilter) || opt.value === statusFilter;
+          const count = opt.value === ''
+            ? Object.values(door.statusCounts).reduce((sum, n) => sum + n, 0)
+            : (door.statusCounts[opt.value] ?? 0);
           return (
             <Link
               key={opt.value}
               href={buildUrl({ status: opt.value || undefined, page: 1 })}
               className={isActive ? 'filter-active' : 'filter-inactive'}
             >
-              {opt.label}
+              {opt.label} ({count})
             </Link>
           );
         })}
