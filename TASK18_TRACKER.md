@@ -32,7 +32,7 @@
 | 09 | task18r-slot-09 | T3 | 3/3 | DONE | 8abf86a | Error tracking + structured logging + lifecycle metrics + email deliverability checks + admin APIs |
 | 10 | task18r-slot-10 | T4 | 1/3 | DONE | 433dcda | Structured logging across all routes, timing-safe webhook auth, load sanity harness, integration tests (601 tests), bug fixes |
 | 11 | task18r-slot-11 | T4 | 2/3 | DONE | b2d2689 | Added 500-user load sanity dry-run harness + 21 tests; completed final S12 checkbox |
-| 12 | task18r-slot-12 | T4 | 3/3 | DONE | TBD | Full observability coverage: 23 routes instrumented with logger+error-tracking, logger test TS fix |
+| 12 | task18r-slot-12 | T4 | 3/3 | DONE | 6861953 | Full observability coverage: 23 routes instrumented with logger+error-tracking, logger test TS fix |
 | 13 | task18r-slot-13 | T5 | 1/3 | PENDING | - | rescheduled to `chawd` |
 | 14 | task18r-slot-14 | T5 | 2/3 | PENDING | - | rescheduled to `chawd` |
 | 15 | task18r-slot-15 | T5 | 3/3 | PENDING | - | rescheduled to `chawd` |
