@@ -1123,6 +1123,12 @@ export async function listRequestsByDoorSlugForKeeper(
             }
           }
         }
+      },
+      emailAliases: {
+        select: {
+          alias: true,
+          isEnabled: true
+        }
       }
     }
   });

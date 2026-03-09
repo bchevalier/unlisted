@@ -215,18 +215,61 @@ const PAID_CATEGORY_SEED: CategorySeed[] = [
 
 export class AuthValidationError extends Error {}
 
+// ---------------------------------------------------------------------------
+// Slug generation — robust, collision-resistant, with reserved-word protection
+// ---------------------------------------------------------------------------
+
+/**
+ * Reserved slugs that must never be assigned to a user door.
+ * Includes route prefixes, product terms, and common vanity targets.
+ */
+const RESERVED_SLUGS = new Set([
+  // App routes & API namespaces
+  'admin', 'api', 'direct', 'reach', 'u', 'r', 'complete',
+  'app', 'auth', 'login', 'signup', 'logout', 'register',
+  'settings', 'inbox', 'dashboard', 'billing', 'account',
+  // Product terms
+  'knokio', 'door', 'doors', 'keeper', 'keepers', 'knocker', 'knockers',
+  'request', 'requests', 'category', 'categories',
+  // Infrastructure
+  'www', 'mail', 'email', 'smtp', 'imap', 'pop', 'ftp', 'ssh',
+  'cdn', 'assets', 'static', 'public', 'private',
+  'help', 'support', 'status', 'health', 'healthz',
+  'webhook', 'webhooks', 'cron', 'internal',
+  // Common vanity / abuse vectors
+  'test', 'demo', 'example', 'root', 'system', 'null', 'undefined',
+  'info', 'contact', 'abuse', 'postmaster', 'webmaster', 'noreply', 'no-reply',
+]);
+
+function isReservedSlug(slug: string): boolean {
+  return RESERVED_SLUGS.has(slug);
+}
+
 function normalizeSlug(input: string) {
   return input.trim().toLowerCase();
 }
 
-function fallbackSlug(seed: string) {
-  const localPart = seed.split('@')[0] ?? 'keeper';
-  return localPart
+/**
+ * Sanitise an arbitrary seed string into a valid slug candidate.
+ * Strips invalid chars, collapses dashes, trims to 40 chars.
+ */
+function sanitizeSlugCandidate(raw: string): string {
+  return raw
     .toLowerCase()
     .replace(/[^a-z0-9-]+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
     .slice(0, 40);
+}
+
+function fallbackSlug(seed: string) {
+  const localPart = seed.split('@')[0] ?? 'keeper';
+  return sanitizeSlugCandidate(localPart);
+}
+
+/** Generate a short random suffix (6 chars, base-36). */
+function randomSuffix(): string {
+  return crypto.randomBytes(4).toString('hex').slice(0, 6);
 }
 
 function normalizeEmail(value?: string | null) {
@@ -250,16 +293,34 @@ function getDefaultWeeklyCapForPlan(plan: DoorPlan): number | null {
   return plan === DoorPlan.PAID ? null : 50;
 }
 
+/**
+ * Ensure the given base slug is unique, non-reserved, and at least 2 chars.
+ *
+ * Strategy:
+ *  1. If the base is reserved or too short, append a random suffix.
+ *  2. Try the candidate as-is.
+ *  3. On collision, append a random suffix (not sequential numbers — avoids
+ *     information leakage about existing users).
+ *  4. Up to 10 attempts with fresh randomness before giving up.
+ */
 async function ensureUniqueSlug(base: string): Promise<string> {
-  const initial = base.length >= 2 ? base : `keeper-${Date.now().toString(36)}`;
+  let initial = base.length >= 2 ? base : `keeper-${randomSuffix()}`;
+
+  // Block reserved slugs — always append randomness
+  if (isReservedSlug(initial)) {
+    initial = `${initial}-${randomSuffix()}`.slice(0, 40);
+  }
 
   const existing = await db.door.findUnique({ where: { slug: initial }, select: { id: true } });
   if (!existing) {
     return initial;
   }
 
-  for (let i = 1; i < 1000; i += 1) {
-    const candidate = `${initial}-${i}`.slice(0, 40);
+  // Collision: try with random suffixes (not sequential — prevents enumeration)
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const candidate = `${base}-${randomSuffix()}`.slice(0, 40);
+    // Double-check the random candidate isn't itself reserved
+    if (isReservedSlug(candidate)) continue;
     const exists = await db.door.findUnique({ where: { slug: candidate }, select: { id: true } });
     if (!exists) {
       return candidate;

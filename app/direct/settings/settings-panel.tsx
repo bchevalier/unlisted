@@ -37,6 +37,10 @@ type SettingsPanelProps = {
         required: boolean;
       }>;
     }>;
+    emailAliases: Array<{
+      alias: string;
+      isEnabled: boolean;
+    }>;
   };
 };
 
@@ -56,9 +60,34 @@ async function postJson(url: string, body: unknown) {
 export function SettingsPanel({ door }: SettingsPanelProps) {
   const isPaid = door.plan === 'PAID';
 
+  const activeAlias = door.emailAliases.find((a) => a.isEnabled);
+  const emailProxyEnabled = Boolean(activeAlias);
+
   return (
     <section className="settings-panel">
       <BillingCard doorSlug={door.slug} plan={door.plan} />
+
+      {!emailProxyEnabled ? (
+        <article className="settings-card" style={{ borderLeft: '4px solid #e5a00d', background: '#fffbe6' }}>
+          <h2>⚠️ Email proxy disabled</h2>
+          <p>
+            This door has no active email alias. Knockers will not be able to reach you via email
+            (e.g. <code>{door.slug}@knokio.io</code>). Only the web form entry point is active.
+          </p>
+          <p style={{ fontSize: '0.9em', color: '#666' }}>
+            Email aliases are created automatically when a door is set up. If this warning is
+            unexpected, contact support.
+          </p>
+        </article>
+      ) : activeAlias ? (
+        <article className="settings-card">
+          <h2>Email entry point</h2>
+          <p>
+            Knockers can email <strong>{activeAlias.alias}@knokio.io</strong> to submit requests
+            to this door.
+          </p>
+        </article>
+      ) : null}
 
       <article className="settings-card">
         <h2>Door settings</h2>
@@ -191,6 +220,21 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
                 <button type="submit">Save category</button>
               </form>
               {isPaid ? <p>Paid plan ignores category caps.</p> : null}
+
+              {!emailProxyEnabled && category.isEnabled ? (
+                <p style={{ color: '#b45309', fontSize: '0.85em', margin: '8px 0' }}>
+                  ⚠️ Email proxy is disabled — this category only accepts web form submissions.
+                </p>
+              ) : null}
+
+              {emailProxyEnabled &&
+                category.isEnabled &&
+                category.fields.some((f) => f.required) ? (
+                <p style={{ color: '#6b7280', fontSize: '0.85em', margin: '8px 0' }}>
+                  ℹ️ This category has required fields. Email submissions will trigger a
+                  form-completion link before the request enters your inbox.
+                </p>
+              ) : null}
 
               {category.fields.length > 0 ? (
                 <div className="settings-fields">

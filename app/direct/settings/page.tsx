@@ -81,7 +81,8 @@ export default async function DirectSettingsPage({ searchParams }: DirectSetting
           displayName: door.displayName,
           plan: door.plan,
           settings: door.settings,
-          categories: door.categories
+          categories: door.categories,
+          emailAliases: door.emailAliases ?? []
         }}
       />
     </main>

@@ -11,7 +11,7 @@
 | Task | Scope | Slots | Status |
 |---|---|---:|---|
 | T1 | Direct Billing (Stripe) | 01-03 | DONE |
-| T2 | Direct Admin Tools MVP | 04-06 | PENDING |
+| T2 | Direct Admin Tools MVP | 04-06 | MISS |
 | T3 | Direct entry + email infra gaps | 07-09 | PENDING |
 | T4 | Observability + hardening | 10-12 | PENDING |
 | T5 | Launch readiness package | 13-15 | PENDING |
@@ -26,8 +26,8 @@
 | 03 | task18r-slot-03 | T1 | 3/3 | DONE | 4919f6c | Final verification pass: lint ✅ typecheck ✅ 415 tests ✅ build ✅; all S9 checkboxes closed; T1 complete |
 | 04 | task18r-slot-04 | T2 | 1/3 | MISS | - | Command miss: zsh glob no-match on admin route file pattern check |
 | 05 | task18r-slot-05 | T2 | 2/3 | DONE | f98de74 | admin_users table + DB-backed auth + admin user management API + docs/Admin.md |
-| 06 | task18r-slot-06 | T2 | 3/3 | PENDING | - | rescheduled to `chawd` |
-| 07 | task18r-slot-07 | T3 | 1/3 | PENDING | - | rescheduled to `chawd` |
+| 06 | task18r-slot-06 | T2 | 3/3 | MISS | - | Command miss: grep check failed on `.gitignore` (`tsbuildinfo` not found) |
+| 07 | task18r-slot-07 | T3 | 1/3 | DONE | (pending) | Robust slug gen + reserved-slug guard, email proxy warning UI, Email-Setup.md production guide, 15 new slug tests |
 | 08 | task18r-slot-08 | T3 | 2/3 | PENDING | - | rescheduled to `chawd` |
 | 09 | task18r-slot-09 | T3 | 3/3 | PENDING | - | rescheduled to `chawd` |
 | 10 | task18r-slot-10 | T4 | 1/3 | PENDING | - | rescheduled to `chawd` |

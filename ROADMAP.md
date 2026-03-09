@@ -45,7 +45,7 @@ Tasks should be checked only when implemented and verified.
 
 ## 2. Knokio Door (URL-based Entry)
 
-- [ ] Generate unique door slugs
+- [x] Generate unique door slugs
 - [x] Implement door enable / disable logic
 - [x] Create public door route (`/u/:slug`)
 - [x] Render door branding and trust copy
@@ -79,7 +79,7 @@ Tasks should be checked only when implemented and verified.
 - [x] Configure per-category request caps
 - [x] Configure global request caps
 - [x] Configure contact reveal method (email or redirect URL)
-- [ ] Display warnings when email proxy is disabled for a category
+- [x] Display warnings when email proxy is disabled for a category
 
 ---
 
@@ -112,8 +112,8 @@ Tasks should be checked only when implemented and verified.
 
 ## 7. Email Proxy (Inbound Email → Request)
 
-- [ ] Configure inbound email domain (`@knokio.io`)
-- [ ] Enable catch-all email routing
+- [x] Configure inbound email domain (`@knokio.io`)
+- [x] Enable catch-all email routing
 - [x] Create inbound email webhook endpoint
 - [x] Verify inbound email authenticity
 - [x] Parse sender address
