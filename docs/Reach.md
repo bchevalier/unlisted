@@ -344,10 +344,20 @@ Reach operates with strict isolation from Direct:
 
 ## Pilot Rollout
 
-### Operational documents
+### Operator handoff package (external-facing)
+
+These documents are delivered to pilot operators:
 
 | Document | Purpose |
 |----------|---------|
+| [Reach-Operator-Quickstart.md](./Reach-Operator-Quickstart.md) | Self-contained integration guide for operators (registration → fulfillment) |
+| [Reach-Webhook-Integration.md](./Reach-Webhook-Integration.md) | Webhook receiver examples in Node.js, Python, and Go |
+
+### Internal operational documents
+
+| Document | Purpose |
+|----------|---------|
+| [Reach-Operator-Handoff-Checklist.md](./Reach-Operator-Handoff-Checklist.md) | Admin checklist for operator handoff (pre/during/post) |
 | [Reach-Pilot-Onboarding.md](./Reach-Pilot-Onboarding.md) | Step-by-step onboarding flow for AI operators and org ops teams |
 | [Reach-Pilot-Runbook.md](./Reach-Pilot-Runbook.md) | API-level runbook for pilot operations |
 | [Reach-Pilot-Evidence.md](./Reach-Pilot-Evidence.md) | Structured evidence capture format (JSONL) |
@@ -361,6 +371,7 @@ Reach operates with strict isolation from Direct:
 | `./scripts/reach-pilot-smoke.sh` | End-to-end smoke test (10 steps) |
 | `./scripts/reach-pilot-metrics.sh` | Metrics capture, threshold checks, and snapshots |
 | `./scripts/reach-pilot-evidence.sh` | Evidence log recording and summary |
+| `./scripts/reach-operator-verify.sh` | Operator-side integration verification (8 checks) |
 
 For step-by-step operator onboarding, see **[Reach-Pilot-Onboarding.md](./Reach-Pilot-Onboarding.md)**.
 

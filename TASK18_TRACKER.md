@@ -15,7 +15,7 @@
 | T3 | Direct entry + email infra gaps | 07-09 | DONE |
 | T4 | Observability + hardening | 10-12 | DONE |
 | T5 | Launch readiness package | 13-15 | DONE |
-| T6 | Reach limited pilot execution | 16-18 | PENDING |
+| T6 | Reach limited pilot execution | 16-18 | DONE |
 
 ## Slot-level view
 
@@ -35,7 +35,7 @@
 | 12 | task18r-slot-12 | T4 | 3/3 | DONE | 6861953 | Full observability coverage: 23 routes instrumented with logger+error-tracking, logger test TS fix |
 | 13 | task18r-slot-13 | T5 | 1/3 | DONE | 8b94fe9 | Full launch readiness package: onboarding copy, FAQ, privacy policy, terms of service, email deliverability plan, E2E checklist, production enablement checklist, pilot invite workflow; all S13 checkboxes closed |
 | 14 | task18r-slot-14 | T5 | 2/3 | DONE | ac1bb66 | Launch ops tooling: validate-launch.ts script, Deployment-Runbook.md, Incident-Response.md, validate:launch npm script |
-| 15 | task18r-slot-15 | T5 | 3/3 | DONE | - | Final verification pass: lint ✅ typecheck ✅ 622 tests ✅ build ✅ validate:launch build-checks 12/12 ✅; all S13 checkboxes closed; env failures are expected deployment-time config (external inputs) |
-| 16 | task18r-slot-16 | T6 | 1/3 | PENDING | - | rescheduled to `chawd` |
+| 15 | task18r-slot-15 | T5 | 3/3 | DONE | 3ff8bbb | Final verification pass: lint ✅ typecheck ✅ 622 tests ✅ build ✅ validate:launch build-checks 12/12 ✅; all S13 checkboxes closed; env failures are expected deployment-time config (external inputs) |
+| 16 | task18r-slot-16 | T6 | 1/3 | DONE | bf97925 | Pilot execution package: onboarding flow, evidence format, metrics capture, rollback process; S11R checkbox closed |
 | 17 | task18r-slot-17 | T6 | 2/3 | PENDING | - | rescheduled to `chawd` |
 | 18 | task18r-slot-18 | T6 | 3/3 | PENDING | - | rescheduled to `chawd` |
