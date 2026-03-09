@@ -206,12 +206,12 @@ Tasks should be checked only when implemented and verified.
 - [ ] Configure error tracking
 - [ ] Add structured logging
 - [ ] Add request lifecycle metrics
-- [ ] Verify webhook signature handling
-- [ ] Sanitize all user inputs
-- [ ] Review token entropy and expiry rules
-- [ ] Add basic integration tests
+- [x] Verify webhook signature handling
+- [x] Sanitize all user inputs
+- [x] Review token entropy and expiry rules
+- [x] Add basic integration tests
 - [ ] Perform load sanity check (500 users)
-- [ ] Verify failure modes for email ingestion
+- [x] Verify failure modes for email ingestion
 
 ---
 
