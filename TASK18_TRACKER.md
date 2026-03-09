@@ -37,5 +37,5 @@
 | 14 | task18r-slot-14 | T5 | 2/3 | DONE | ac1bb66 | Launch ops tooling: validate-launch.ts script, Deployment-Runbook.md, Incident-Response.md, validate:launch npm script |
 | 15 | task18r-slot-15 | T5 | 3/3 | DONE | 3ff8bbb | Final verification pass: lint ✅ typecheck ✅ 622 tests ✅ build ✅ validate:launch build-checks 12/12 ✅; all S13 checkboxes closed; env failures are expected deployment-time config (external inputs) |
 | 16 | task18r-slot-16 | T6 | 1/3 | DONE | bf97925 | Pilot execution package: onboarding flow, evidence format, metrics capture, rollback process; S11R checkbox closed |
-| 17 | task18r-slot-17 | T6 | 2/3 | PENDING | - | rescheduled to `chawd` |
-| 18 | task18r-slot-18 | T6 | 3/3 | PENDING | - | rescheduled to `chawd` |
+| 17 | task18r-slot-17 | T6 | 2/3 | DONE | 883c116 | Operator handoff package: external quickstart, webhook integration guide (Node/Python/Go), handoff checklist, operator verification script |
+| 18 | task18r-slot-18 | T6 | 3/3 | DONE | PENDING_COMMIT | External dependency matrix: docs/Reach-Pilot-External-Dependencies.md; all checks green (lint ✅ typecheck ✅ 622 tests ✅ build ✅); all S11R checkboxes closed; T6 complete |
