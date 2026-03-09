@@ -13,7 +13,7 @@
 | T1 | Direct Billing (Stripe) | 01-03 | DONE |
 | T2 | Direct Admin Tools MVP | 04-06 | MISS |
 | T3 | Direct entry + email infra gaps | 07-09 | DONE |
-| T4 | Observability + hardening | 10-12 | PENDING |
+| T4 | Observability + hardening | 10-12 | IN PROGRESS |
 | T5 | Launch readiness package | 13-15 | PENDING |
 | T6 | Reach limited pilot execution | 16-18 | PENDING |
 
@@ -30,7 +30,7 @@
 | 07 | task18r-slot-07 | T3 | 1/3 | DONE | 9bbaa5d | Robust slug gen + reserved-slug guard, email proxy warning UI, Email-Setup.md production guide, 15 new slug tests |
 | 08 | task18r-slot-08 | T3 | 2/3 | DONE | 3eb8e84 | 4 new test suites (115 tests), email failure mode docs, S12 checkboxes closed |
 | 09 | task18r-slot-09 | T3 | 3/3 | DONE | 8abf86a | Error tracking + structured logging + lifecycle metrics + email deliverability checks + admin APIs |
-| 10 | task18r-slot-10 | T4 | 1/3 | PENDING | - | rescheduled to `chawd` |
+| 10 | task18r-slot-10 | T4 | 1/3 | DONE | 433dcda | Structured logging across all routes, timing-safe webhook auth, load sanity harness, integration tests (601 tests), bug fixes |
 | 11 | task18r-slot-11 | T4 | 2/3 | PENDING | - | rescheduled to `chawd` |
 | 12 | task18r-slot-12 | T4 | 3/3 | PENDING | - | rescheduled to `chawd` |
 | 13 | task18r-slot-13 | T5 | 1/3 | PENDING | - | rescheduled to `chawd` |
