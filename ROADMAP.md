@@ -35,7 +35,7 @@ Tasks should be checked only when implemented and verified.
 - [x] Define `email_aliases` table
 - [x] Define `requests` table
 - [x] Define `request_events` table
-- [ ] Define `payments` table
+- [x] Define `payments` table
 - [ ] Define `admin_users` table
 - [x] Create database migrations
 - [x] Seed default categories and fields
@@ -151,14 +151,14 @@ Tasks should be checked only when implemented and verified.
 
 - [x] Define free vs paid plan limits
 - [x] Implement manual free/paid plan switching in Direct settings (pre-Stripe)
-- [ ] Configure Stripe products and prices
-- [ ] Implement Stripe Checkout flow
-- [ ] Handle subscription creation webhook
-- [ ] Handle subscription cancellation webhook
-- [ ] Sync subscription status to user account
+- [x] Configure Stripe products and prices
+- [x] Implement Stripe Checkout flow
+- [x] Handle subscription creation webhook
+- [x] Handle subscription cancellation webhook
+- [x] Sync subscription status to user account
 - [x] Enforce plan-based feature limits
-- [ ] Display billing status in settings
-- [ ] Link to Stripe customer portal
+- [x] Display billing status in settings
+- [x] Link to Stripe customer portal
 
 ---
 

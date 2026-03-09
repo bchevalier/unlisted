@@ -18,9 +18,14 @@ const envSchema = z
     DATABASE_URL: z
       .string()
       .trim()
-      .nonempty({ message: 'DATABASE_URL is required' })
+      .nonempty({ message: 'DATABASE_URL is required' }),
+    // Stripe (optional — billing features degrade gracefully when unset)
+    STRIPE_SECRET_KEY: z.string().optional(),
+    STRIPE_PUBLISHABLE_KEY: z.string().optional(),
+    STRIPE_WEBHOOK_SECRET: z.string().optional(),
+    STRIPE_PRICE_ID: z.string().optional()
   })
-  .strict();
+  .passthrough();
 
 export const env = envSchema.parse(process.env);
 

@@ -95,6 +95,7 @@ model User {
   emailVerifiedAt  DateTime?
   twoFactorEnabled Boolean   @default(false)
   twoFactorSecret  String?
+  stripeCustomerId String?   @unique
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
@@ -103,6 +104,7 @@ model User {
   authTokens    AuthToken[]
   recoveryCodes TwoFactorRecoveryCode[]
   reachActor    ReachActor?
+  payments      Payment[]
 }
 
 model AuthIdentity {
@@ -164,16 +166,31 @@ model AuthAttempt {
   @@index([ipHash, action, createdAt])
 }
 
+enum StripeSubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+  TRIALING
+  UNPAID
+  PAUSED
+}
+
 model Door {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  slug        String   @unique
-  displayName String
-  headline    String?
-  plan        DoorPlan @default(FREE)
-  isEnabled   Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                       String                    @id @default(cuid())
+  userId                   String                    @unique
+  slug                     String                    @unique
+  displayName              String
+  headline                 String?
+  plan                     DoorPlan                  @default(FREE)
+  isEnabled                Boolean                   @default(true)
+  stripeSubscriptionId     String?                   @unique
+  stripeSubscriptionStatus StripeSubscriptionStatus?
+  stripePriceId            String?
+  stripeCurrentPeriodEnd   DateTime?
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @updatedAt
 
   user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   settings       DoorSettings?
@@ -184,6 +201,21 @@ model Door {
   abuseReports   AbuseReport[]
 
   @@index([slug, isEnabled])
+}
+
+model Payment {
+  id               String   @id @default(cuid())
+  userId           String
+  stripePaymentId  String   @unique
+  amount           Int // cents
+  currency         String   @default("usd")
+  status           String // succeeded, pending, failed
+  description      String?
+  createdAt        DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }
 
 model DoorSettings {

@@ -2,6 +2,14 @@
 
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 
+type BillingStatus = {
+  plan: 'FREE' | 'PAID';
+  stripeSubscriptionStatus: string | null;
+  stripePriceId: string | null;
+  currentPeriodEnd: string | null;
+  hasStripeCustomer: boolean;
+};
+
 type SettingsPanelProps = {
   door: {
     slug: string;
@@ -50,53 +58,7 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
 
   return (
     <section className="settings-panel">
-      <article className="settings-card">
-        <h2>Plan</h2>
-        <p>
-          Current plan: <strong>{door.plan}</strong>{' '}
-          {isPaid ? '(unlimited paid reaches)' : '(caps enabled for inbox protection)'}
-        </p>
-        <form
-          onSubmit={async (event) => {
-            event.preventDefault();
-            const form = event.currentTarget;
-            const data = new FormData(form);
-            const nextPlan = String(data.get('plan') ?? door.plan) as 'FREE' | 'PAID';
-
-            if (nextPlan === door.plan) {
-              alert('Plan unchanged');
-              return;
-            }
-
-            if (
-              nextPlan === 'FREE' &&
-              !confirm('Downgrading to FREE will re-enable caps on this door. Continue?')
-            ) {
-              return;
-            }
-
-            await postJson('/api/direct/settings/plan', {
-              doorSlug: door.slug,
-              plan: nextPlan
-            });
-
-            alert(`Plan updated to ${nextPlan}`);
-            window.location.reload();
-          }}
-        >
-          <label>
-            Door plan
-            <select name="plan" defaultValue={door.plan}>
-              <option value="FREE">Free</option>
-              <option value="PAID">Paid</option>
-            </select>
-          </label>
-          <button type="submit">Update plan</button>
-        </form>
-        <p>
-          Billing is not connected yet. This is a manual plan switch for internal testing until Stripe is wired.
-        </p>
-      </article>
+      <BillingCard doorSlug={door.slug} plan={door.plan} />
 
       <article className="settings-card">
         <h2>Door settings</h2>
@@ -266,6 +228,112 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
 
       <BlocklistPanel doorSlug={door.slug} />
     </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Billing card (Stripe integration)
+// ---------------------------------------------------------------------------
+
+function BillingCard({ doorSlug, plan }: { doorSlug: string; plan: 'FREE' | 'PAID' }) {
+  const [billing, setBilling] = useState<BillingStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  useEffect(() => {
+    fetch(`/api/direct/billing/status?slug=${encodeURIComponent(doorSlug)}`)
+      .then((r) => r.json())
+      .then((data: { ok: boolean; billing?: BillingStatus }) => {
+        if (data.ok && data.billing) setBilling(data.billing);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [doorSlug]);
+
+  async function handleUpgrade() {
+    setActionLoading(true);
+    try {
+      const res = await fetch('/api/direct/billing/checkout', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ doorSlug })
+      });
+      const data = (await res.json()) as { ok: boolean; url?: string; error?: string };
+      if (data.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error ?? 'Failed to start checkout');
+      }
+    } catch {
+      alert('Failed to start checkout');
+    } finally {
+      setActionLoading(false);
+    }
+  }
+
+  async function handleManageBilling() {
+    setActionLoading(true);
+    try {
+      const res = await fetch('/api/direct/billing/portal', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ doorSlug })
+      });
+      const data = (await res.json()) as { ok: boolean; url?: string; error?: string };
+      if (data.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error ?? 'Failed to open billing portal');
+      }
+    } catch {
+      alert('Failed to open billing portal');
+    } finally {
+      setActionLoading(false);
+    }
+  }
+
+  const isPaid = plan === 'PAID';
+  const subStatus = billing?.stripeSubscriptionStatus;
+  const periodEnd = billing?.currentPeriodEnd
+    ? new Date(billing.currentPeriodEnd).toLocaleDateString()
+    : null;
+
+  return (
+    <article className="settings-card">
+      <h2>Plan &amp; Billing</h2>
+
+      {loading ? (
+        <p>Loading billing status…</p>
+      ) : (
+        <>
+          <p>
+            Current plan: <strong>{plan}</strong>{' '}
+            {isPaid ? '(unlimited reaches)' : '(caps enabled for inbox protection)'}
+          </p>
+
+          {subStatus ? (
+            <p>
+              Subscription status: <strong>{subStatus.toLowerCase().replace('_', ' ')}</strong>
+              {periodEnd ? ` · Renews ${periodEnd}` : ''}
+            </p>
+          ) : null}
+
+          <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+            {!isPaid ? (
+              <button type="button" onClick={handleUpgrade} disabled={actionLoading}>
+                {actionLoading ? 'Redirecting…' : 'Upgrade to Paid'}
+              </button>
+            ) : null}
+
+            {billing?.hasStripeCustomer ? (
+              <button type="button" onClick={handleManageBilling} disabled={actionLoading}>
+                {actionLoading ? 'Redirecting…' : 'Manage Billing'}
+              </button>
+            ) : null}
+          </div>
+        </>
+      )}
+    </article>
   );
 }
 
