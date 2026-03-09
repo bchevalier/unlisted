@@ -176,14 +176,14 @@ Tasks should be checked only when implemented and verified.
 
 ## 11. Admin Tools
 
-- [ ] Implement admin authentication
-- [ ] Create admin dashboard shell
-- [ ] List users and doors
-- [ ] View individual requests
-- [ ] Suspend a door
-- [ ] Disable a user account
-- [ ] Delete abusive requests
-- [ ] Inspect request events and metadata
+- [x] Implement admin authentication
+- [x] Create admin dashboard shell
+- [x] List users and doors
+- [x] View individual requests
+- [x] Suspend a door
+- [x] Disable a user account
+- [x] Delete abusive requests
+- [x] Inspect request events and metadata
 
 ---
 
