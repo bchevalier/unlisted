@@ -25,7 +25,7 @@
 | 02 | task18r-slot-02 | T1 | 2/3 | PENDING | - | rescheduled to `chawd` |
 | 03 | task18r-slot-03 | T1 | 3/3 | PENDING | - | rescheduled to `chawd` |
 | 04 | task18r-slot-04 | T2 | 1/3 | PENDING | - | rescheduled to `chawd` |
-| 05 | task18r-slot-05 | T2 | 2/3 | DONE | 6f89859 | RBAC hardening: edge middleware, login rate limiting, audit logging, input validation; +18 tests |
+| 05 | task18r-slot-05 | T2 | 2/3 | DONE | d9e22bc | RBAC hardening: edge middleware, login rate limiting, audit logging, input validation; +18 tests |
 | 06 | task18r-slot-06 | T2 | 3/3 | PENDING | - | rescheduled to `chawd` |
 | 07 | task18r-slot-07 | T3 | 1/3 | PENDING | - | rescheduled to `chawd` |
 | 08 | task18r-slot-08 | T3 | 2/3 | PENDING | - | rescheduled to `chawd` |
