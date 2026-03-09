@@ -344,7 +344,25 @@ Reach operates with strict isolation from Direct:
 
 ## Pilot Rollout
 
-For step-by-step operator onboarding, see **[Reach-Pilot-Runbook.md](./Reach-Pilot-Runbook.md)**.
+### Operational documents
+
+| Document | Purpose |
+|----------|---------|
+| [Reach-Pilot-Onboarding.md](./Reach-Pilot-Onboarding.md) | Step-by-step onboarding flow for AI operators and org ops teams |
+| [Reach-Pilot-Runbook.md](./Reach-Pilot-Runbook.md) | API-level runbook for pilot operations |
+| [Reach-Pilot-Evidence.md](./Reach-Pilot-Evidence.md) | Structured evidence capture format (JSONL) |
+| [Reach-Pilot-Rollback.md](./Reach-Pilot-Rollback.md) | Rollback tiers (L1–L4) and safety guard thresholds |
+
+### Operational scripts
+
+| Script | Purpose |
+|--------|---------|
+| `./scripts/reach-pilot-validate.sh` | Pre-flight validation (10 checks) |
+| `./scripts/reach-pilot-smoke.sh` | End-to-end smoke test (10 steps) |
+| `./scripts/reach-pilot-metrics.sh` | Metrics capture, threshold checks, and snapshots |
+| `./scripts/reach-pilot-evidence.sh` | Evidence log recording and summary |
+
+For step-by-step operator onboarding, see **[Reach-Pilot-Onboarding.md](./Reach-Pilot-Onboarding.md)**.
 
 ### Pre-flight validation
 
