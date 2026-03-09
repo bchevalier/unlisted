@@ -1,3 +1,8 @@
+import { logger } from '../../../../lib/logger';
+import { captureException } from '../../../../lib/error-tracking';
+
+const log = logger('reach:actors POST');
+
 /**
  * POST /api/reach/actors — Register a new Reach actor.
  * GET  /api/reach/actors — List actors (auth required).
@@ -99,7 +104,8 @@ export async function POST(request: Request) {
         { status: error.statusCode },
       );
     }
-    console.error('[reach/actors POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:actors POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -138,7 +144,8 @@ export async function GET(request: Request) {
       pagination: { totalCount, limit, offset },
     });
   } catch (error) {
-    console.error('[reach/actors GET]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:actors POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

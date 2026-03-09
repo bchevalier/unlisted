@@ -61,6 +61,7 @@ async function ensureInitialized(): Promise<SentryLike | null> {
 
   try {
     // Dynamic import so the Sentry package is only required when DSN is set
+    // @ts-expect-error — @sentry/nextjs is an optional dependency; installed only when SENTRY_DSN is configured
     const Sentry = await import('@sentry/nextjs');
     Sentry.init({
       dsn,

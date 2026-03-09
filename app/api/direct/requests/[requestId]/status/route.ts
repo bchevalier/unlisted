@@ -4,6 +4,10 @@ import {
   updateRequestStatusForKeeper
 } from '../../../../../../features/direct/server/requests';
 import { getKeeperSessionFromRequest } from '../../../../../../lib/keeper-auth';
+import { logger } from '../../../../../../lib/logger';
+import { captureException } from '../../../../../../lib/error-tracking';
+
+const log = logger('requests:status');
 
 function extractRequestId(request: Request): string | null {
   const { pathname } = new URL(request.url);
@@ -37,7 +41,8 @@ export async function POST(request: Request) {
       return Response.json({ ok: false, error: error.message }, { status: error.statusCode });
     }
 
-    console.error(error);
+    log.error('Request status update failed', { error, requestId });
+    await captureException(error, { component: 'requests:status', requestId: requestId ?? undefined });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

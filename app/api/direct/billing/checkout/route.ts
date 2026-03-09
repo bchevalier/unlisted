@@ -4,6 +4,10 @@ import {
   createCheckoutSession
 } from '../../../../../features/direct/server/billing';
 import { getKeeperSessionFromRequest } from '../../../../../lib/keeper-auth';
+import { logger } from '../../../../../lib/logger';
+import { captureException } from '../../../../../lib/error-tracking';
+
+const log = logger('billing:checkout');
 
 const checkoutSchema = z.object({
   doorSlug: z.string().min(1)
@@ -18,6 +22,7 @@ export async function POST(request: Request) {
   try {
     const payload = checkoutSchema.parse(await request.json());
     const checkoutUrl = await createCheckoutSession(session.userId, payload.doorSlug);
+    log.info('Checkout session created', { userId: session.userId, doorSlug: payload.doorSlug });
     return Response.json({ ok: true, url: checkoutUrl });
   } catch (error) {
     if (error instanceof ZodError) {
@@ -28,13 +33,15 @@ export async function POST(request: Request) {
     }
 
     if (error instanceof BillingError) {
+      log.warn('Checkout billing error', { error: error.message, status: error.statusCode });
       return Response.json(
         { ok: false, error: error.message },
         { status: error.statusCode }
       );
     }
 
-    console.error('[billing/checkout]', error);
+    log.error('Checkout session creation failed', { error });
+    await captureException(error, { component: 'billing:checkout', userId: session.userId });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

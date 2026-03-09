@@ -1,3 +1,8 @@
+import { logger } from '../../../../../../lib/logger';
+import { captureException } from '../../../../../../lib/error-tracking';
+
+const log = logger('reach:contracts:transition POST');
+
 /**
  * POST /api/reach/contracts/:contractId/transition — Transition contract status.
  *
@@ -75,7 +80,8 @@ export async function POST(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/contracts/transition POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:contracts:transition POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

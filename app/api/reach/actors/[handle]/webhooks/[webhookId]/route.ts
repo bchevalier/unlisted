@@ -1,3 +1,8 @@
+import { logger } from '../../../../../../../lib/logger';
+import { captureException } from '../../../../../../../lib/error-tracking';
+
+const log = logger('reach:webhooks::id GET');
+
 /**
  * GET    /api/reach/actors/:handle/webhooks/:webhookId — Get webhook details.
  * PATCH  /api/reach/actors/:handle/webhooks/:webhookId — Update webhook config.
@@ -99,7 +104,8 @@ export async function GET(
 
     return Response.json({ ok: true, webhook: resolved.webhook });
   } catch (error) {
-    console.error('[reach/webhooks/:id GET]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:webhooks::id GET' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -129,7 +135,8 @@ export async function PATCH(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/webhooks/:id PATCH]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:webhooks::id GET' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -151,7 +158,8 @@ export async function DELETE(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/webhooks/:id DELETE]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:webhooks::id GET' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -200,7 +208,8 @@ export async function POST(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/webhooks/:id POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:webhooks::id GET' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

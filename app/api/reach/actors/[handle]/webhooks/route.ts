@@ -1,3 +1,8 @@
+import { logger } from '../../../../../../lib/logger';
+import { captureException } from '../../../../../../lib/error-tracking';
+
+const log = logger('reach:webhooks POST');
+
 /**
  * POST /api/reach/actors/:handle/webhooks — Register a new webhook.
  * GET  /api/reach/actors/:handle/webhooks — List webhooks for an actor.
@@ -73,7 +78,8 @@ export async function POST(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/webhooks POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:webhooks POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -107,7 +113,8 @@ export async function GET(
 
     return Response.json({ ok: true, webhooks });
   } catch (error) {
-    console.error('[reach/webhooks GET]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:webhooks POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

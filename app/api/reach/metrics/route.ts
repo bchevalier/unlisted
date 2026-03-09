@@ -1,3 +1,8 @@
+import { logger } from '../../../../lib/logger';
+import { captureException } from '../../../../lib/error-tracking';
+
+const log = logger('reach:metrics GET');
+
 /**
  * GET /api/reach/metrics — Retrieve Reach pilot metrics.
  *
@@ -72,7 +77,8 @@ export async function GET(request: Request) {
     const metrics = await getReachPilotMetrics({ actorId, from, to });
     return Response.json({ ok: true, metrics });
   } catch (error) {
-    console.error('[reach/metrics GET]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:metrics GET' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

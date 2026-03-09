@@ -1,3 +1,8 @@
+import { logger } from '../../../../../../../lib/logger';
+import { captureException } from '../../../../../../../lib/error-tracking';
+
+const log = logger('reach:actors::handle:members::memberId PATCH');
+
 /**
  * PATCH  /api/reach/actors/:handle/members/:memberId — Update member role.
  * DELETE /api/reach/actors/:handle/members/:memberId — Remove member from org.
@@ -72,7 +77,8 @@ export async function PATCH(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/actors/:handle/members/:memberId PATCH]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:actors::handle:members::memberId PATCH' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -107,7 +113,8 @@ export async function DELETE(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/actors/:handle/members/:memberId DELETE]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:actors::handle:members::memberId PATCH' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

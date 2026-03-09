@@ -1,3 +1,8 @@
+import { logger } from '../../../../../../lib/logger';
+import { captureException } from '../../../../../../lib/error-tracking';
+
+const log = logger('reach:actors::handle:key POST');
+
 /**
  * POST /api/reach/actors/:handle/key — Rotate API key for a headless actor.
  *
@@ -51,7 +56,8 @@ export async function POST(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/actors/:handle/key POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:actors::handle:key POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

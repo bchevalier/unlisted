@@ -1,3 +1,8 @@
+import { logger } from '../../../../../../../lib/logger';
+import { captureException } from '../../../../../../../lib/error-tracking';
+
+const log = logger('reach:policies:preview POST');
+
 /**
  * POST /api/reach/actors/:handle/policies/preview — Dry-run policy evaluation.
  *
@@ -129,7 +134,8 @@ export async function POST(
         { status: 400 },
       );
     }
-    console.error('[reach/policies/preview POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:policies:preview POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

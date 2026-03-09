@@ -1,3 +1,8 @@
+import { logger } from '../../../../lib/logger';
+import { captureException } from '../../../../lib/error-tracking';
+
+const log = logger('reach:health');
+
 /**
  * GET /api/reach/health — Reach subsystem health check.
  *
@@ -64,7 +69,8 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('[reach/health]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:health' });
     return Response.json(
       {
         ok: false,

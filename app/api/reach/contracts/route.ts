@@ -1,3 +1,8 @@
+import { logger } from '../../../../lib/logger';
+import { captureException } from '../../../../lib/error-tracking';
+
+const log = logger('reach:contracts POST');
+
 /**
  * POST /api/reach/contracts — Propose a new contract.
  * GET  /api/reach/contracts — List contracts for the authenticated actor.
@@ -87,7 +92,8 @@ export async function POST(request: Request) {
         { status: error.statusCode },
       );
     }
-    console.error('[reach/contracts POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:contracts POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -171,7 +177,8 @@ export async function GET(request: Request) {
       pagination: { totalCount, limit, offset },
     });
   } catch (error) {
-    console.error('[reach/contracts GET]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:contracts POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

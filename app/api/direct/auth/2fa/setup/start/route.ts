@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { AuthValidationError, startTwoFactorSetup } from '../../../../../../../features/direct/server/auth';
 import { getKeeperSessionFromRequest } from '../../../../../../../lib/keeper-auth';
+import { logger } from '../../../../../../../lib/logger';
+import { captureException } from '../../../../../../../lib/error-tracking';
+
+const log = logger('auth:2fa-setup');
 
 export async function POST(request: Request) {
   const session = getKeeperSessionFromRequest(request);
@@ -22,7 +26,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
     }
 
-    console.error(error);
+    log.error('2FA setup start failed', { error });
+    await captureException(error, { component: 'auth:2fa-setup', userId: session.userId });
     return NextResponse.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,3 +1,8 @@
+import { logger } from '../../../../../lib/logger';
+import { captureException } from '../../../../../lib/error-tracking';
+
+const log = logger('reach:connectors:inbound POST');
+
 /**
  * POST /api/reach/connectors/inbound — Inbound connector endpoint.
  *
@@ -138,7 +143,8 @@ export async function POST(request: Request) {
         { status: error.statusCode },
       );
     }
-    console.error('[reach/connectors/inbound POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:connectors:inbound POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

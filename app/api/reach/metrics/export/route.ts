@@ -1,3 +1,8 @@
+import { logger } from '../../../../../lib/logger';
+import { captureException } from '../../../../../lib/error-tracking';
+
+const log = logger('reach:metrics:export GET');
+
 /**
  * GET /api/reach/metrics/export — Export Reach pilot metrics as CSV.
  *
@@ -149,7 +154,8 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    console.error('[reach/metrics/export GET]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:metrics:export GET' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,3 +1,8 @@
+import { logger } from '../../../../../../lib/logger';
+import { captureException } from '../../../../../../lib/error-tracking';
+
+const log = logger('reach:contracts:fulfill POST');
+
 /**
  * POST /api/reach/contracts/:contractId/fulfill — Fulfill a contract with optional response data.
  *
@@ -72,7 +77,8 @@ export async function POST(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/contracts/fulfill POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:contracts:fulfill POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

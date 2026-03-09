@@ -1,3 +1,8 @@
+import { logger } from '../../../../../../lib/logger';
+import { captureException } from '../../../../../../lib/error-tracking';
+
+const log = logger('reach:actors::handle:members GET');
+
 /**
  * GET  /api/reach/actors/:handle/members — List org members.
  * POST /api/reach/actors/:handle/members — Add a member to the org.
@@ -63,7 +68,8 @@ export async function GET(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/actors/:handle/members GET]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:actors::handle:members GET' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -120,7 +126,8 @@ export async function POST(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/actors/:handle/members POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:actors::handle:members GET' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

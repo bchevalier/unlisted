@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 
 // ---------------------------------------------------------------------------
@@ -9,6 +10,9 @@ import { describe, expect, it } from 'vitest';
 /**
  * Re-implementation of the webhook auth check from
  * app/api/direct/email/inbound/route.ts — keep in sync.
+ *
+ * Uses crypto.timingSafeEqual for constant-time secret comparison
+ * to prevent timing attacks.
  */
 function isAuthorized(
   headers: Record<string, string | null>,
@@ -18,7 +22,14 @@ function isAuthorized(
   if (!expectedSecret) return true; // no secret configured → allow all
 
   const receivedSecret = headers['x-knokio-inbound-secret'] ?? null;
-  return receivedSecret === expectedSecret;
+  if (!receivedSecret) return false;
+
+  // Constant-time comparison to prevent timing attacks
+  const expected = Buffer.from(expectedSecret, 'utf-8');
+  const received = Buffer.from(receivedSecret, 'utf-8');
+
+  if (expected.length !== received.length) return false;
+  return crypto.timingSafeEqual(expected, received);
 }
 
 // ---------------------------------------------------------------------------

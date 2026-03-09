@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendDigestNotifications } from '../../../../../features/direct/server/digest';
+import { logger } from '../../../../../lib/logger';
+import { captureException } from '../../../../../lib/error-tracking';
+
+const log = logger('notifications:digest');
 
 /**
  * POST /api/direct/notifications/digest
@@ -17,14 +21,17 @@ export async function POST(request: NextRequest) {
 
   const authorization = request.headers.get('authorization');
   if (authorization !== `Bearer ${cronSecret}`) {
+    log.warn('Unauthorized digest cron request');
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     const result = await sendDigestNotifications();
+    log.info('Digest notifications sent', result);
     return NextResponse.json({ ok: true, ...result });
   } catch (error) {
-    console.error('Digest notification failed:', error);
+    log.error('Digest notification failed', { error });
+    await captureException(error, { component: 'notifications:digest' });
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 }

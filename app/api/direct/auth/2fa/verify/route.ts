@@ -6,6 +6,10 @@ import {
   KEEPER_SESSION_COOKIE,
   keeperSessionCookieOptions
 } from '../../../../../../lib/keeper-auth';
+import { logger } from '../../../../../../lib/logger';
+import { captureException } from '../../../../../../lib/error-tracking';
+
+const log = logger('auth:2fa-verify');
 
 export async function POST(request: Request) {
   try {
@@ -34,7 +38,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 401 });
     }
 
-    console.error(error);
+    log.error('2FA verification failed', { error });
+    await captureException(error, { component: 'auth:2fa-verify' });
     return NextResponse.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

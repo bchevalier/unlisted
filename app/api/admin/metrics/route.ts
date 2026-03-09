@@ -1,4 +1,4 @@
-import { getAdminSessionFromRequest } from '../../../../features/direct/server/admin-session';
+import { getAdminSessionFromRequest } from '../../../../lib/admin-auth';
 import { snapshot } from '../../../../lib/metrics';
 
 export async function GET(request: Request) {

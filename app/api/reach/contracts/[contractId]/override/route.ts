@@ -1,3 +1,8 @@
+import { logger } from '../../../../../../lib/logger';
+import { captureException } from '../../../../../../lib/error-tracking';
+
+const log = logger('reach:contracts:override POST');
+
 /**
  * POST /api/reach/contracts/:contractId/override — Human override of a policy decision.
  *
@@ -78,7 +83,8 @@ export async function POST(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/contracts/override POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:contracts:override POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

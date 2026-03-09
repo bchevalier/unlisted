@@ -1023,6 +1023,7 @@ export async function updateRequestStatusForKeeper(userId: string, requestId: st
       door: {
         select: {
           userId: true,
+          slug: true,
           displayName: true,
           settings: {
             select: {

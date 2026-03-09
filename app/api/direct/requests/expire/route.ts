@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { expireStaleRequests } from '../../../../../features/direct/server/requests';
+import { logger } from '../../../../../lib/logger';
+import { captureException } from '../../../../../lib/error-tracking';
+import { increment, METRIC } from '../../../../../lib/metrics';
+
+const log = logger('requests:expire');
 
 /**
  * POST /api/direct/requests/expire
@@ -17,6 +22,7 @@ export async function POST(request: NextRequest) {
 
   const authorization = request.headers.get('authorization');
   if (authorization !== `Bearer ${cronSecret}`) {
+    log.warn('Unauthorized expire cron request');
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -26,9 +32,14 @@ export async function POST(request: NextRequest) {
       expiryDays: Number.isNaN(expiryDays) || expiryDays <= 0 ? 30 : expiryDays
     });
 
+    log.info('Auto-expire completed', result);
+    if (typeof result.expired === 'number') {
+      increment(METRIC.REQUEST_EXPIRED, result.expired);
+    }
     return NextResponse.json({ ok: true, ...result });
   } catch (error) {
-    console.error('Auto-expire failed:', error);
+    log.error('Auto-expire failed', { error });
+    await captureException(error, { component: 'requests:expire' });
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 }

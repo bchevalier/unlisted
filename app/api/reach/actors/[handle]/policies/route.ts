@@ -1,3 +1,8 @@
+import { logger } from '../../../../../../lib/logger';
+import { captureException } from '../../../../../../lib/error-tracking';
+
+const log = logger('reach:actors:policies POST');
+
 /**
  * GET  /api/reach/actors/:handle/policies — List policies for an actor.
  * POST /api/reach/actors/:handle/policies — Create a policy for an actor.
@@ -84,7 +89,8 @@ export async function POST(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/actors/policies POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:actors:policies POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

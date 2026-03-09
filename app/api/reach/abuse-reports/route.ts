@@ -1,3 +1,8 @@
+import { logger } from '../../../../lib/logger';
+import { captureException } from '../../../../lib/error-tracking';
+
+const log = logger('reach:abuse-reports POST');
+
 /**
  * POST  /api/reach/abuse-reports — Submit an abuse report for a Reach contract.
  * GET   /api/reach/abuse-reports — List abuse reports (scoped to own contracts; admin sees all).
@@ -75,7 +80,8 @@ export async function POST(request: Request) {
         { status: error.statusCode },
       );
     }
-    console.error('[reach/abuse-reports POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:abuse-reports POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -105,7 +111,8 @@ export async function GET(request: Request) {
 
     return Response.json({ ok: true, ...result });
   } catch (error) {
-    console.error('[reach/abuse-reports GET]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:abuse-reports POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -156,7 +163,8 @@ export async function PATCH(request: Request) {
         { status: error.statusCode },
       );
     }
-    console.error('[reach/abuse-reports PATCH]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:abuse-reports POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

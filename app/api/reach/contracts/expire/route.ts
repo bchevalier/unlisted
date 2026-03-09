@@ -1,3 +1,8 @@
+import { logger } from '../../../../../lib/logger';
+import { captureException } from '../../../../../lib/error-tracking';
+
+const log = logger('reach:contracts:expire POST');
+
 /**
  * POST /api/reach/contracts/expire — Expire stale contracts.
  *
@@ -25,7 +30,8 @@ export async function POST(request: Request) {
     const count = await expireStaleContracts();
     return Response.json({ ok: true, expired: count });
   } catch (error) {
-    console.error('[reach/contracts/expire POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:contracts:expire POST' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

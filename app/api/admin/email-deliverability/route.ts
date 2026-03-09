@@ -1,5 +1,9 @@
-import { getAdminSessionFromRequest } from '../../../../features/direct/server/admin-session';
+import { getAdminSessionFromRequest } from '../../../../lib/admin-auth';
 import { checkDeliverability } from '../../../../lib/email-deliverability';
+import { logger } from '../../../../lib/logger';
+import { captureException } from '../../../../lib/error-tracking';
+
+const log = logger('admin:deliverability');
 
 export async function GET(request: Request) {
   const session = await getAdminSessionFromRequest(request);
@@ -14,7 +18,8 @@ export async function GET(request: Request) {
     const report = await checkDeliverability(domain);
     return Response.json({ ok: true, report });
   } catch (error) {
-    console.error('[deliverability-check]', error);
+    log.error('Deliverability check failed', { error, domain });
+    await captureException(error, { component: 'admin:deliverability' });
     return Response.json({ ok: false, error: 'Deliverability check failed' }, { status: 500 });
   }
 }

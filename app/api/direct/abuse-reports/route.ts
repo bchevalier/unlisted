@@ -1,5 +1,9 @@
 import { ZodError } from 'zod';
 import { AbuseReportError, createAbuseReport } from '../../../../features/direct/server/abuse-reports';
+import { logger } from '../../../../lib/logger';
+import { captureException } from '../../../../lib/error-tracking';
+
+const log = logger('abuse-reports');
 
 function extractClientIP(request: Request): string | null {
   const forwarded = request.headers.get('x-forwarded-for');
@@ -17,6 +21,7 @@ export async function POST(request: Request) {
 
     const report = await createAbuseReport(payload, { ipAddress });
 
+    log.info('Abuse report created', { reportId: report.id });
     return Response.json({ ok: true, report }, { status: 201 });
   } catch (error) {
     if (error instanceof ZodError) {
@@ -27,7 +32,8 @@ export async function POST(request: Request) {
       return Response.json({ ok: false, error: error.message }, { status: error.statusCode });
     }
 
-    console.error(error);
+    log.error('Abuse report creation failed', { error });
+    await captureException(error, { component: 'abuse-reports' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

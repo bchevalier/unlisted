@@ -4,6 +4,10 @@ import {
   updateDoorPlanForKeeper
 } from '../../../../../features/direct/server/requests';
 import { getKeeperSessionFromRequest } from '../../../../../lib/keeper-auth';
+import { logger } from '../../../../../lib/logger';
+import { captureException } from '../../../../../lib/error-tracking';
+
+const log = logger('settings:plan');
 
 export async function POST(request: Request) {
   const session = getKeeperSessionFromRequest(request);
@@ -24,7 +28,8 @@ export async function POST(request: Request) {
       return Response.json({ ok: false, error: error.message }, { status: error.statusCode });
     }
 
-    console.error(error);
+    log.error('Plan update failed', { error });
+    await captureException(error, { component: 'settings:plan', userId: session.userId });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

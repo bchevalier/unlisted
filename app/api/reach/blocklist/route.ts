@@ -1,3 +1,8 @@
+import { logger } from '../../../../lib/logger';
+import { captureException } from '../../../../lib/error-tracking';
+
+const log = logger('reach:blocklist GET');
+
 /**
  * GET  /api/reach/blocklist         — List blocked actors
  * POST /api/reach/blocklist         — Block an actor
@@ -53,7 +58,8 @@ export async function GET(request: Request) {
     const entries = await listBlockedActors(actorId);
     return Response.json({ ok: true, blockedActors: entries });
   } catch (error) {
-    console.error('[reach/blocklist GET]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:blocklist GET' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -98,7 +104,8 @@ export async function POST(request: Request) {
         { status: error.statusCode },
       );
     }
-    console.error('[reach/blocklist POST]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:blocklist GET' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -145,7 +152,8 @@ export async function DELETE(request: Request) {
         { status: error.statusCode },
       );
     }
-    console.error('[reach/blocklist DELETE]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:blocklist GET' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,3 +1,8 @@
+import { logger } from '../../../../../lib/logger';
+import { captureException } from '../../../../../lib/error-tracking';
+
+const log = logger('reach:policies PATCH');
+
 /**
  * PATCH  /api/reach/policies/:policyId — Update a policy.
  * DELETE /api/reach/policies/:policyId — Deactivate a policy.
@@ -78,7 +83,8 @@ export async function PATCH(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/policies PATCH]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:policies PATCH' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -118,7 +124,8 @@ export async function DELETE(
         { status: error.statusCode },
       );
     }
-    console.error('[reach/policies DELETE]', error);
+    log.error('Request failed', { error });
+    void captureException(error, { component: 'reach:policies PATCH' });
     return Response.json({ ok: false, error: 'Internal server error' }, { status: 500 });
   }
 }
