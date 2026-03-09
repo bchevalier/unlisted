@@ -283,6 +283,29 @@ Query params: `from`, `to` (ISO dates), `actorId` (org delegation)
 | `REACH_ABUSE_REPORT_RATE_LIMIT_MAX` | `10` | Max abuse reports per actor per window |
 | `REACH_ABUSE_REPORT_RATE_LIMIT_WINDOW_MINUTES` | `60` | Abuse report rate limit window |
 | `REACH_WEBHOOK_SECRET` | _(none)_ | Global HMAC secret (per-webhook secrets preferred) |
+| `EMBEDDING_PROVIDER_ORDER` | `openai,voyage,google` | Provider failover order for embeddings |
+| `EMBEDDING_TIMEOUT_MS` | `12000` | Timeout per provider request |
+| `EMBEDDINGS_OPENAI_MODEL` | `text-embedding-3-small` | OpenAI default embedding model |
+| `EMBEDDINGS_VOYAGE_MODEL` | `voyage-3-lite` | Voyage fallback embedding model |
+| `EMBEDDINGS_GOOGLE_MODEL` | `text-embedding-004` | Google fallback embedding model |
+
+---
+
+## Embeddings + Retrieval Strategy
+
+Reach now includes a provider-agnostic embedding client in `lib/reach/embeddings.ts`.
+
+Design goals:
+- **Provider portability** — OpenAI/Voyage/Google adapters normalize to one output shape.
+- **Failover-first** — `EMBEDDING_PROVIDER_ORDER` controls fallback sequence.
+- **Cost-aware default** — start with a small model for stage-1 recall, then rerank downstream.
+
+Recommended retrieval pipeline:
+1. Generate query embedding (`generateEmbeddings`) with configured provider chain.
+2. ANN/vector search for top-K candidates.
+3. Optional reranker/LLM pass over top candidates for final precision.
+
+This keeps stage-1 fast/cheap while preserving nuance in stage-2 selection.
 
 ---
 

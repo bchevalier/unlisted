@@ -219,6 +219,24 @@ export {
 
 export type { RateLimitConfig, RateLimitResult } from './rate-limit';
 
+// Embeddings provider abstraction (multi-provider fallback)
+export {
+  EMBEDDING_PROVIDER_NAMES,
+  resolveEmbeddingProviderOrder,
+  configuredEmbeddingProviders,
+  generateEmbeddings,
+  EmbeddingError,
+} from './embeddings';
+
+export type {
+  EmbeddingProviderName,
+  EmbeddingRequestInput,
+  EmbeddingRecord,
+  EmbeddingUsage,
+  EmbeddingProviderFailure,
+  EmbeddingResult,
+} from './embeddings';
+
 // Webhook integration layer
 export {
   createWebhook,
