@@ -17,3 +17,11 @@ Neon is the default choice because it has a $0 starter tier, scales linearly wit
 
 - Keep dev/prod isolated to avoid data leaks.
 - Use the pooled connection string for production to avoid connection limits.
+
+## pgvector requirement (semantic retrieval)
+
+Direct semantic retrieval uses a `DoorEmbeddingChunk` table backed by pgvector.
+
+- Migration: `prisma/migrations/20260309162500_add_direct_door_embedding_chunks/migration.sql`
+- Requires `CREATE EXTENSION IF NOT EXISTS vector;`
+- Includes cosine ANN index (`hnsw`) for top-K retrieval speed.

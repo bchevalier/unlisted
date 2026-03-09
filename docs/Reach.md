@@ -310,6 +310,8 @@ Helper implementation is available in `lib/reach/retrieval.ts` via `retrieveTopK
 - supports optional rerank hook with non-strict fallback
 - returns debug metadata (provider/model/index kind/reranker usage)
 
+A ready-to-use PostgreSQL adapter exists at `lib/vector/pgvector.ts` (`createDoorPgvectorAdapter`).
+
 This keeps stage-1 fast/cheap while preserving nuance in stage-2 selection.
 
 ---
