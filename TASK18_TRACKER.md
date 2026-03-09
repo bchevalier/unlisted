@@ -10,7 +10,7 @@
 
 | Task | Scope | Slots | Status |
 |---|---|---:|---|
-| T1 | Direct Billing (Stripe) | 01-03 | PENDING |
+| T1 | Direct Billing (Stripe) | 01-03 | DONE |
 | T2 | Direct Admin Tools MVP | 04-06 | PENDING |
 | T3 | Direct entry + email infra gaps | 07-09 | PENDING |
 | T4 | Observability + hardening | 10-12 | PENDING |
@@ -22,7 +22,7 @@
 | Slot | Job name | Task | Attempt | Status | Commit | Notes |
 |---:|---|---|---:|---|---|---|
 | 01 | task18-slot-01 | T1 | 1/3 | PENDING | - | - |
-| 02 | task18-slot-02 | T1 | 2/3 | PENDING | - | - |
+| 02 | task18-slot-02 | T1 | 2/3 | DONE | de98d38 | Full Stripe billing: schema + checkout + webhooks + portal + UI + roadmap §1+§9 closed |
 | 03 | task18-slot-03 | T1 | 3/3 | PENDING | - | - |
 | 04 | task18-slot-04 | T2 | 1/3 | PENDING | - | - |
 | 05 | task18-slot-05 | T2 | 2/3 | PENDING | - | - |
