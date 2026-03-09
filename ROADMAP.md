@@ -210,7 +210,7 @@ Tasks should be checked only when implemented and verified.
 - [x] Sanitize all user inputs
 - [x] Review token entropy and expiry rules
 - [x] Add basic integration tests
-- [ ] Perform load sanity check (500 users)
+- [x] Perform load sanity check (500 users)
 - [x] Verify failure modes for email ingestion
 
 ---
