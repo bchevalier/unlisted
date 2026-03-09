@@ -10,12 +10,16 @@ import {
   extractClientIP,
   recordAuthAttempt
 } from '../../../../../features/direct/server/auth-security';
+import { captureException } from '../../../../../lib/error-tracking';
 import {
   createKeeperSessionToken,
   KEEPER_SESSION_COOKIE,
   keeperSessionCookieOptions
 } from '../../../../../lib/keeper-auth';
+import { logger } from '../../../../../lib/logger';
 import { verifyProviderToken } from '../../../../../lib/provider-auth';
+
+const log = logger('auth:provider');
 
 const providerAuthSchema = z.object({
   provider: z
@@ -106,6 +110,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
     }
 
+    log.error('Provider auth failed unexpectedly', { error });
+    await captureException(error, { component: 'auth:provider' });
     const message = error instanceof Error ? error.message : 'Provider authentication failed';
     return NextResponse.json({ ok: false, error: message }, { status: 401 });
   }

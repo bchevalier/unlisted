@@ -12,6 +12,10 @@ import {
   recordAuthAttempt
 } from '../../../../../features/direct/server/auth-security';
 import { sendEmailVerificationMail } from '../../../../../lib/auth-mailer';
+import { captureException } from '../../../../../lib/error-tracking';
+import { logger } from '../../../../../lib/logger';
+
+const log = logger('auth:signup');
 
 export async function POST(request: Request) {
   const ipAddress = extractClientIP(request);
@@ -78,6 +82,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
     }
 
+    log.error('Signup failed unexpectedly', { error, email });
+    await captureException(error, { component: 'auth:signup' });
     const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ ok: false, error: message }, { status: 429 });
   }

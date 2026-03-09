@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { getAdminSessionFromRequest } from '../../../../../lib/admin-auth';
 import { logAdminAction, isValidEntityId } from '../../../../../lib/admin-audit';
 import { db } from '../../../../../lib/db';
+import { captureException } from '../../../../../lib/error-tracking';
+import { logger } from '../../../../../lib/logger';
+
+const log = logger('admin:admin-user-detail');
 
 type RouteContext = { params: Promise<{ adminId: string }> };
 
@@ -78,7 +82,9 @@ export async function PATCH(request: Request, context: RouteContext) {
     });
 
     return NextResponse.json({ admin: updated });
-  } catch {
+  } catch (error) {
+    log.error('Admin user update failed', { error, adminId });
+    await captureException(error, { component: 'admin:admin-user-detail' });
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 }
@@ -130,7 +136,9 @@ export async function DELETE(request: Request, context: RouteContext) {
     });
 
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (error) {
+    log.error('Admin user deletion failed', { error, adminId });
+    await captureException(error, { component: 'admin:admin-user-detail' });
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 }

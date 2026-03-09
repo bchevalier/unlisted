@@ -2,9 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { logger } from './logger';
 
 describe('logger', () => {
-  const originalEnv = process.env.NODE_ENV;
-  const originalLogLevel = process.env.LOG_LEVEL;
-
   beforeEach(() => {
     vi.spyOn(console, 'debug').mockImplementation(() => {});
     vi.spyOn(console, 'info').mockImplementation(() => {});
@@ -14,13 +11,12 @@ describe('logger', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
-    process.env.NODE_ENV = originalEnv;
-    process.env.LOG_LEVEL = originalLogLevel;
+    vi.unstubAllEnvs();
   });
 
   it('emits structured JSON in production', () => {
-    process.env.NODE_ENV = 'production';
-    process.env.LOG_LEVEL = 'info';
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('LOG_LEVEL', 'info');
     const log = logger('test-component');
 
     log.info('hello world', { key: 'value' });
@@ -36,8 +32,8 @@ describe('logger', () => {
   });
 
   it('emits human-readable in development', () => {
-    process.env.NODE_ENV = 'development';
-    process.env.LOG_LEVEL = 'debug';
+    vi.stubEnv('NODE_ENV', 'development');
+    vi.stubEnv('LOG_LEVEL', 'debug');
     const log = logger('dev-comp');
 
     log.debug('test message');
@@ -50,7 +46,7 @@ describe('logger', () => {
   });
 
   it('respects log level filtering', () => {
-    process.env.LOG_LEVEL = 'warn';
+    vi.stubEnv('LOG_LEVEL', 'warn');
     const log = logger('filter-test');
 
     log.debug('should not appear');
@@ -65,8 +61,8 @@ describe('logger', () => {
   });
 
   it('serializes Error objects in meta', () => {
-    process.env.NODE_ENV = 'production';
-    process.env.LOG_LEVEL = 'error';
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('LOG_LEVEL', 'error');
     const log = logger('error-test');
 
     const err = new Error('test error');
@@ -80,8 +76,8 @@ describe('logger', () => {
   });
 
   it('creates child loggers with compound component names', () => {
-    process.env.NODE_ENV = 'production';
-    process.env.LOG_LEVEL = 'info';
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('LOG_LEVEL', 'info');
     const parent = logger('parent');
     const child = parent.child('child');
 

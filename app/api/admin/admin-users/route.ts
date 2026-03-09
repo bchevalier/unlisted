@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { getAdminSessionFromRequest } from '../../../../lib/admin-auth';
 import { logAdminAction } from '../../../../lib/admin-audit';
 import { db } from '../../../../lib/db';
+import { captureException } from '../../../../lib/error-tracking';
+import { logger } from '../../../../lib/logger';
+
+const log = logger('admin:admin-users');
 
 /**
  * GET /api/admin/admin-users — List all admin users.
@@ -109,7 +113,9 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ admin }, { status: 201 });
-  } catch {
+  } catch (error) {
+    log.error('Admin user creation failed', { error });
+    await captureException(error, { component: 'admin:admin-users' });
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 }

@@ -7,11 +7,15 @@ import {
   extractClientIP,
   recordAuthAttempt
 } from '../../../../../features/direct/server/auth-security';
+import { captureException } from '../../../../../lib/error-tracking';
 import {
   createKeeperSessionToken,
   KEEPER_SESSION_COOKIE,
   keeperSessionCookieOptions
 } from '../../../../../lib/keeper-auth';
+import { logger } from '../../../../../lib/logger';
+
+const log = logger('auth:login');
 
 export async function POST(request: Request) {
   const ipAddress = extractClientIP(request);
@@ -95,6 +99,8 @@ export async function POST(request: Request) {
       );
     }
 
+    log.error('Login failed unexpectedly', { error, email });
+    await captureException(error, { component: 'auth:login', userId: email ?? undefined });
     const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ ok: false, error: message }, { status: 429 });
   }

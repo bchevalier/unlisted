@@ -7,6 +7,10 @@ import {
   extractClientIP,
   recordAuthAttempt
 } from '../../../../../../../features/direct/server/auth-security';
+import { captureException } from '../../../../../../../lib/error-tracking';
+import { logger } from '../../../../../../../lib/logger';
+
+const log = logger('auth:email-verify');
 
 const confirmSchema = z.object({
   token: z.string().trim().min(10)
@@ -49,6 +53,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
     }
 
+    log.error('Email verification failed unexpectedly', { error });
+    await captureException(error, { component: 'auth:email-verify' });
     const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ ok: false, error: message }, { status: 429 });
   }

@@ -12,6 +12,10 @@ import {
   getClientIp,
 } from '../../../../lib/admin-rate-limit';
 import { logAdminAction } from '../../../../lib/admin-audit';
+import { captureException } from '../../../../lib/error-tracking';
+import { logger } from '../../../../lib/logger';
+
+const log = logger('admin:login');
 
 export async function POST(request: Request) {
   try {
@@ -79,7 +83,9 @@ export async function POST(request: Request) {
     response.cookies.set(ADMIN_SESSION_COOKIE, token, adminSessionCookieOptions);
 
     return response;
-  } catch {
+  } catch (error) {
+    log.error('Admin login failed unexpectedly', { error });
+    await captureException(error, { component: 'admin:login' });
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 }

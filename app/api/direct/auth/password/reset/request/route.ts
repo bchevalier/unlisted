@@ -11,6 +11,10 @@ import {
   recordAuthAttempt
 } from '../../../../../../../features/direct/server/auth-security';
 import { sendPasswordResetMail } from '../../../../../../../lib/auth-mailer';
+import { captureException } from '../../../../../../../lib/error-tracking';
+import { logger } from '../../../../../../../lib/logger';
+
+const log = logger('auth:password-reset');
 
 const requestSchema = z.object({
   email: z.string().trim().email()
@@ -63,6 +67,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: 'Invalid payload', issues: error.issues }, { status: 400 });
     }
 
+    log.error('Password reset request failed unexpectedly', { error });
+    await captureException(error, { component: 'auth:password-reset' });
     const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ ok: false, error: message }, { status: 429 });
   }
