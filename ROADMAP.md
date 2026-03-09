@@ -217,13 +217,13 @@ Tasks should be checked only when implemented and verified.
 
 ## 13. Launch Readiness
 
-- [ ] Write onboarding copy
-- [ ] Write public FAQ
-- [ ] Write privacy and terms documents
+- [x] Write onboarding copy
+- [x] Write public FAQ
+- [x] Write privacy and terms documents
 - [x] Verify email deliverability
-- [ ] Perform final end-to-end test
-- [ ] Enable production environment
-- [ ] Invite first pilot users
+- [x] Perform final end-to-end test
+- [x] Enable production environment
+- [x] Invite first pilot users
 
 ---
 
