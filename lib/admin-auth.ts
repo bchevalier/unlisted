@@ -4,20 +4,24 @@ import { cookies } from 'next/headers';
 /**
  * Admin authentication module.
  *
- * MVP approach: admin credentials are stored as environment variables
- * (ADMIN_EMAIL + ADMIN_PASSWORD_HASH). This avoids a DB migration for
- * an internal-only admin panel while still using proper bcrypt-hashed
- * passwords and HMAC-signed session tokens.
+ * Supports two credential sources (checked in order):
+ *  1. **DB-backed**: `admin_users` table (AdminUser model)
+ *  2. **Env-var bootstrap**: ADMIN_EMAIL + ADMIN_PASSWORD_HASH env vars
  *
- * A future iteration can migrate to an `admin_users` DB table.
+ * The env-var path allows bootstrapping the first admin without DB access.
+ * Once an `admin_users` row exists for the same email, the DB record takes
+ * precedence (including its `disabled` flag and `role`).
  */
 
 export const ADMIN_SESSION_COOKIE = 'knokio_admin_session';
 const SESSION_TTL_SECONDS = 60 * 60 * 8; // 8 hours
 
+export type AdminRole = 'SUPER_ADMIN' | 'ADMIN';
+
 type AdminSessionPayload = {
   email: string;
   role: 'admin';
+  adminRole?: AdminRole;
   exp: number;
 };
 
@@ -42,10 +46,11 @@ function sign(data: string): string {
   return base64url(crypto.createHmac('sha256', secret).update(data).digest());
 }
 
-export function createAdminSessionToken(email: string): string {
+export function createAdminSessionToken(email: string, adminRole?: AdminRole): string {
   const payload: AdminSessionPayload = {
     email,
     role: 'admin',
+    ...(adminRole ? { adminRole } : {}),
     exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
   };
   const encodedPayload = base64url(JSON.stringify(payload));
@@ -105,27 +110,79 @@ export const adminSessionCookieOptions = {
 };
 
 /**
- * Validate admin credentials against environment variables.
- * Returns the admin email on success, null on failure.
+ * Result of a successful admin credential validation.
  */
-export async function validateAdminCredentials(email: string, password: string): Promise<string | null> {
+export type AdminValidationResult = {
+  email: string;
+  role: AdminRole;
+  source: 'db' | 'env';
+  adminUserId?: string;
+};
+
+/**
+ * Validate admin credentials.
+ *
+ * Checks DB (`admin_users` table) first. If no DB match, falls back to
+ * the ADMIN_EMAIL + ADMIN_PASSWORD_HASH env vars (bootstrap path).
+ *
+ * Returns validation result on success, null on failure.
+ */
+export async function validateAdminCredentials(
+  email: string,
+  password: string
+): Promise<AdminValidationResult | null> {
+  const bcrypt = await import('bcryptjs');
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // --- 1. Try DB-backed admin_users ---
+  try {
+    const { db } = await import('./db');
+    const dbAdmin = await db.adminUser.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (dbAdmin) {
+      if (dbAdmin.disabled) return null;
+
+      const passwordMatch = await bcrypt.compare(password, dbAdmin.passwordHash);
+      if (!passwordMatch) return null;
+
+      // Update last login timestamp (fire-and-forget)
+      db.adminUser
+        .update({
+          where: { id: dbAdmin.id },
+          data: { lastLoginAt: new Date() },
+        })
+        .catch(() => {
+          /* non-critical */
+        });
+
+      return {
+        email: dbAdmin.email,
+        role: dbAdmin.role as AdminRole,
+        source: 'db',
+        adminUserId: dbAdmin.id,
+      };
+    }
+  } catch {
+    // DB unavailable — fall through to env-var path
+  }
+
+  // --- 2. Fallback: env-var bootstrap ---
   const adminEmail = process.env.ADMIN_EMAIL;
   const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
 
-  if (!adminEmail || !adminPasswordHash) {
-    // Admin panel not configured
-    return null;
-  }
+  if (!adminEmail || !adminPasswordHash) return null;
 
-  // Constant-time email comparison
-  const emailMatch =
-    email.trim().toLowerCase() === adminEmail.trim().toLowerCase();
-
+  const emailMatch = normalizedEmail === adminEmail.trim().toLowerCase();
   if (!emailMatch) return null;
 
-  // Use bcrypt for password verification
-  const bcrypt = await import('bcryptjs');
   const passwordMatch = await bcrypt.compare(password, adminPasswordHash);
+  if (!passwordMatch) return null;
 
-  return passwordMatch ? adminEmail : null;
+  return {
+    email: adminEmail,
+    role: 'SUPER_ADMIN',
+    source: 'env',
+  };
 }

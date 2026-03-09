@@ -621,6 +621,29 @@ model ReachWebhookDelivery {
   @@index([status, createdAt])
 }
 
+// ─── Admin ──────────────────────────────────────────────────────
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+}
+
+/// Admin users for the internal admin panel.
+/// Supports both env-var bootstrap (ADMIN_EMAIL) and DB-managed admin accounts.
+model AdminUser {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  passwordHash   String    @map("password_hash")
+  role           AdminRole @default(ADMIN)
+  disabled       Boolean   @default(false)
+  lastLoginAt    DateTime? @map("last_login_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  @@map("admin_users")
+  @@index([email, disabled])
+}
+
 /// Per-actor blocklist: prevents a blocked actor from sending contracts to the blocker.
 model ReachBlockedActor {
   id        String   @id @default(cuid())

@@ -47,9 +47,9 @@ export async function POST(request: Request) {
     // Record the attempt before validation
     recordLoginAttempt(ip);
 
-    const adminEmail = await validateAdminCredentials(email, password);
+    const result = await validateAdminCredentials(email, password);
 
-    if (!adminEmail) {
+    if (!result) {
       logAdminAction({
         adminEmail: typeof email === 'string' ? email : 'unknown',
         action: 'login_failed',
@@ -65,16 +65,17 @@ export async function POST(request: Request) {
     clearLoginRateLimit(ip);
 
     logAdminAction({
-      adminEmail,
+      adminEmail: result.email,
       action: 'login_success',
       targetType: 'auth',
-      targetId: adminEmail,
+      targetId: result.email,
+      details: { role: result.role, source: result.source },
       ip,
     });
 
-    const token = createAdminSessionToken(adminEmail);
+    const token = createAdminSessionToken(result.email, result.role);
 
-    const response = NextResponse.json({ ok: true, email: adminEmail });
+    const response = NextResponse.json({ ok: true, email: result.email, role: result.role });
     response.cookies.set(ADMIN_SESSION_COOKIE, token, adminSessionCookieOptions);
 
     return response;

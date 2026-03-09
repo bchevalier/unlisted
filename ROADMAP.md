@@ -36,7 +36,7 @@ Tasks should be checked only when implemented and verified.
 - [x] Define `requests` table
 - [x] Define `request_events` table
 - [x] Define `payments` table
-- [ ] Define `admin_users` table
+- [x] Define `admin_users` table
 - [x] Create database migrations
 - [x] Seed default categories and fields
 - [x] Integrate ORM models into application

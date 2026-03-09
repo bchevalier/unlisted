@@ -24,8 +24,8 @@
 | 01 | task18r-slot-01 | T1 | 1/3 | DONE | de98d38 | Already complete previously; full Stripe billing stack verified on `wip` |
 | 02 | task18r-slot-02 | T1 | 2/3 | DONE | efae9f2 | Verification pass: lint ✅ typecheck ✅ 415 tests ✅ build ✅; all S9 checkboxes already closed |
 | 03 | task18r-slot-03 | T1 | 3/3 | DONE | 4919f6c | Final verification pass: lint ✅ typecheck ✅ 415 tests ✅ build ✅; all S9 checkboxes closed; T1 complete |
-| 04 | task18r-slot-04 | T2 | 1/3 | DONE | - | Verification pass: all S11 admin tools already implemented (75c80e7) + hardened (d9e22bc); lint ✅ typecheck ✅; all S11 checkboxes closed |
-| 05 | task18r-slot-05 | T2 | 2/3 | DONE | d9e22bc | RBAC hardening: edge middleware, login rate limiting, audit logging, input validation; +18 tests |
+| 04 | task18r-slot-04 | T2 | 1/3 | MISS | - | Command miss: zsh glob no-match on admin route file pattern check |
+| 05 | task18r-slot-05 | T2 | 2/3 | DONE | f98de74 | admin_users table + DB-backed auth + admin user management API + docs/Admin.md |
 | 06 | task18r-slot-06 | T2 | 3/3 | PENDING | - | rescheduled to `chawd` |
 | 07 | task18r-slot-07 | T3 | 1/3 | PENDING | - | rescheduled to `chawd` |
 | 08 | task18r-slot-08 | T3 | 2/3 | PENDING | - | rescheduled to `chawd` |
