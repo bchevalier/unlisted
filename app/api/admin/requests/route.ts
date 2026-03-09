@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { RequestStatus } from '@prisma/client';
 import { getAdminSessionFromRequest } from '../../../../lib/admin-auth';
 import { listRequests, deleteRequests } from '../../../../features/direct/server/admin';
+import { logAdminAction, isValidEntityId } from '../../../../lib/admin-audit';
+import { getClientIp } from '../../../../lib/admin-rate-limit';
 
 const VALID_STATUSES = ['PENDING', 'ACCEPTED', 'DECLINED', 'EXPIRED', 'AWAITING_COMPLETION'];
 
@@ -41,6 +43,23 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: 'Max 100 requests per batch delete' }, { status: 400 });
   }
 
+  // Validate all IDs before proceeding
+  const invalidIds = requestIds.filter((id: unknown) => typeof id !== 'string' || !isValidEntityId(id));
+  if (invalidIds.length > 0) {
+    return NextResponse.json({ error: 'One or more invalid request ID formats' }, { status: 400 });
+  }
+
+  const ip = getClientIp(request);
   const result = await deleteRequests(requestIds);
+
+  logAdminAction({
+    adminEmail: session.email,
+    action: 'requests_batch_delete',
+    targetType: 'request',
+    targetId: `batch(${requestIds.length})`,
+    details: { requestIds, deletedCount: result.count },
+    ip,
+  });
+
   return NextResponse.json({ ok: true, deleted: result.count });
 }
