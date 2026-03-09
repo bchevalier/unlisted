@@ -305,6 +305,11 @@ Recommended retrieval pipeline:
 2. ANN/vector search for top-K candidates.
 3. Optional reranker/LLM pass over top candidates for final precision.
 
+Helper implementation is available in `lib/reach/retrieval.ts` via `retrieveTopK(...)`:
+- plugs into any vector adapter (`hnsw`, `ivf`, `exact`, `hybrid`)
+- supports optional rerank hook with non-strict fallback
+- returns debug metadata (provider/model/index kind/reranker usage)
+
 This keeps stage-1 fast/cheap while preserving nuance in stage-2 selection.
 
 ---

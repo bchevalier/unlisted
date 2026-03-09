@@ -237,6 +237,25 @@ export type {
   EmbeddingResult,
 } from './embeddings';
 
+// Retrieval pipeline (ANN top-K + optional rerank hook)
+export {
+  retrieveTopK,
+  RetrievalError,
+} from './retrieval';
+
+export type {
+  RetrievalQueryInput,
+  RetrievalQuery,
+  VectorSearchHit,
+  VectorSearchAdapter,
+  RerankQuery,
+  RerankHit,
+  Reranker,
+  RetrievalDeps,
+  RetrievalHit,
+  RetrievalResult,
+} from './retrieval';
+
 // Webhook integration layer
 export {
   createWebhook,
