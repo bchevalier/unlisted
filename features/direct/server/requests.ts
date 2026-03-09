@@ -10,6 +10,8 @@ import {
 } from '@prisma/client';
 import { z } from 'zod';
 import { db } from '../../../lib/db';
+import { logger } from '../../../lib/logger';
+import { increment, startTimer, METRIC } from '../../../lib/metrics';
 import {
   notifyKeeperNewRequest,
   notifyKnockerAccepted,
@@ -19,6 +21,8 @@ import {
   sendBatch
 } from '../../../lib/notifications';
 import { verifyTurnstileToken } from '../../../lib/turnstile';
+
+const log = logger('requests');
 
 const formRequestSchema = z.object({
   doorSlug: z.string().trim().min(1),
@@ -380,8 +384,11 @@ export async function createFormRequest(
   input: unknown,
   options?: { ipAddress?: string | null; cfTurnstileToken?: string | null; honeypot?: string | null }
 ) {
+  const endTimer = startTimer(METRIC.REQUEST_CREATION_MS);
+
   // Honeypot check — bots auto-fill hidden fields, humans leave them empty
   if (options?.honeypot && options.honeypot.trim().length > 0) {
+    increment(METRIC.HONEYPOT_TRIGGERED);
     throw new DirectValidationError('Unable to submit request at this time.', 403);
   }
 
@@ -496,6 +503,10 @@ export async function createFormRequest(
     }
   });
 
+  increment(METRIC.REQUEST_FORM_CREATED);
+  endTimer();
+  log.info('Form request created', { requestId: created.id, door: door.slug, category: category.key });
+
   // Fire-and-forget: notify keeper of new request
   sendNewRequestNotification(
     {
@@ -531,13 +542,17 @@ function hasRequiredFields(
 }
 
 export async function createEmailRequest(input: unknown) {
+  const endTimer = startTimer(METRIC.REQUEST_CREATION_MS);
+  increment(METRIC.EMAIL_INBOUND_RECEIVED);
   const payload = emailRequestSchema.parse(input);
 
   if ((payload.cc?.length ?? 0) > 0 || (payload.bcc?.length ?? 0) > 0) {
+    increment(METRIC.EMAIL_INBOUND_REJECTED);
     throw new DirectValidationError('CC/BCC not supported');
   }
 
   if ((payload.attachments?.length ?? 0) > 0) {
+    increment(METRIC.EMAIL_INBOUND_REJECTED);
     throw new DirectValidationError('Attachments not supported');
   }
 
@@ -698,6 +713,10 @@ export async function createEmailRequest(input: unknown) {
       });
     }
   }
+
+  increment(METRIC.REQUEST_EMAIL_CREATED);
+  endTimer();
+  log.info('Email request created', { requestId: created.id, alias, requiresCompletion });
 
   return {
     ...created,
@@ -1057,6 +1076,14 @@ export async function updateRequestStatusForKeeper(userId: string, requestId: st
     data: updateData,
     select: { id: true, status: true }
   });
+
+  if (payload.status === RequestStatus.ACCEPTED) {
+    increment(METRIC.REQUEST_ACCEPTED);
+    log.info('Request accepted', { requestId, doorSlug: existing.door.slug });
+  } else {
+    increment(METRIC.REQUEST_DECLINED);
+    log.info('Request declined', { requestId, doorSlug: existing.door.slug });
+  }
 
   // Fire-and-forget: notify knocker on acceptance
   if (payload.status === RequestStatus.ACCEPTED && existing.senderEmail) {
@@ -1492,6 +1519,9 @@ export async function expireStaleRequests(options?: { expiryDays?: number; batch
       console.error('[notification:expired-batch-failed]', err);
     });
   }
+
+  increment(METRIC.REQUEST_EXPIRED, result);
+  log.info('Expired stale requests', { expired: result, expiryDays });
 
   return { expired: result };
 }

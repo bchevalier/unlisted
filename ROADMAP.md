@@ -203,9 +203,9 @@ Tasks should be checked only when implemented and verified.
 
 ## 12. Observability & Hardening
 
-- [ ] Configure error tracking
-- [ ] Add structured logging
-- [ ] Add request lifecycle metrics
+- [x] Configure error tracking
+- [x] Add structured logging
+- [x] Add request lifecycle metrics
 - [x] Verify webhook signature handling
 - [x] Sanitize all user inputs
 - [x] Review token entropy and expiry rules
@@ -220,7 +220,7 @@ Tasks should be checked only when implemented and verified.
 - [ ] Write onboarding copy
 - [ ] Write public FAQ
 - [ ] Write privacy and terms documents
-- [ ] Verify email deliverability
+- [x] Verify email deliverability
 - [ ] Perform final end-to-end test
 - [ ] Enable production environment
 - [ ] Invite first pilot users

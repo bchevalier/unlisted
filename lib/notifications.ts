@@ -7,6 +7,10 @@
  */
 
 import crypto from 'node:crypto';
+import { logger } from './logger';
+import { increment, startTimer, METRIC } from './metrics';
+
+const log = logger('notifications');
 
 // ---------------------------------------------------------------------------
 // Low-level email sender (reuses Resend, same pattern as auth-mailer)
@@ -31,12 +35,11 @@ function appUrl(): string {
 }
 
 async function sendEmail(payload: EmailPayload): Promise<boolean> {
+  const endTimer = startTimer(METRIC.NOTIFICATION_SEND_MS);
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    console.info('[notification:fallback]', JSON.stringify({
-      to: payload.to,
-      subject: payload.subject
-    }));
+    log.info('Email send skipped (no API key)', { to: payload.to, subject: payload.subject });
+    endTimer();
     return false;
   }
 
@@ -65,10 +68,15 @@ async function sendEmail(payload: EmailPayload): Promise<boolean> {
 
   if (!response.ok) {
     const body = await response.text();
-    console.error('[notification:send-failed]', response.status, body);
+    log.error('Email send failed', { status: response.status, body, to: payload.to });
+    increment(METRIC.EMAIL_OUTBOUND_FAILED);
+    endTimer();
     return false;
   }
 
+  increment(METRIC.EMAIL_OUTBOUND_SENT);
+  increment(METRIC.NOTIFICATION_SENT);
+  endTimer();
   return true;
 }
 
@@ -79,7 +87,8 @@ async function safeSend(payload: EmailPayload): Promise<void> {
   try {
     await sendEmail(payload);
   } catch (error) {
-    console.error('[notification:error]', error);
+    log.error('Notification send error', { error, to: payload.to });
+    increment(METRIC.NOTIFICATION_FAILED);
   }
 }
 
