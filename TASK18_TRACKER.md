@@ -22,8 +22,8 @@
 | Slot | Job name | Task | Attempt | Status | Commit | Notes |
 |---:|---|---|---:|---|---|---|
 | 01 | task18r-slot-01 | T1 | 1/3 | DONE | de98d38 | Already complete previously; full Stripe billing stack verified on `wip` |
-| 02 | task18r-slot-02 | T1 | 2/3 | DONE | - | Verification pass: lint ✅ typecheck ✅ 415 tests ✅ build ✅; all S9 checkboxes already closed |
-| 03 | task18r-slot-03 | T1 | 3/3 | PENDING | - | rescheduled to `chawd` |
+| 02 | task18r-slot-02 | T1 | 2/3 | DONE | efae9f2 | Verification pass: lint ✅ typecheck ✅ 415 tests ✅ build ✅; all S9 checkboxes already closed |
+| 03 | task18r-slot-03 | T1 | 3/3 | DONE | — | Final verification pass: lint ✅ typecheck ✅ 415 tests ✅ build ✅; all S9 checkboxes closed; T1 complete |
 | 04 | task18r-slot-04 | T2 | 1/3 | PENDING | - | rescheduled to `chawd` |
 | 05 | task18r-slot-05 | T2 | 2/3 | DONE | d9e22bc | RBAC hardening: edge middleware, login rate limiting, audit logging, input validation; +18 tests |
 | 06 | task18r-slot-06 | T2 | 3/3 | PENDING | - | rescheduled to `chawd` |
