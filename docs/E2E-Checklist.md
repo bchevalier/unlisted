@@ -235,7 +235,7 @@ This checklist covers every critical user flow in Knokio Direct for launch valid
 ### J1. Error handling
 - [ ] 404 pages render correctly
 - [ ] API errors return appropriate status codes
-- [ ] Error tracking captures errors (Sentry)
+- [ ] Error tracking captures errors (provider or logs-only mode validated)
 - [ ] Structured logs are emitted correctly
 
 ### J2. Security

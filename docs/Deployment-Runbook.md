@@ -13,7 +13,7 @@ Before starting, ensure you have:
 - [ ] Access to the `knokio.io` domain DNS settings
 - [ ] A Resend account with a verified domain
 - [ ] A Stripe account in live mode
-- [ ] A Sentry project for error tracking
+- [ ] An error tracking plan (logs-only or provider such as Sentry/Bugsink/GlitchTip)
 
 ---
 
@@ -145,7 +145,9 @@ ADMIN_SESSION_SECRET=<generate: openssl rand -base64 48>
 AGENT_SIGNUP_SECRET=<generate: openssl rand -base64 48>
 
 # Observability
-SENTRY_DSN=<from Sentry project settings>
+ERROR_TRACKING_PROVIDER=none  # or sentry|bugsink|glitchtip
+ERROR_TRACKING_DSN=<provider DSN>  # optional in logs-only mode
+SENTRY_DSN=<legacy fallback DSN, optional>
 LOG_LEVEL=info
 
 # Safety

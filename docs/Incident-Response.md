@@ -21,7 +21,7 @@ Procedures for handling incidents during and after launch. This is a living docu
 
 **Automated signals:**
 - Render health check failures (auto-alerts)
-- Sentry error spikes
+- Error tracking spikes (Sentry/Bugsink/GlitchTip if enabled)
 - Stripe webhook delivery failures (Stripe dashboard)
 - Resend bounce rate spike (Resend dashboard)
 
@@ -199,12 +199,12 @@ UPDATE doors SET plan = 'PAID' WHERE user_id = '<user_id>';
 
 ---
 
-### S6: High error rate / Sentry spike
+### S6: High error rate / error-tracking spike
 
-**Symptoms:** Sentry shows sudden increase in errors
+**Symptoms:** Error tracker (if configured) shows sudden increase in errors
 
 **Diagnosis:**
-1. Open Sentry → check top errors by count
+1. Open your error tracking dashboard → check top errors by count
 2. Look at error details — which route/function is failing?
 3. Check if correlates with a recent deployment
 
@@ -276,7 +276,7 @@ SELECT * FROM request_events WHERE request_id = '<id>' ORDER BY created_at;
 Run through these checks daily during the first 2 weeks:
 
 - [ ] Render health check: green
-- [ ] Sentry: no new P0/P1 errors
+- [ ] Error tracking: no new P0/P1 errors (or logs reviewed if provider disabled)
 - [ ] Resend: bounce rate < 2%, complaint rate < 0.1%
 - [ ] Stripe: no failed webhooks
 - [ ] Cron jobs: last run succeeded (check Render cron logs)
@@ -292,7 +292,7 @@ Run through these checks daily during the first 2 weeks:
 | Neon | status.neon.tech | Neon dashboard → Support |
 | Resend | status.resend.com | support@resend.com |
 | Stripe | status.stripe.com | Stripe dashboard → Support |
-| Sentry | status.sentry.io | Sentry dashboard → Support |
+| Error tracking provider | provider status page | provider dashboard/support |
 
 ---
 

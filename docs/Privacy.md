@@ -96,7 +96,7 @@ We share data only in these limited circumstances:
 
 - **Stripe** — payment processing (governed by [Stripe's privacy policy](https://stripe.com/privacy))
 - **Email provider (Resend)** — outbound notification delivery (governed by [Resend's privacy policy](https://resend.com/legal/privacy-policy))
-- **Error tracking (Sentry)** — application error reports with PII redacted (governed by [Sentry's privacy policy](https://sentry.io/privacy/))
+- **Error tracking provider (optional)** — application error reports with PII redacted (e.g., Sentry/Bugsink/GlitchTip), or structured logs-only mode
 - **Law enforcement** — if legally compelled by valid legal process
 - **Safety** — if necessary to prevent imminent harm to a person
 

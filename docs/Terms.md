@@ -149,7 +149,7 @@ Knokio is provided "as is" and "as available" without warranties of any kind, ex
 We aim for high availability but do not guarantee uninterrupted or error-free service. We may perform maintenance that temporarily affects availability.
 
 ### 11.3 Third-party services
-Knokio integrates with third-party services (Stripe, Resend, Sentry). We are not responsible for the availability, accuracy, or conduct of these services.
+Knokio integrates with third-party services (e.g., Stripe, Resend, and optional error-tracking providers such as Sentry/Bugsink/GlitchTip). We are not responsible for the availability, accuracy, or conduct of these services.
 
 ---
 

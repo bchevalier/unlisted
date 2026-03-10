@@ -71,9 +71,10 @@ All variables from `.env.example` must be set in the production provider. Critic
 - [ ] `TURNSTILE_SECRET_KEY`
 
 ### Observability
-- [ ] `SENTRY_DSN` — production Sentry project
-- [ ] `SENTRY_RELEASE` — set to build SHA or version tag
-- [ ] `SENTRY_TRACES_SAMPLE_RATE=0.1`
+- [ ] `ERROR_TRACKING_PROVIDER` — `none|sentry|bugsink|glitchtip`
+- [ ] `ERROR_TRACKING_DSN` (or legacy `SENTRY_DSN`) for external provider mode
+- [ ] `SENTRY_RELEASE` — set to build SHA or version tag (when using Sentry-compatible providers)
+- [ ] `SENTRY_TRACES_SAMPLE_RATE=0.1` (when using Sentry-compatible providers)
 - [ ] `LOG_LEVEL=info`
 
 ### Agent/machine access
@@ -129,13 +130,13 @@ All variables from `.env.example` must be set in the production provider. Critic
 - [ ] Rate limiting active on auth, form, and email endpoints
 - [ ] Admin panel protected by separate auth + session
 - [ ] Webhook signature verification active (Stripe + inbound email)
-- [ ] Error tracking configured (Sentry) with PII redaction
+- [ ] Error tracking configured (or explicitly set to logs-only mode) with PII redaction
 
 ---
 
 ## 7. Observability
 
-- [ ] Sentry project created and DSN configured
+- [ ] Error tracking provider configured (Sentry/Bugsink/GlitchTip) or `ERROR_TRACKING_PROVIDER=none`
 - [ ] Structured logging active (`LOG_LEVEL=info`)
 - [ ] Key routes instrumented with logger and error tracking
 - [ ] Health endpoint responding: `GET /api/reach/health`

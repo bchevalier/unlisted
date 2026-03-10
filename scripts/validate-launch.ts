@@ -155,11 +155,19 @@ function checkEnvVars() {
     }
   }
 
-  // Observability
-  if (!envPresent('SENTRY_DSN')) {
-    warn(CAT, 'SENTRY_DSN set', 'Error tracking will be disabled');
+  // Observability (provider-agnostic)
+  const trackingProvider = (process.env.ERROR_TRACKING_PROVIDER ?? '').trim().toLowerCase();
+  const effectiveProvider = trackingProvider || (envPresent('ERROR_TRACKING_DSN') || envPresent('SENTRY_DSN') ? 'sentry' : 'none');
+
+  if (effectiveProvider === 'none') {
+    pass(CAT, 'Error tracking provider', 'logs-only mode (no external provider)');
   } else {
-    pass(CAT, 'SENTRY_DSN set');
+    const hasDsn = envPresent('ERROR_TRACKING_DSN') || envPresent('SENTRY_DSN');
+    if (!hasDsn) {
+      warn(CAT, 'Error tracking DSN set', `Provider=${effectiveProvider} but no DSN configured`);
+    } else {
+      pass(CAT, 'Error tracking DSN set', `provider=${effectiveProvider}`);
+    }
   }
 
   // Cron
