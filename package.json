@@ -15,7 +15,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "load:sanity": "npx tsx scripts/load-sanity.ts",
-    "validate:launch": "npx tsx scripts/validate-launch.ts"
+    "validate:launch": "npx tsx scripts/validate-launch.ts",
+    "eval:embeddings": "dotenv -e .env.local -- npx tsx scripts/eval-embeddings.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.14.0",
