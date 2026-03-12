@@ -16,7 +16,13 @@
     "test:watch": "vitest",
     "load:sanity": "npx tsx scripts/load-sanity.ts",
     "validate:launch": "npx tsx scripts/validate-launch.ts",
-    "eval:embeddings": "dotenv -e .env.local -- npx tsx scripts/eval-embeddings.ts"
+    "eval:embeddings": "dotenv -e .env.local -- npx tsx scripts/eval-embeddings.ts",
+    "seed:profile": "dotenv -e .env.local -- npx tsx scripts/seed-profiles.ts",
+    "seed:ci": "dotenv -e .env.local -- npx tsx scripts/seed-profiles.ts --profile ci",
+    "seed:staging-lite": "dotenv -e .env.local -- npx tsx scripts/seed-profiles.ts --profile staging-lite",
+    "seed:staging": "dotenv -e .env.local -- npx tsx scripts/seed-profiles.ts --profile staging",
+    "seed:load": "dotenv -e .env.local -- npx tsx scripts/seed-profiles.ts --profile load",
+    "seed:staging-lite:chunk": "dotenv -e .env.local -- npx tsx scripts/seed-staging-lite-chunk.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.14.0",
