@@ -63,7 +63,13 @@ const updateDoorSettingsSchema = z.object({
   revealMethod: z.enum([ContactRevealMethod.NONE, ContactRevealMethod.EMAIL, ContactRevealMethod.URL]),
   revealValue: z.string().trim().max(500).nullable(),
   notifyNewRequest: z.boolean().optional(),
-  notifyDigest: z.boolean().optional()
+  notifyDigest: z.boolean().optional(),
+  // Paid door: quote configuration
+  paidQuoteAmountCents: z.number().int().min(0).max(100_000_000).nullable().optional(),
+  paidQuoteCurrency: z.string().trim().min(3).max(3).toUpperCase().nullable().optional(),
+  paidQuoteNote: z.string().trim().max(1000).nullable().optional(),
+  quoteVisibleToVerifiedOrgsOnly: z.boolean().optional(),
+  openToNonTargetedPaidReach: z.boolean().optional()
 });
 
 const updateDoorPlanSchema = z.object({
@@ -1163,7 +1169,12 @@ export async function listRequestsByDoorSlugForKeeper(
           revealMethod: true,
           revealValue: true,
           notifyNewRequest: true,
-          notifyDigest: true
+          notifyDigest: true,
+          paidQuoteAmountCents: true,
+          paidQuoteCurrency: true,
+          paidQuoteNote: true,
+          quoteVisibleToVerifiedOrgsOnly: true,
+          openToNonTargetedPaidReach: true
         }
       },
       categories: {
@@ -1405,6 +1416,25 @@ export async function updateDoorSettingsForKeeper(userId: string, input: unknown
     ...(payload.notifyDigest !== undefined && { notifyDigest: payload.notifyDigest })
   };
 
+  // Paid quote fields — only apply when explicitly provided in payload
+  const paidQuoteFields = {
+    ...(payload.paidQuoteAmountCents !== undefined && {
+      paidQuoteAmountCents: payload.paidQuoteAmountCents
+    }),
+    ...(payload.paidQuoteCurrency !== undefined && {
+      paidQuoteCurrency: payload.paidQuoteCurrency ? payload.paidQuoteCurrency : null
+    }),
+    ...(payload.paidQuoteNote !== undefined && {
+      paidQuoteNote: payload.paidQuoteNote ? normalizeOptional(payload.paidQuoteNote) : null
+    }),
+    ...(payload.quoteVisibleToVerifiedOrgsOnly !== undefined && {
+      quoteVisibleToVerifiedOrgsOnly: payload.quoteVisibleToVerifiedOrgsOnly
+    }),
+    ...(payload.openToNonTargetedPaidReach !== undefined && {
+      openToNonTargetedPaidReach: payload.openToNonTargetedPaidReach
+    })
+  };
+
   return db.doorSettings.upsert({
     where: { doorId: door.id },
     update: {
@@ -1413,7 +1443,8 @@ export async function updateDoorSettingsForKeeper(userId: string, input: unknown
       weeklyRequestCap: normalizedWeeklyCap,
       revealMethod: payload.revealMethod,
       revealValue: normalizeOptional(payload.revealValue),
-      ...notificationFields
+      ...notificationFields,
+      ...paidQuoteFields
     },
     create: {
       doorId: door.id,
@@ -1422,7 +1453,8 @@ export async function updateDoorSettingsForKeeper(userId: string, input: unknown
       weeklyRequestCap: normalizedWeeklyCap,
       revealMethod: payload.revealMethod,
       revealValue: normalizeOptional(payload.revealValue),
-      ...notificationFields
+      ...notificationFields,
+      ...paidQuoteFields
     }
   });
 }
