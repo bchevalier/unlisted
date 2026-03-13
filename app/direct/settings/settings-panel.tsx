@@ -24,6 +24,11 @@ type SettingsPanelProps = {
           revealValue: string | null;
           notifyNewRequest: boolean;
           notifyDigest: boolean;
+          paidQuoteAmountCents: number | null;
+          paidQuoteCurrency: string | null;
+          paidQuoteNote: string | null;
+          quoteVisibleToVerifiedOrgsOnly: boolean;
+          openToNonTargetedPaidReach: boolean;
         }
       | null;
     categories: Array<{
@@ -97,6 +102,12 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
             const form = event.currentTarget;
             const data = new FormData(form);
 
+            const rawQuoteAmount = String(data.get('paidQuoteAmount') ?? '').trim();
+            const quoteAmountCents =
+              isPaid && rawQuoteAmount !== ''
+                ? Math.round(parseFloat(rawQuoteAmount) * 100)
+                : null;
+
             await postJson('/api/direct/settings/door', {
               doorSlug: door.slug,
               autoReplyEnabled: data.get('autoReplyEnabled') === 'on',
@@ -106,7 +117,14 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
               revealMethod: String(data.get('revealMethod') ?? 'NONE'),
               revealValue: String(data.get('revealValue') ?? '').trim() || null,
               notifyNewRequest: data.get('notifyNewRequest') === 'on',
-              notifyDigest: data.get('notifyDigest') === 'on'
+              notifyDigest: data.get('notifyDigest') === 'on',
+              paidQuoteAmountCents: quoteAmountCents,
+              paidQuoteCurrency: quoteAmountCents != null ? 'USD' : null,
+              paidQuoteNote: String(data.get('paidQuoteNote') ?? '').trim() || null,
+              quoteVisibleToVerifiedOrgsOnly:
+                data.get('quoteVisibleToVerifiedOrgsOnly') === 'on',
+              openToNonTargetedPaidReach:
+                data.get('openToNonTargetedPaidReach') === 'on'
             });
 
             alert('Door settings saved');
@@ -174,6 +192,75 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
               />{' '}
               Send periodic digest summary
             </label>
+          </fieldset>
+
+          {isPaid ? (
+            <fieldset style={{ border: '1px solid #ddd', padding: '12px', margin: '16px 0' }}>
+              <legend>Paid quote</legend>
+              <p style={{ fontSize: '0.9em', color: '#555', margin: '0 0 12px' }}>
+                Set a quote for paid requests. This amount is shown to requesters only after you
+                accept their request and they pass your verification policy.
+              </p>
+
+              <label>
+                Quote amount (USD)
+                <input
+                  name="paidQuoteAmount"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  defaultValue={
+                    door.settings?.paidQuoteAmountCents != null
+                      ? (door.settings.paidQuoteAmountCents / 100).toFixed(2)
+                      : ''
+                  }
+                  placeholder="e.g. 250.00"
+                />
+              </label>
+
+              <label>
+                Quote note (optional)
+                <textarea
+                  name="paidQuoteNote"
+                  rows={2}
+                  maxLength={1000}
+                  defaultValue={door.settings?.paidQuoteNote ?? ''}
+                  placeholder="e.g. Rate is per hour, minimum 1h engagement"
+                />
+              </label>
+            </fieldset>
+          ) : null}
+
+          <fieldset style={{ border: '1px solid #ddd', padding: '12px', margin: '16px 0' }}>
+            <legend>Privacy &amp; Reach</legend>
+
+            <label>
+              <input
+                type="checkbox"
+                name="quoteVisibleToVerifiedOrgsOnly"
+                defaultChecked={door.settings?.quoteVisibleToVerifiedOrgsOnly ?? false}
+              />{' '}
+              Restrict quote visibility to verified organizations only
+            </label>
+            <p style={{ fontSize: '0.85em', color: '#666', margin: '4px 0 12px 24px' }}>
+              When enabled, only requesters whose organization email domain is verified will see
+              your quote. When disabled, any requester who passes basic identity verification can
+              see it.
+            </p>
+
+            <label>
+              <input
+                type="checkbox"
+                name="openToNonTargetedPaidReach"
+                defaultChecked={door.settings?.openToNonTargetedPaidReach ?? false}
+              />{' '}
+              Open to non-targeted paid Reach offers
+            </label>
+            <p style={{ fontSize: '0.85em', color: '#666', margin: '4px 0 0 24px' }}>
+              Allow verified organizations to discover and contact you through Knokio Reach, even
+              if they don&apos;t have your door link. Your quote and identity stay hidden until you
+              accept.
+            </p>
           </fieldset>
 
           <button type="submit">Save door settings</button>
