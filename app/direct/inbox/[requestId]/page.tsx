@@ -8,6 +8,23 @@ type RequestDetailPageProps = {
   searchParams?: Promise<{ slug?: string }>;
 };
 
+/** Human-readable verification status label */
+function verificationLabel(status: string | null): { text: string; color: string } {
+  if (status === 'ORG_VERIFIED') return { text: '✓ Org verified', color: '#15803d' };
+  if (status === 'BASIC_VERIFIED') return { text: '✓ Basic verified', color: '#2563eb' };
+  return { text: 'Unverified', color: '#a3a3a3' };
+}
+
+/** Format cents as currency string */
+function formatQuote(amountCents: number, currency: string): string {
+  const amount = amountCents / 100;
+  try {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
+  } catch {
+    return `${currency} ${amount.toFixed(2)}`;
+  }
+}
+
 export default async function RequestDetailPage({ params, searchParams }: RequestDetailPageProps) {
   const session = await requireKeeperSession('/direct/inbox');
   const { requestId } = await params;
@@ -35,6 +52,8 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
       ) as Record<string, string>
     : null;
   const hasStructuredFields = structuredData && Object.keys(structuredData).length > 0;
+
+  const vLabel = verificationLabel(request.requesterVerificationStatus);
 
   return (
     <main>
@@ -65,6 +84,41 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
               {request.senderEmail ? ` (${request.senderEmail})` : ''}
             </td>
           </tr>
+          <tr>
+            <td><strong>Verification</strong></td>
+            <td>
+              <span style={{ color: vLabel.color, fontWeight: 600 }}>{vLabel.text}</span>
+              {request.requesterVerificationReason && (
+                <span style={{ color: '#888', fontSize: '13px', marginLeft: 8 }}>
+                  ({request.requesterVerificationReason})
+                </span>
+              )}
+            </td>
+          </tr>
+          {request.requesterType === 'ORGANIZATION' && (
+            <>
+              <tr>
+                <td><strong>Organization</strong></td>
+                <td>{request.requesterOrgName ?? '—'}</td>
+              </tr>
+              {request.requesterOrgWebsite && (
+                <tr>
+                  <td><strong>Org website</strong></td>
+                  <td>
+                    <a href={request.requesterOrgWebsite} target="_blank" rel="noopener noreferrer">
+                      {request.requesterOrgWebsite}
+                    </a>
+                  </td>
+                </tr>
+              )}
+              {request.requesterRoleTitle && (
+                <tr>
+                  <td><strong>Role / title</strong></td>
+                  <td>{request.requesterRoleTitle}</td>
+                </tr>
+              )}
+            </>
+          )}
           <tr>
             <td><strong>Received</strong></td>
             <td>{new Date(request.createdAt).toLocaleString()}</td>
@@ -170,6 +224,29 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
             </p>
           ) : null}
         </>
+      )}
+
+      {request.keeperQuoteAmountCents != null && (
+        <div style={{ padding: '12px 16px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 6, margin: '16px 0' }}>
+          <h2 style={{ margin: '0 0 8px 0', fontSize: '16px' }}>Quote Snapshot</h2>
+          <p style={{ margin: 0 }}>
+            <strong>{formatQuote(request.keeperQuoteAmountCents, request.keeperQuoteCurrency ?? 'USD')}</strong>
+          </p>
+          {request.keeperQuoteNote && (
+            <p style={{ margin: '4px 0 0 0', color: '#666', fontSize: '14px' }}>
+              {request.keeperQuoteNote}
+            </p>
+          )}
+          {request.door.settings && (
+            <p style={{ margin: '8px 0 0 0', color: '#888', fontSize: '13px' }}>
+              Visibility: {request.door.settings.quoteVisibleToVerifiedOrgsOnly
+                ? 'Verified orgs only'
+                : 'All verified requesters'}
+              {' · '}
+              Requester: <span style={{ color: vLabel.color }}>{vLabel.text}</span>
+            </p>
+          )}
+        </div>
       )}
 
       {request.events.length > 0 && (
