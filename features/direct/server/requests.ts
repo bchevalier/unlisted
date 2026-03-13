@@ -1065,7 +1065,10 @@ export async function updateRequestStatusForKeeper(userId: string, requestId: st
           settings: {
             select: {
               revealMethod: true,
-              revealValue: true
+              revealValue: true,
+              paidQuoteAmountCents: true,
+              paidQuoteCurrency: true,
+              paidQuoteNote: true
             }
           }
         }
@@ -1102,6 +1105,16 @@ export async function updateRequestStatusForKeeper(userId: string, requestId: st
       }
     }
   };
+
+  // Snapshot quote fields from door settings onto request on acceptance
+  if (payload.status === RequestStatus.ACCEPTED && existing.door.settings) {
+    const { paidQuoteAmountCents, paidQuoteCurrency, paidQuoteNote } = existing.door.settings;
+    if (paidQuoteAmountCents != null) {
+      updateData.keeperQuoteAmountCents = paidQuoteAmountCents;
+      updateData.keeperQuoteCurrency = paidQuoteCurrency ?? 'USD';
+      updateData.keeperQuoteNote = paidQuoteNote ?? null;
+    }
+  }
 
   // Clear completion token when declining an AWAITING_COMPLETION request
   if (existing.status === RequestStatus.AWAITING_COMPLETION) {
@@ -1279,6 +1292,17 @@ export async function getRequestDetailForKeeper(userId: string, requestId: strin
       completionExpiresAt: true,
       createdAt: true,
       updatedAt: true,
+      // Requester verification fields
+      requesterType: true,
+      requesterOrgName: true,
+      requesterOrgWebsite: true,
+      requesterRoleTitle: true,
+      requesterVerificationStatus: true,
+      requesterVerificationReason: true,
+      // Quote snapshot (populated on acceptance)
+      keeperQuoteAmountCents: true,
+      keeperQuoteCurrency: true,
+      keeperQuoteNote: true,
       category: {
         select: { key: true, label: true }
       },
@@ -1298,7 +1322,15 @@ export async function getRequestDetailForKeeper(userId: string, requestId: strin
           slug: true,
           displayName: true,
           settings: {
-            select: { revealMethod: true, revealValue: true }
+            select: {
+              revealMethod: true,
+              revealValue: true,
+              paidQuoteAmountCents: true,
+              paidQuoteCurrency: true,
+              paidQuoteNote: true,
+              quoteVisibleToVerifiedOrgsOnly: true,
+              openToNonTargetedPaidReach: true
+            }
           }
         }
       }
