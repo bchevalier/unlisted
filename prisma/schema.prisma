@@ -52,6 +52,17 @@ enum DoorPlan {
   PAID
 }
 
+enum RequesterType {
+  INDIVIDUAL
+  ORGANIZATION
+}
+
+enum RequesterVerificationStatus {
+  UNVERIFIED
+  BASIC_VERIFIED
+  ORG_VERIFIED
+}
+
 enum AuthProvider {
   PASSWORD
   GOOGLE
@@ -204,14 +215,14 @@ model Door {
 }
 
 model Payment {
-  id               String   @id @default(cuid())
-  userId           String
-  stripePaymentId  String   @unique
-  amount           Int // cents
-  currency         String   @default("usd")
-  status           String // succeeded, pending, failed
-  description      String?
-  createdAt        DateTime @default(now())
+  id              String   @id @default(cuid())
+  userId          String
+  stripePaymentId String   @unique
+  amount          Int // cents
+  currency        String   @default("usd")
+  status          String // succeeded, pending, failed
+  description     String?
+  createdAt       DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -231,6 +242,13 @@ model DoorSettings {
   notifyNewRequest Boolean   @default(true)
   notifyDigest     Boolean   @default(false)
   lastDigestSentAt DateTime?
+
+  // Paid door: quote configuration
+  paidQuoteAmountCents           Int?
+  paidQuoteCurrency              String?
+  paidQuoteNote                  String?
+  quoteVisibleToVerifiedOrgsOnly Boolean @default(false)
+  openToNonTargetedPaidReach     Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -339,8 +357,22 @@ model Request {
   requestToken        String        @unique @default(cuid())
   completionToken     String?       @unique
   completionExpiresAt DateTime?
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+
+  // Requester verification fields
+  requesterType               RequesterType?              @default(INDIVIDUAL)
+  requesterOrgName            String?
+  requesterOrgWebsite         String?
+  requesterRoleTitle          String?
+  requesterVerificationStatus RequesterVerificationStatus @default(UNVERIFIED)
+  requesterVerificationReason String?
+
+  // Quote snapshot (captured from DoorSettings on acceptance)
+  keeperQuoteAmountCents Int?
+  keeperQuoteCurrency    String?
+  keeperQuoteNote        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   door         Door           @relation(fields: [doorId], references: [id], onDelete: Cascade)
   category     Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
@@ -631,17 +663,17 @@ enum AdminRole {
 /// Admin users for the internal admin panel.
 /// Supports both env-var bootstrap (ADMIN_EMAIL) and DB-managed admin accounts.
 model AdminUser {
-  id             String    @id @default(cuid())
-  email          String    @unique
-  passwordHash   String    @map("password_hash")
-  role           AdminRole @default(ADMIN)
-  disabled       Boolean   @default(false)
-  lastLoginAt    DateTime? @map("last_login_at")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  role         AdminRole @default(ADMIN)
+  disabled     Boolean   @default(false)
+  lastLoginAt  DateTime? @map("last_login_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
 
-  @@map("admin_users")
   @@index([email, disabled])
+  @@map("admin_users")
 }
 
 /// Per-actor blocklist: prevents a blocked actor from sending contracts to the blocker.
