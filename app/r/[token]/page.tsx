@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { db } from '../../../lib/db';
+import { isQuoteVisible } from '../../../features/direct/server/quote-visibility';
 import { ReportButton } from './report-button';
 
 type RequestStatusPageProps = {
@@ -69,21 +70,14 @@ export default async function RequestStatusPage({ params }: RequestStatusPagePro
 
   const canReveal = request.status === 'ACCEPTED' && request.door.settings?.revealMethod !== 'NONE';
 
-  // Quote visibility policy (only on accepted requests with a snapshot)
-  const hasQuote =
-    request.status === 'ACCEPTED' && request.keeperQuoteAmountCents != null;
-
-  let quoteVisible = false;
-  if (hasQuote) {
-    const orgOnly = request.door.settings?.quoteVisibleToVerifiedOrgsOnly ?? false;
-    if (orgOnly) {
-      quoteVisible = request.requesterVerificationStatus === 'ORG_VERIFIED';
-    } else {
-      quoteVisible =
-        request.requesterVerificationStatus === 'BASIC_VERIFIED' ||
-        request.requesterVerificationStatus === 'ORG_VERIFIED';
-    }
-  }
+  // Quote visibility — delegates to shared policy helper
+  const quoteVisible = isQuoteVisible({
+    requestStatus: request.status,
+    keeperQuoteAmountCents: request.keeperQuoteAmountCents,
+    requesterVerificationStatus: request.requesterVerificationStatus ?? 'UNVERIFIED',
+    quoteVisibleToVerifiedOrgsOnly:
+      request.door.settings?.quoteVisibleToVerifiedOrgsOnly ?? false,
+  });
 
   return (
     <main>
