@@ -170,4 +170,70 @@ describe('isQuoteVisible — edge cases', () => {
       })
     ).toBe(false);
   });
+
+  it('returns false for empty-string verification status', () => {
+    expect(
+      isQuoteVisible({
+        requestStatus: 'ACCEPTED',
+        keeperQuoteAmountCents: 50000,
+        requesterVerificationStatus: '',
+        quoteVisibleToVerifiedOrgsOnly: false,
+      })
+    ).toBe(false);
+  });
+
+  it('returns false for lowercase verification status (case-sensitive)', () => {
+    expect(
+      isQuoteVisible({
+        requestStatus: 'ACCEPTED',
+        keeperQuoteAmountCents: 50000,
+        requesterVerificationStatus: 'basic_verified',
+        quoteVisibleToVerifiedOrgsOnly: false,
+      })
+    ).toBe(false);
+  });
+
+  it('returns false for lowercase org_verified with org-only restriction', () => {
+    expect(
+      isQuoteVisible({
+        requestStatus: 'ACCEPTED',
+        keeperQuoteAmountCents: 50000,
+        requesterVerificationStatus: 'org_verified',
+        quoteVisibleToVerifiedOrgsOnly: true,
+      })
+    ).toBe(false);
+  });
+
+  it('returns false when status is accepted (lowercase) — case-sensitive gate', () => {
+    expect(
+      isQuoteVisible({
+        requestStatus: 'accepted',
+        keeperQuoteAmountCents: 50000,
+        requesterVerificationStatus: 'BASIC_VERIFIED',
+        quoteVisibleToVerifiedOrgsOnly: false,
+      })
+    ).toBe(false);
+  });
+
+  it('returns false when declined with quote and ORG_VERIFIED', () => {
+    expect(
+      isQuoteVisible({
+        requestStatus: 'DECLINED',
+        keeperQuoteAmountCents: 50000,
+        requesterVerificationStatus: 'ORG_VERIFIED',
+        quoteVisibleToVerifiedOrgsOnly: false,
+      })
+    ).toBe(false);
+  });
+
+  it('returns false when expired with quote and ORG_VERIFIED', () => {
+    expect(
+      isQuoteVisible({
+        requestStatus: 'EXPIRED',
+        keeperQuoteAmountCents: 50000,
+        requesterVerificationStatus: 'ORG_VERIFIED',
+        quoteVisibleToVerifiedOrgsOnly: false,
+      })
+    ).toBe(false);
+  });
 });
