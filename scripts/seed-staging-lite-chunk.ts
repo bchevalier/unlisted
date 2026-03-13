@@ -10,6 +10,8 @@ import {
   RequestEventType,
   RequestSource,
   RequestStatus,
+  RequesterType,
+  RequesterVerificationStatus,
   ReachActorType,
   ReachContractEventActor,
   ReachContractEventType,
@@ -212,18 +214,30 @@ async function seedUsers() {
       },
     });
 
+    const paidQuoteFields = plan === DoorPlan.PAID
+      ? {
+          paidQuoteAmountCents: 25000 + (i * 1000) % 75000,
+          paidQuoteCurrency: 'USD',
+          paidQuoteNote: `Seed ${suffix} standard rate.`,
+          quoteVisibleToVerifiedOrgsOnly: i % 3 === 0,
+          openToNonTargetedPaidReach: i % 5 === 0,
+        }
+      : {};
+
     await prisma.doorSettings.upsert({
       where: { doorId: door.id },
       update: {
         weeklyRequestCap: plan === DoorPlan.PAID ? null : 50,
         notifyNewRequest: true,
         notifyDigest: i % 5 === 0,
+        ...paidQuoteFields,
       },
       create: {
         doorId: door.id,
         weeklyRequestCap: plan === DoorPlan.PAID ? null : 50,
         notifyNewRequest: true,
         notifyDigest: i % 5 === 0,
+        ...paidQuoteFields,
       },
     });
 
@@ -314,6 +328,23 @@ async function seedDirectRequests(start: number, count: number) {
     const title = `Seed STAGING_LITE request ${i}`;
     await prisma.request.deleteMany({ where: { title } });
 
+    // Requester verification fields — deterministic from hash
+    const isOrg = hashRand(i, 'requester-type') < 0.35;
+    const requesterType = isOrg ? RequesterType.ORGANIZATION : RequesterType.INDIVIDUAL;
+    const senderDomain = isOrg ? `seed-org-${i}.com` : 'example.test';
+    const senderEmail = `sender-${PREFIX}-${i}@${senderDomain}`;
+
+    let verificationStatus: RequesterVerificationStatus = RequesterVerificationStatus.UNVERIFIED;
+    let verificationReason: string | null = null;
+
+    if (isOrg && hashRand(i, 'org-verified') < 0.6) {
+      verificationStatus = RequesterVerificationStatus.ORG_VERIFIED;
+      verificationReason = 'Email domain matches org website. MX record confirmed.';
+    } else if (hashRand(i, 'basic-verified') < 0.5) {
+      verificationStatus = RequesterVerificationStatus.BASIC_VERIFIED;
+      verificationReason = 'Non-disposable email domain verified.';
+    }
+
     const request = await prisma.request.create({
       data: {
         doorId: door.id,
@@ -321,7 +352,7 @@ async function seedDirectRequests(start: number, count: number) {
         source,
         status,
         senderName: `Sender ${i}`,
-        senderEmail: `sender-${PREFIX}-${i}@example.test`,
+        senderEmail,
         ipHash: `ip-${PREFIX}-${Math.floor(i / 3)}`,
         title,
         message: `Seeded staging-lite request ${i}`,
@@ -334,6 +365,20 @@ async function seedDirectRequests(start: number, count: number) {
           status === RequestStatus.AWAITING_COMPLETION
             ? new Date(Date.now() + 1000 * 60 * 60 * 24)
             : null,
+        requesterType,
+        requesterOrgName: isOrg ? `Seed Org ${i}` : null,
+        requesterOrgWebsite: isOrg ? `https://${senderDomain}` : null,
+        requesterRoleTitle: isOrg ? 'Partnerships Lead' : null,
+        requesterVerificationStatus: verificationStatus,
+        requesterVerificationReason: verificationReason,
+        // Snapshot quote on accepted requests
+        ...(status === RequestStatus.ACCEPTED
+          ? {
+              keeperQuoteAmountCents: 50000,
+              keeperQuoteCurrency: 'USD',
+              keeperQuoteNote: 'Seed quote snapshot.',
+            }
+          : {}),
       },
     });
 

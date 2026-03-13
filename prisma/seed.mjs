@@ -64,12 +64,32 @@ async function main() {
   await prisma.doorSettings.upsert({
     where: { doorId: door.id },
     update: {
-      weeklyRequestCap: demoPlan === DoorPlan.PAID ? null : 50
+      weeklyRequestCap: demoPlan === DoorPlan.PAID ? null : 50,
+      // Paid door quote defaults
+      ...(demoPlan === DoorPlan.PAID
+        ? {
+            paidQuoteAmountCents: 50000,
+            paidQuoteCurrency: 'USD',
+            paidQuoteNote: 'Standard rate for initial engagement.',
+            quoteVisibleToVerifiedOrgsOnly: false,
+            openToNonTargetedPaidReach: false,
+          }
+        : {}),
     },
     create: {
       doorId: door.id,
       autoReplyEnabled: false,
-      weeklyRequestCap: demoPlan === DoorPlan.PAID ? null : 50
+      weeklyRequestCap: demoPlan === DoorPlan.PAID ? null : 50,
+      // Paid door quote defaults
+      ...(demoPlan === DoorPlan.PAID
+        ? {
+            paidQuoteAmountCents: 50000,
+            paidQuoteCurrency: 'USD',
+            paidQuoteNote: 'Standard rate for initial engagement.',
+            quoteVisibleToVerifiedOrgsOnly: false,
+            openToNonTargetedPaidReach: false,
+          }
+        : {}),
     }
   });
 
