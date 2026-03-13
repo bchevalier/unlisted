@@ -18,5 +18,7 @@ export type PublicDoor = {
   slug: string;
   displayName: string;
   headline: string | null;
+  /** True when the door is on the PAID plan (enables verification fields + requires email). */
+  isPaidDoor: boolean;
   categories: PublicDoorCategory[];
 };

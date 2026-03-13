@@ -82,8 +82,12 @@ function useTurnstile(siteKey: string | null | undefined) {
 
 export function KnockForm({ door, turnstileSiteKey }: KnockFormProps) {
   const [categoryKey, setCategoryKey] = useState(door.categories[0]?.key ?? '');
+  const [requesterType, setRequesterType] = useState<'INDIVIDUAL' | 'ORGANIZATION'>('INDIVIDUAL');
   const [submitState, setSubmitState] = useState<SubmitState>({ kind: 'idle' });
   const turnstile = useTurnstile(turnstileSiteKey);
+
+  const isPaid = door.isPaidDoor;
+  const isOrg = requesterType === 'ORGANIZATION';
 
   const category = useMemo(
     () => door.categories.find((item) => item.key === categoryKey) ?? door.categories[0],
@@ -106,6 +110,14 @@ export function KnockForm({ door, turnstileSiteKey }: KnockFormProps) {
     // Turnstile token
     const cfToken = turnstile.getToken();
 
+    const senderEmail = String(data.get('senderEmail') ?? '').trim();
+
+    // Client-side enforcement: paid doors require an email address
+    if (isPaid && !senderEmail) {
+      setSubmitState({ kind: 'error', message: 'Email is required for this door.' });
+      return;
+    }
+
     const fields: Record<string, string> = {};
     for (const field of category.fields) {
       fields[field.key] = String(data.get(`field_${field.key}`) ?? '').trim();
@@ -121,10 +133,14 @@ export function KnockForm({ door, turnstileSiteKey }: KnockFormProps) {
           doorSlug: door.slug,
           categoryKey: category.key,
           senderName: String(data.get('senderName') ?? '').trim(),
-          senderEmail: String(data.get('senderEmail') ?? '').trim(),
+          senderEmail,
           title: String(data.get('title') ?? '').trim(),
           message: String(data.get('message') ?? '').trim(),
           fields,
+          requesterType,
+          requesterOrgName: String(data.get('requesterOrgName') ?? '').trim() || undefined,
+          requesterOrgWebsite: String(data.get('requesterOrgWebsite') ?? '').trim() || undefined,
+          requesterRoleTitle: String(data.get('requesterRoleTitle') ?? '').trim() || undefined,
           _hp_website: honeypot,
           'cf-turnstile-response': cfToken
         })
@@ -187,10 +203,70 @@ export function KnockForm({ door, turnstileSiteKey }: KnockFormProps) {
         </label>
 
         <label>
-          Your email
-          <input name="senderEmail" type="email" maxLength={160} />
+          Your email{isPaid ? ' *' : ''}
+          <input name="senderEmail" type="email" required={isPaid} maxLength={160} />
         </label>
       </div>
+
+      {/* Requester type selector — always shown on paid doors */}
+      {isPaid ? (
+        <>
+          <div className="knock-form__row">
+            <label htmlFor="requesterType">I am reaching out as</label>
+            <select
+              id="requesterType"
+              name="requesterType"
+              value={requesterType}
+              onChange={(event) =>
+                setRequesterType(event.target.value as 'INDIVIDUAL' | 'ORGANIZATION')
+              }
+            >
+              <option value="INDIVIDUAL">An individual</option>
+              <option value="ORGANIZATION">An organization</option>
+            </select>
+          </div>
+
+          {/* Organization fields — shown only when requesterType is ORGANIZATION */}
+          {isOrg ? (
+            <fieldset>
+              <legend>Organization details</legend>
+              <div className="knock-form__grid">
+                <label>
+                  Company name *
+                  <input
+                    name="requesterOrgName"
+                    type="text"
+                    required
+                    maxLength={200}
+                    placeholder="Acme Inc."
+                  />
+                </label>
+
+                <label>
+                  Company website *
+                  <input
+                    name="requesterOrgWebsite"
+                    type="url"
+                    required
+                    maxLength={500}
+                    placeholder="https://acme.com"
+                  />
+                </label>
+
+                <label>
+                  Your role / title
+                  <input
+                    name="requesterRoleTitle"
+                    type="text"
+                    maxLength={200}
+                    placeholder="Head of Partnerships"
+                  />
+                </label>
+              </div>
+            </fieldset>
+          ) : null}
+        </>
+      ) : null}
 
       <label>
         Title

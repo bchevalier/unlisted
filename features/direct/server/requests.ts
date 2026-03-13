@@ -452,8 +452,13 @@ export async function createFormRequest(
     throw new DirectValidationError('Category unavailable');
   }
 
-  // Abuse controls: blocklist → IP rate limit → sender rate limit → caps
+  // Paid doors require senderEmail for verification
   const normalizedSenderEmail = normalizeOptional(payload.senderEmail);
+  if (door.plan === DoorPlan.PAID && !normalizedSenderEmail) {
+    throw new DirectValidationError('Email is required for paid doors');
+  }
+
+  // Abuse controls: blocklist → IP rate limit → sender rate limit → caps
   await enforceBlocklist(door.id, normalizedSenderEmail);
 
   const ipHash = options?.ipAddress ? hashForRateLimit(options.ipAddress) : null;

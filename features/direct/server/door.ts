@@ -1,3 +1,4 @@
+import { DoorPlan } from '@prisma/client';
 import { db } from '../../../lib/db';
 import type { PublicDoor } from '../types';
 
@@ -10,6 +11,7 @@ export async function getPublicDoorBySlug(slug: string): Promise<PublicDoor | nu
       displayName: true,
       headline: true,
       isEnabled: true,
+      plan: true,
       categories: {
         where: { isEnabled: true },
         orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
@@ -41,6 +43,7 @@ export async function getPublicDoorBySlug(slug: string): Promise<PublicDoor | nu
     slug: door.slug,
     displayName: door.displayName,
     headline: door.headline,
+    isPaidDoor: door.plan === DoorPlan.PAID,
     categories: door.categories
   };
 }
