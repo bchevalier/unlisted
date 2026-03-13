@@ -21,6 +21,7 @@ import {
   sendBatch
 } from '../../../lib/notifications';
 import { verifyTurnstileToken } from '../../../lib/turnstile';
+import { computeVerificationStatus } from './verification';
 
 const log = logger('requests');
 
@@ -31,7 +32,12 @@ const formRequestSchema = z.object({
   senderEmail: z.string().trim().email().optional(),
   title: z.string().trim().max(180).optional(),
   message: z.string().trim().min(1).max(4000),
-  fields: z.record(z.string(), z.string()).default({})
+  fields: z.record(z.string(), z.string()).default({}),
+  // Requester type / org fields (V1 verification)
+  requesterType: z.enum(['INDIVIDUAL', 'ORGANIZATION']).default('INDIVIDUAL'),
+  requesterOrgName: z.string().trim().max(200).optional(),
+  requesterOrgWebsite: z.string().trim().max(500).optional(),
+  requesterRoleTitle: z.string().trim().max(200).optional()
 });
 
 const emailRequestSchema = z.object({
@@ -476,6 +482,15 @@ export async function createFormRequest(
     }
   }
 
+  // Compute requester verification status (V1 — deterministic, no external KYC)
+  const verification = await computeVerificationStatus({
+    senderEmail: normalizedSenderEmail,
+    requesterType: payload.requesterType,
+    requesterOrgName: payload.requesterOrgName,
+    requesterOrgWebsite: payload.requesterOrgWebsite,
+    requesterRoleTitle: payload.requesterRoleTitle
+  });
+
   const created = await db.request.create({
     data: {
       doorId: door.id,
@@ -488,6 +503,12 @@ export async function createFormRequest(
       title: normalizeOptional(payload.title),
       message: payload.message,
       structuredData: sanitizedFields,
+      requesterType: payload.requesterType,
+      requesterOrgName: normalizeOptional(payload.requesterOrgName),
+      requesterOrgWebsite: normalizeOptional(payload.requesterOrgWebsite),
+      requesterRoleTitle: normalizeOptional(payload.requesterRoleTitle),
+      requesterVerificationStatus: verification.status,
+      requesterVerificationReason: verification.reason,
       events: {
         create: {
           type: RequestEventType.CREATED,
@@ -499,7 +520,8 @@ export async function createFormRequest(
     select: {
       id: true,
       requestToken: true,
-      status: true
+      status: true,
+      requesterVerificationStatus: true
     }
   });
 
