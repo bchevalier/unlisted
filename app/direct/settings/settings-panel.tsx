@@ -228,25 +228,38 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
                   placeholder="e.g. Rate is per hour, minimum 1h engagement"
                 />
               </label>
+
+              <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid #eee' }} />
+
+              <label>
+                <input
+                  type="checkbox"
+                  name="quoteVisibleToVerifiedOrgsOnly"
+                  defaultChecked={door.settings?.quoteVisibleToVerifiedOrgsOnly ?? false}
+                />{' '}
+                Restrict quote visibility to verified organizations only
+              </label>
+              <p style={{ fontSize: '0.85em', color: '#666', margin: '4px 0 0 24px' }}>
+                Your quote is only ever shown after you accept a request. This controls <em>who</em>{' '}
+                can see it:
+              </p>
+              <ul style={{ fontSize: '0.85em', color: '#666', margin: '4px 0 0 24px', paddingLeft: '16px' }}>
+                <li>
+                  <strong>Enabled:</strong> only requesters with a verified organization (company
+                  email domain matches their stated company website) will see the quote.
+                  Individuals and unverified senders will not.
+                </li>
+                <li>
+                  <strong>Disabled:</strong> any requester who passes basic identity verification
+                  (non-free, non-disposable email domain) can see the quote — including individuals
+                  without an organization.
+                </li>
+              </ul>
             </fieldset>
           ) : null}
 
           <fieldset style={{ border: '1px solid #ddd', padding: '12px', margin: '16px 0' }}>
-            <legend>Privacy &amp; Reach</legend>
-
-            <label>
-              <input
-                type="checkbox"
-                name="quoteVisibleToVerifiedOrgsOnly"
-                defaultChecked={door.settings?.quoteVisibleToVerifiedOrgsOnly ?? false}
-              />{' '}
-              Restrict quote visibility to verified organizations only
-            </label>
-            <p style={{ fontSize: '0.85em', color: '#666', margin: '4px 0 12px 24px' }}>
-              When enabled, only requesters whose organization email domain is verified will see
-              your quote. When disabled, any requester who passes basic identity verification can
-              see it.
-            </p>
+            <legend>Reach</legend>
 
             <label>
               <input
