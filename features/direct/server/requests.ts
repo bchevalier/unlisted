@@ -666,11 +666,12 @@ export async function createEmailRequest(input: unknown) {
     ? RequestStatus.AWAITING_COMPLETION
     : RequestStatus.PENDING;
 
-  // Email requests are always INDIVIDUAL; verification is based on sender email
-  const emailVerificationStatus = senderEmail ? 'BASIC_VERIFIED' : 'UNVERIFIED';
-  const emailVerificationReason = senderEmail
-    ? 'Sender email present on inbound email'
-    : 'No sender email on inbound email';
+  // Email requests are always INDIVIDUAL — run through full verification logic
+  // to ensure free/disposable domain senders are correctly marked UNVERIFIED
+  const emailVerification = await computeVerificationStatus({
+    senderEmail: senderEmail || null,
+    requesterType: 'INDIVIDUAL',
+  });
 
   const created = await db.request.create({
     data: {
@@ -684,8 +685,8 @@ export async function createEmailRequest(input: unknown) {
       completionToken,
       completionExpiresAt,
       requesterType: 'INDIVIDUAL',
-      requesterVerificationStatus: emailVerificationStatus,
-      requesterVerificationReason: emailVerificationReason,
+      requesterVerificationStatus: emailVerification.status,
+      requesterVerificationReason: emailVerification.reason,
       structuredData: {
         _emailMeta: {
           to: payload.to,

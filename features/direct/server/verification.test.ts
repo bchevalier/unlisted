@@ -291,4 +291,140 @@ describe('computeVerificationStatus', () => {
       expect(result.reason).toMatch(/no dns/i);
     });
   });
+
+  // -------------------------------------------------------------------------
+  // Edge-case audit: org domain mismatch, free-email org claim, missing email
+  // -------------------------------------------------------------------------
+
+  describe('edge-case audit — org domain mismatch', () => {
+    it('returns BASIC_VERIFIED when org email is from a completely different company', async () => {
+      const result = await computeVerificationStatus({
+        senderEmail: 'alice@competitor.com',
+        requesterType: 'ORGANIZATION',
+        requesterOrgName: 'Acme Inc',
+        requesterOrgWebsite: 'https://acme.com',
+        requesterRoleTitle: 'VP Sales',
+      });
+      expect(result.status).toBe('BASIC_VERIFIED');
+      expect(result.reason).toMatch(/does not match/i);
+      expect(result.reason).toContain('competitor.com');
+      expect(result.reason).toContain('acme.com');
+    });
+
+    it('returns BASIC_VERIFIED when email subdomain differs from website registrable domain', async () => {
+      // e.g. email on acme-labs.com but website is acme.com — different registrable domains
+      const result = await computeVerificationStatus({
+        senderEmail: 'alice@acme-labs.com',
+        requesterType: 'ORGANIZATION',
+        requesterOrgName: 'Acme Inc',
+        requesterOrgWebsite: 'https://acme.com',
+        requesterRoleTitle: 'CTO',
+      });
+      expect(result.status).toBe('BASIC_VERIFIED');
+      expect(result.reason).toMatch(/does not match/i);
+    });
+
+    it('returns BASIC_VERIFIED when website uses country-code TLD that differs from email', async () => {
+      const result = await computeVerificationStatus({
+        senderEmail: 'alice@acme.com',
+        requesterType: 'ORGANIZATION',
+        requesterOrgName: 'Acme UK',
+        requesterOrgWebsite: 'https://acme.co.uk',
+        requesterRoleTitle: 'Managing Director',
+      });
+      expect(result.status).toBe('BASIC_VERIFIED');
+      expect(result.reason).toMatch(/does not match/i);
+    });
+  });
+
+  describe('edge-case audit — free-email org claim', () => {
+    it('returns UNVERIFIED when org claimant uses gmail.com', async () => {
+      const result = await computeVerificationStatus({
+        senderEmail: 'ceo@gmail.com',
+        requesterType: 'ORGANIZATION',
+        requesterOrgName: 'My Startup',
+        requesterOrgWebsite: 'https://mystartup.com',
+        requesterRoleTitle: 'CEO',
+      });
+      // Free domain check fires before org checks — UNVERIFIED, not BASIC_VERIFIED
+      expect(result.status).toBe('UNVERIFIED');
+      expect(result.reason).toMatch(/free.*disposable/i);
+    });
+
+    it('returns UNVERIFIED when org claimant uses protonmail.com', async () => {
+      const result = await computeVerificationStatus({
+        senderEmail: 'founder@protonmail.com',
+        requesterType: 'ORGANIZATION',
+        requesterOrgName: 'ProtonCorp',
+        requesterOrgWebsite: 'https://protoncorp.io',
+        requesterRoleTitle: 'Founder',
+      });
+      expect(result.status).toBe('UNVERIFIED');
+      expect(result.reason).toMatch(/free.*disposable/i);
+    });
+
+    it('returns UNVERIFIED when org claimant uses disposable email', async () => {
+      const result = await computeVerificationStatus({
+        senderEmail: 'ceo@guerrillamail.com',
+        requesterType: 'ORGANIZATION',
+        requesterOrgName: 'Legit Corp',
+        requesterOrgWebsite: 'https://legitcorp.com',
+        requesterRoleTitle: 'CEO',
+      });
+      expect(result.status).toBe('UNVERIFIED');
+      expect(result.reason).toMatch(/free.*disposable/i);
+    });
+
+    it('returns UNVERIFIED for yahoo.co.uk org claim (intl free domain)', async () => {
+      const result = await computeVerificationStatus({
+        senderEmail: 'partner@yahoo.co.uk',
+        requesterType: 'ORGANIZATION',
+        requesterOrgName: 'UK Partners Ltd',
+        requesterOrgWebsite: 'https://ukpartners.co.uk',
+        requesterRoleTitle: 'Director',
+      });
+      expect(result.status).toBe('UNVERIFIED');
+    });
+  });
+
+  describe('edge-case audit — missing sender email', () => {
+    it('returns UNVERIFIED for null email on INDIVIDUAL request', async () => {
+      const result = await computeVerificationStatus({
+        senderEmail: null,
+        requesterType: 'INDIVIDUAL',
+      });
+      expect(result.status).toBe('UNVERIFIED');
+      expect(result.reason).toMatch(/no sender email/i);
+    });
+
+    it('returns UNVERIFIED for null email on ORGANIZATION request', async () => {
+      const result = await computeVerificationStatus({
+        senderEmail: null,
+        requesterType: 'ORGANIZATION',
+        requesterOrgName: 'Acme',
+        requesterOrgWebsite: 'https://acme.com',
+        requesterRoleTitle: 'CEO',
+      });
+      expect(result.status).toBe('UNVERIFIED');
+      expect(result.reason).toMatch(/no sender email/i);
+    });
+
+    it('returns UNVERIFIED for whitespace-only email', async () => {
+      const result = await computeVerificationStatus({
+        senderEmail: '   ',
+        requesterType: 'INDIVIDUAL',
+      });
+      expect(result.status).toBe('UNVERIFIED');
+      expect(result.reason).toMatch(/no sender email/i);
+    });
+
+    it('returns UNVERIFIED for @ only (no local part, no domain)', async () => {
+      const result = await computeVerificationStatus({
+        senderEmail: '@',
+        requesterType: 'INDIVIDUAL',
+      });
+      expect(result.status).toBe('UNVERIFIED');
+      expect(result.reason).toMatch(/invalid.*format/i);
+    });
+  });
 });
