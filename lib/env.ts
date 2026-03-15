@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { assertBioOverrideNotInProduction } from './env-guards';
 
 const requiredUrl = (name: string) =>
   z
@@ -23,10 +24,21 @@ const envSchema = z
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_PUBLISHABLE_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
-    STRIPE_PRICE_ID: z.string().optional()
+    STRIPE_PRICE_ID: z.string().optional(),
+    // Social verification — dev-only override
+    SOCIAL_VERIFICATION_ALLOW_BIO_OVERRIDE: z.string().optional(),
   })
   .passthrough();
 
 export const env = envSchema.parse(process.env);
 
 export type Env = z.infer<typeof envSchema>;
+
+// ---------------------------------------------------------------------------
+// Hard startup guard — runs at env-parse time (earliest boot phase) so a
+// misconfigured deploy fails immediately rather than at first request.
+// ---------------------------------------------------------------------------
+assertBioOverrideNotInProduction(
+  env.NODE_ENV,
+  env.SOCIAL_VERIFICATION_ALLOW_BIO_OVERRIDE,
+);

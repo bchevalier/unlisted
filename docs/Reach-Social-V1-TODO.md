@@ -107,11 +107,11 @@ These items block any real-world social verification usage.
 - Edit: `lib/env.ts` or new `lib/reach/social-env-check.ts`
 
 **Acceptance criteria:**
-- [ ] Server refuses to start if `NODE_ENV=production` and `SOCIAL_VERIFICATION_ALLOW_BIO_OVERRIDE=true`
-- [ ] Warning logged in dev mode when override is enabled
-- [ ] Unit test covers both assertion paths
+- [x] Server refuses to start if `NODE_ENV=production` and `SOCIAL_VERIFICATION_ALLOW_BIO_OVERRIDE=true`
+- [x] Warning logged in dev mode when override is enabled (existing `assertBioOverrideSafe` in social-verifications.ts)
+- [x] Unit test covers both assertion paths
 
-**Test checkpoint:** Manual verification + unit test
+**Test checkpoint:** Manual verification + unit test ✅
 
 ---
 
