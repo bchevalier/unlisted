@@ -72,6 +72,15 @@
 All routes under `/api/reach/actors/:handle/social-verifications`.
 Auth: standard Reach auth (session cookie for humans, `Bearer knk_…` for headless actors).
 
+**Rate limiting:** Two layers protect every endpoint:
+1. **IP-level** — shared Reach limiters (`reachReadLimiter` for GET, `reachWriteLimiter` for POST/DELETE). Applied before auth.
+2. **Actor-level** — per-actor sliding-window limits applied after auth:
+   - Create: 10 requests/hour (`REACH_SOCIAL_CREATE_LIMIT`)
+   - Verify: 20 requests/hour (`REACH_SOCIAL_VERIFY_LIMIT`)
+   - Delete: 20 requests/hour (`REACH_SOCIAL_DELETE_LIMIT`)
+
+Exceeded limits return `429 Too Many Requests` with `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset` headers. Successful responses include the same `X-RateLimit-*` headers for quota visibility.
+
 ### 4.1 List verifications
 
 ```
@@ -182,6 +191,7 @@ DELETE /api/reach/actors/:handle/social-verifications/:verificationId
 
 | Failure | HTTP | Code | Behavior |
 |---------|------|------|----------|
+| IP or actor rate limit exceeded | 429 | `IP_RATE_LIMIT` | `Retry-After` header; `X-RateLimit-*` headers |
 | Actor not found or inactive | 404 | `ACTOR_NOT_FOUND` | Reject with clear error |
 | Invalid handle (empty after normalization) | 400 | `INVALID_HANDLE` | Reject |
 | Duplicate platform+handle for actor | 409 | `HANDLE_ALREADY_LINKED` | Reject; actor must delete old record first |
@@ -367,4 +377,10 @@ Existing tests: `lib/reach/social-verifications.test.ts`
 | `X_CLIENT_ID` | Per-platform | — | X (Twitter) adapter |
 | `X_CLIENT_SECRET` | Per-platform | — | X (Twitter) adapter |
 | `X_API_BEARER_TOKEN` | Per-platform | — | X read-only API |
+| `REACH_SOCIAL_CREATE_LIMIT` | No | `10` | Max challenge creations per actor per window |
+| `REACH_SOCIAL_CREATE_WINDOW_SECONDS` | No | `3600` | Sliding window for create limit |
+| `REACH_SOCIAL_VERIFY_LIMIT` | No | `20` | Max verify attempts per actor per window |
+| `REACH_SOCIAL_VERIFY_WINDOW_SECONDS` | No | `3600` | Sliding window for verify limit |
+| `REACH_SOCIAL_DELETE_LIMIT` | No | `20` | Max deletes per actor per window |
+| `REACH_SOCIAL_DELETE_WINDOW_SECONDS` | No | `3600` | Sliding window for delete limit |
 | `SOCIAL_VERIFICATION_ALLOW_BIO_OVERRIDE` | No | `false` | Dev-only; **must be `false` in prod** |

@@ -226,23 +226,33 @@ These items block any real-world social verification usage.
 
 ---
 
-### P1-5: API rate limiting for social verification endpoints
+### P1-5: API rate limiting for social verification endpoints ✅
 
 **What:** Add rate limits specific to social verification endpoints to prevent abuse.
 - Limit challenge creation: max 10 per actor per hour
 - Limit verify attempts: max 20 per actor per hour
+- Limit deletes: max 20 per actor per hour
+- IP-level defense-in-depth on all endpoints (reachReadLimiter / reachWriteLimiter)
 - Use existing rate limit infrastructure
 
 **Files:**
-- Edit: social verification route handlers
+- Edit: `lib/reach/rate-limit.ts` (new limiter instances)
+- Edit: `lib/reach/index.ts` (exports)
+- Edit: all social verification route handlers (3 files)
+- Edit: `lib/reach/rate-limit.test.ts` (new tests)
+- Edit: `.env.example` (env var docs)
 
 **Acceptance criteria:**
-- [ ] Rate limits enforced per actor
-- [ ] 429 response with `Retry-After` header when exceeded
-- [ ] Rate limit config sourced from env vars with sensible defaults
-- [ ] Existing rate limit tests pattern followed
+- [x] Rate limits enforced per actor (create 10/hr, verify 20/hr, delete 20/hr)
+- [x] IP-level rate limits on all endpoints (read + write)
+- [x] 429 response with `Retry-After` header when exceeded
+- [x] Rate limit config sourced from env vars with sensible defaults
+- [x] `X-RateLimit-*` headers on success responses
+- [x] Auth-failure tracking via `reachAuthLimiter`
+- [x] Existing rate limit tests pattern followed
+- [x] All tests pass, types clean
 
-**Test checkpoint:** Manual verification + unit test
+**Test checkpoint:** `npx vitest run lib/reach/rate-limit.test.ts` — 19/19 green ✅
 
 ---
 
@@ -361,7 +371,7 @@ Before shipping social verification to real users:
 - [ ] **P0 complete:** At least YouTube + one other adapter (Instagram or X) working end-to-end
 - [ ] **Env safety:** Bio override blocked in production (P0-5)
 - [ ] **Smoke test green:** Full lifecycle test passes (P0-6)
-- [ ] **Rate limits:** Social verification endpoints rate-limited (P1-5)
+- [x] **Rate limits:** Social verification endpoints rate-limited (P1-5)
 - [ ] **Docs:** Provider setup guide complete for shipped adapters (P1-6)
 - [ ] **Feature flag:** `ENABLE_REACH=false` still cleanly disables everything
 - [ ] **Direct isolation:** Zero imports from social verification into Direct modules

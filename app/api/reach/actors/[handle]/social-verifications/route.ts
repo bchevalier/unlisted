@@ -10,6 +10,13 @@ import {
   listSocialVerifications,
   ReachSocialVerificationCreateSchema,
   ReachSocialVerificationError,
+  reachReadLimiter,
+  reachWriteLimiter,
+  reachAuthLimiter,
+  socialVerificationCreateLimiter,
+  getClientIp,
+  rateLimitResponse,
+  addRateLimitHeaders,
 } from '../../../../../../lib/reach';
 import { logger } from '../../../../../../lib/logger';
 import { captureException } from '../../../../../../lib/error-tracking';
@@ -28,8 +35,16 @@ export async function GET(
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
 
+  // IP-based rate limiting (defense-in-depth, before auth).
+  const clientIp = getClientIp(request);
+  const ipCheck = reachReadLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
+
   const auth = await authenticateReachRequest(request);
-  if (!auth) return unauthorizedResponse();
+  if (!auth) {
+    reachAuthLimiter.check(clientIp);
+    return unauthorizedResponse();
+  }
 
   const { handle } = await params;
   const actor = await getActorByHandle(handle);
@@ -42,7 +57,10 @@ export async function GET(
   if (denied) return denied;
 
   const verifications = await listSocialVerifications(actor.id);
-  return Response.json({ ok: true, verifications });
+  return addRateLimitHeaders(
+    Response.json({ ok: true, verifications }),
+    ipCheck,
+  );
 }
 
 export async function POST(
@@ -52,8 +70,16 @@ export async function POST(
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
 
+  // IP-based rate limiting (defense-in-depth, before auth).
+  const clientIp = getClientIp(request);
+  const ipCheck = reachWriteLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
+
   const auth = await authenticateReachRequest(request);
-  if (!auth) return unauthorizedResponse();
+  if (!auth) {
+    reachAuthLimiter.check(clientIp);
+    return unauthorizedResponse();
+  }
 
   const { handle } = await params;
   const actor = await getActorByHandle(handle);
@@ -65,12 +91,19 @@ export async function POST(
   const denied = requirePermission(authz, 'ACTOR_UPDATE');
   if (denied) return denied;
 
+  // Actor-level rate limit for challenge creation (10/hr per actor).
+  const actorCheck = socialVerificationCreateLimiter.check(actor.id);
+  if (!actorCheck.allowed) return rateLimitResponse(actorCheck);
+
   try {
     const body = await request.json();
     const data = ReachSocialVerificationCreateSchema.parse(body);
     const created = await createSocialVerificationChallenge(actor.id, data);
 
-    return Response.json({ ok: true, verification: created }, { status: 201 });
+    return addRateLimitHeaders(
+      Response.json({ ok: true, verification: created }, { status: 201 }),
+      actorCheck,
+    );
   } catch (error) {
     if (error instanceof ZodError) {
       return Response.json(

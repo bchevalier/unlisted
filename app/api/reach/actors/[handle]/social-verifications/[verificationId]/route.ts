@@ -7,6 +7,12 @@ import {
   getActorByHandle,
   deleteSocialVerification,
   ReachSocialVerificationError,
+  reachWriteLimiter,
+  reachAuthLimiter,
+  socialVerificationDeleteLimiter,
+  getClientIp,
+  rateLimitResponse,
+  addRateLimitHeaders,
 } from '../../../../../../../lib/reach';
 import { logger } from '../../../../../../../lib/logger';
 import { captureException } from '../../../../../../../lib/error-tracking';
@@ -23,8 +29,16 @@ export async function DELETE(
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
 
+  // IP-based rate limiting (defense-in-depth, before auth).
+  const clientIp = getClientIp(request);
+  const ipCheck = reachWriteLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
+
   const auth = await authenticateReachRequest(request);
-  if (!auth) return unauthorizedResponse();
+  if (!auth) {
+    reachAuthLimiter.check(clientIp);
+    return unauthorizedResponse();
+  }
 
   const { handle, verificationId } = await params;
   const actor = await getActorByHandle(handle);
@@ -36,9 +50,16 @@ export async function DELETE(
   const denied = requirePermission(authz, 'ACTOR_UPDATE');
   if (denied) return denied;
 
+  // Actor-level rate limit for deletes (20/hr per actor).
+  const actorCheck = socialVerificationDeleteLimiter.check(actor.id);
+  if (!actorCheck.allowed) return rateLimitResponse(actorCheck);
+
   try {
     await deleteSocialVerification(actor.id, verificationId);
-    return Response.json({ ok: true });
+    return addRateLimitHeaders(
+      Response.json({ ok: true }),
+      actorCheck,
+    );
   } catch (error) {
     if (error instanceof ReachSocialVerificationError) {
       return Response.json(

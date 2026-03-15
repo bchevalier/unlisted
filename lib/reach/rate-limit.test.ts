@@ -1,5 +1,12 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { InMemoryRateLimiter, getClientIp, rateLimitResponse } from './rate-limit';
+import {
+  InMemoryRateLimiter,
+  getClientIp,
+  rateLimitResponse,
+  socialVerificationCreateLimiter,
+  socialVerificationVerifyLimiter,
+  socialVerificationDeleteLimiter,
+} from './rate-limit';
 
 // ---------------------------------------------------------------------------
 // InMemoryRateLimiter
@@ -199,5 +206,53 @@ describe('rateLimitResponse', () => {
     expect(body.ok).toBe(false);
     expect(body.code).toBe('IP_RATE_LIMIT');
     expect(body.retryAfter).toBeGreaterThan(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Social verification limiters — global instances
+// ---------------------------------------------------------------------------
+
+describe('socialVerificationCreateLimiter', () => {
+  it('exists with correct default config (10 requests / 1 hour)', () => {
+    // Defaults from env fallback.
+    const peek = socialVerificationCreateLimiter.peek('test-actor-create');
+    expect(peek.limit).toBe(10);
+    expect(peek.allowed).toBe(true);
+    expect(peek.remaining).toBe(10);
+  });
+});
+
+describe('socialVerificationVerifyLimiter', () => {
+  it('exists with correct default config (20 requests / 1 hour)', () => {
+    const peek = socialVerificationVerifyLimiter.peek('test-actor-verify');
+    expect(peek.limit).toBe(20);
+    expect(peek.allowed).toBe(true);
+    expect(peek.remaining).toBe(20);
+  });
+});
+
+describe('socialVerificationDeleteLimiter', () => {
+  it('exists with correct default config (20 requests / 1 hour)', () => {
+    const peek = socialVerificationDeleteLimiter.peek('test-actor-delete');
+    expect(peek.limit).toBe(20);
+    expect(peek.allowed).toBe(true);
+    expect(peek.remaining).toBe(20);
+  });
+
+  it('enforces limit per actor key', () => {
+    // Use a unique key to avoid cross-test contamination.
+    const key = `test-actor-delete-enforce-${Date.now()}`;
+
+    // Exhaust the budget.
+    for (let i = 0; i < 20; i++) {
+      const r = socialVerificationDeleteLimiter.check(key);
+      expect(r.allowed).toBe(true);
+    }
+
+    // 21st request should be blocked.
+    const blocked = socialVerificationDeleteLimiter.check(key);
+    expect(blocked.allowed).toBe(false);
+    expect(blocked.remaining).toBe(0);
   });
 });

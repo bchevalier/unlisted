@@ -9,6 +9,12 @@ import {
   verifySocialVerification,
   ReachSocialVerificationVerifySchema,
   ReachSocialVerificationError,
+  reachWriteLimiter,
+  reachAuthLimiter,
+  socialVerificationVerifyLimiter,
+  getClientIp,
+  rateLimitResponse,
+  addRateLimitHeaders,
 } from '../../../../../../../../lib/reach';
 import { logger } from '../../../../../../../../lib/logger';
 import { captureException } from '../../../../../../../../lib/error-tracking';
@@ -25,8 +31,16 @@ export async function POST(
   const blocked = reachDisabledResponse();
   if (blocked) return blocked;
 
+  // IP-based rate limiting (defense-in-depth, before auth).
+  const clientIp = getClientIp(request);
+  const ipCheck = reachWriteLimiter.check(clientIp);
+  if (!ipCheck.allowed) return rateLimitResponse(ipCheck);
+
   const auth = await authenticateReachRequest(request);
-  if (!auth) return unauthorizedResponse();
+  if (!auth) {
+    reachAuthLimiter.check(clientIp);
+    return unauthorizedResponse();
+  }
 
   const { handle, verificationId } = await params;
   const actor = await getActorByHandle(handle);
@@ -38,12 +52,19 @@ export async function POST(
   const denied = requirePermission(authz, 'ACTOR_UPDATE');
   if (denied) return denied;
 
+  // Actor-level rate limit for verify attempts (20/hr per actor).
+  const actorCheck = socialVerificationVerifyLimiter.check(actor.id);
+  if (!actorCheck.allowed) return rateLimitResponse(actorCheck);
+
   try {
     const body = await request.json().catch(() => ({}));
     const data = ReachSocialVerificationVerifySchema.parse(body);
     const verification = await verifySocialVerification(actor.id, verificationId, data);
 
-    return Response.json({ ok: true, verification });
+    return addRateLimitHeaders(
+      Response.json({ ok: true, verification }),
+      actorCheck,
+    );
   } catch (error) {
     if (error instanceof ZodError) {
       return Response.json(

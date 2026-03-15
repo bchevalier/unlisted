@@ -205,6 +205,33 @@ export const reachAuthLimiter = new InMemoryRateLimiter({
   windowSeconds: Number(process.env.REACH_IP_AUTH_WINDOW_SECONDS ?? 900),
 });
 
+/**
+ * Social verification challenge creation — per actor.
+ * 10 requests per hour per actor.
+ */
+export const socialVerificationCreateLimiter = new InMemoryRateLimiter({
+  maxRequests: Number(process.env.REACH_SOCIAL_CREATE_LIMIT ?? 10),
+  windowSeconds: Number(process.env.REACH_SOCIAL_CREATE_WINDOW_SECONDS ?? 3600),
+});
+
+/**
+ * Social verification verify attempts — per actor.
+ * 20 requests per hour per actor.
+ */
+export const socialVerificationVerifyLimiter = new InMemoryRateLimiter({
+  maxRequests: Number(process.env.REACH_SOCIAL_VERIFY_LIMIT ?? 20),
+  windowSeconds: Number(process.env.REACH_SOCIAL_VERIFY_WINDOW_SECONDS ?? 3600),
+});
+
+/**
+ * Social verification deletes — per actor.
+ * 20 requests per hour per actor.
+ */
+export const socialVerificationDeleteLimiter = new InMemoryRateLimiter({
+  maxRequests: Number(process.env.REACH_SOCIAL_DELETE_LIMIT ?? 20),
+  windowSeconds: Number(process.env.REACH_SOCIAL_DELETE_WINDOW_SECONDS ?? 3600),
+});
+
 // ---------------------------------------------------------------------------
 // IP extraction
 // ---------------------------------------------------------------------------
