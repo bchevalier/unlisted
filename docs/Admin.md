@@ -9,23 +9,27 @@ The admin panel provides internal tools for managing users, doors, requests, and
 
 ## Authentication
 
-Admin auth supports two credential sources, checked in order:
+Admin auth supports three credential sources, checked in order:
 
-### 1. Database-backed (`admin_users` table)
+### 1. Database-backed (`admin_users` table) — preferred steady state
 
-Admin users stored in the `admin_users` table with bcrypt-hashed passwords. Supports roles (`SUPER_ADMIN`, `ADMIN`) and disable/enable flags.
+Admin users stored in the `admin_users` table with roles (`SUPER_ADMIN`, `ADMIN`) and disable/enable flags.
 
-### 2. Environment variable bootstrap
+### 2. First-run bootstrap (`ADMIN_EMAIL` + existing User password)
 
-Set `ADMIN_EMAIL` and `ADMIN_PASSWORD_HASH` for zero-DB-migration bootstrapping. The env-var admin is treated as `SUPER_ADMIN`.
-
-Generate a password hash:
+Set `ADMIN_EMAIL` to a regular account email, then run:
 
 ```bash
-node -e "require('bcryptjs').hash('your-password', 12).then(h => console.log(h))"
+npm run admin:bootstrap
 ```
 
-If a DB record exists for the same email, the DB record takes precedence (including its `disabled` flag).
+This promotes that existing user to `SUPER_ADMIN` in `admin_users` using the same password hash as the regular login flow.
+
+### 3. Legacy environment bootstrap (deprecated)
+
+`ADMIN_EMAIL + ADMIN_PASSWORD_HASH` still works as a fallback for older deployments, but DB-backed admins are recommended.
+
+If a DB record exists for the same email, the DB record takes precedence (including `disabled` and `role`).
 
 ## Roles
 
@@ -78,11 +82,11 @@ If a DB record exists for the same email, the DB record takes precedence (includ
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `ADMIN_EMAIL` | No* | Bootstrap admin email |
-| `ADMIN_PASSWORD_HASH` | No* | Bootstrap admin bcrypt hash |
+| `ADMIN_EMAIL` | No | First-run bootstrap target email (recommended) |
 | `ADMIN_SESSION_SECRET` | No | Session signing secret (falls back to `KEEPER_SESSION_SECRET`) |
+| `ADMIN_PASSWORD_HASH` | No | Legacy fallback only (deprecated) |
 
-\* At least one of DB admin users or env vars must be configured for admin access.
+At least one DB admin user is required for steady-state admin access.
 
 ## Database Schema
 

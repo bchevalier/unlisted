@@ -12,6 +12,7 @@
     "db:push": "dotenv -e .env.local -- prisma db push",
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:seed": "dotenv -e .env.local -- node prisma/seed.mjs",
+    "admin:bootstrap": "dotenv -e .env.local -- node scripts/bootstrap-admin.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "load:sanity": "npx tsx scripts/load-sanity.ts",

@@ -138,8 +138,9 @@ STRIPE_PRICE_ID=price_<from Stripe product>
 
 # Admin
 ADMIN_EMAIL=admin@knokio.io
-ADMIN_PASSWORD_HASH=<generate: node -e "require('bcryptjs').hash('YOUR_PASSWORD',12).then(h=>console.log(h))">
 ADMIN_SESSION_SECRET=<generate: openssl rand -base64 48>
+# Optional legacy fallback only (deprecated)
+# ADMIN_PASSWORD_HASH=<generate: node -e "require('bcryptjs').hash('YOUR_PASSWORD',12).then(h=>console.log(h))">
 
 # Agent access
 AGENT_SIGNUP_SECRET=<generate: openssl rand -base64 48>
@@ -187,6 +188,17 @@ curl -sf -o /dev/null -w "%{http_code}" https://knokio.io/direct
 # Signup page
 curl -sf -o /dev/null -w "%{http_code}" https://knokio.io/direct/signup
 ```
+
+### 3.5 Bootstrap first admin (recommended)
+
+1. Sign up a normal account with the same email as `ADMIN_EMAIL`.
+2. Run once from your trusted machine:
+
+```bash
+npm run admin:bootstrap
+```
+
+Then log in at `/admin/login` using that same account password.
 
 ---
 

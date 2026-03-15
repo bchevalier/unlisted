@@ -4,13 +4,14 @@ import { cookies } from 'next/headers';
 /**
  * Admin authentication module.
  *
- * Supports two credential sources (checked in order):
- *  1. **DB-backed**: `admin_users` table (AdminUser model)
- *  2. **Env-var bootstrap**: ADMIN_EMAIL + ADMIN_PASSWORD_HASH env vars
+ * Supports three credential sources (checked in order):
+ *  1. **DB-backed**: `admin_users` table (steady state)
+ *  2. **DB bootstrap**: `ADMIN_EMAIL` + existing `User` password hash (first-run)
+ *  3. **Legacy env fallback**: `ADMIN_EMAIL` + `ADMIN_PASSWORD_HASH` (deprecated)
  *
- * The env-var path allows bootstrapping the first admin without DB access.
- * Once an `admin_users` row exists for the same email, the DB record takes
- * precedence (including its `disabled` flag and `role`).
+ * Preferred model:
+ * - Admin account is promoted into `admin_users` once.
+ * - Login then remains DB-backed and can reuse the regular user password.
  */
 
 export const ADMIN_SESSION_COOKIE = 'knokio_admin_session';
@@ -115,17 +116,17 @@ export const adminSessionCookieOptions = {
 export type AdminValidationResult = {
   email: string;
   role: AdminRole;
-  source: 'db' | 'env';
+  source: 'db' | 'bootstrap' | 'env-legacy';
   adminUserId?: string;
 };
 
 /**
  * Validate admin credentials.
  *
- * Checks DB (`admin_users` table) first. If no DB match, falls back to
- * the ADMIN_EMAIL + ADMIN_PASSWORD_HASH env vars (bootstrap path).
- *
- * Returns validation result on success, null on failure.
+ * Order:
+ * 1) DB-backed admin user (`admin_users`)
+ * 2) First-run bootstrap via `ADMIN_EMAIL` + existing `User` password hash
+ * 3) Legacy env fallback (`ADMIN_EMAIL` + `ADMIN_PASSWORD_HASH`)
  */
 export async function validateAdminCredentials(
   email: string,
@@ -134,9 +135,16 @@ export async function validateAdminCredentials(
   const bcrypt = await import('bcryptjs');
   const normalizedEmail = email.trim().toLowerCase();
 
-  // --- 1. Try DB-backed admin_users ---
+  let db: (typeof import('./db'))['db'] | null = null;
   try {
-    const { db } = await import('./db');
+    db = (await import('./db')).db;
+  } catch {
+    db = null;
+  }
+
+  if (db) {
+
+    // --- 1) Steady state: admin_users table ---
     const dbAdmin = await db.adminUser.findUnique({
       where: { email: normalizedEmail },
     });
@@ -144,10 +152,31 @@ export async function validateAdminCredentials(
     if (dbAdmin) {
       if (dbAdmin.disabled) return null;
 
-      const passwordMatch = await bcrypt.compare(password, dbAdmin.passwordHash);
+      // Prefer regular User password hash when present, so admin login follows
+      // the normal account password lifecycle.
+      const user = await db.user.findUnique({
+        where: { email: normalizedEmail },
+        select: { passwordHash: true },
+      });
+
+      const hashToValidate = user?.passwordHash ?? dbAdmin.passwordHash;
+      if (!hashToValidate) return null;
+
+      const passwordMatch = await bcrypt.compare(password, hashToValidate);
       if (!passwordMatch) return null;
 
-      // Update last login timestamp (fire-and-forget)
+      // Keep admin_users hash in sync with User hash when available.
+      if (user?.passwordHash && user.passwordHash !== dbAdmin.passwordHash) {
+        db.adminUser
+          .update({
+            where: { id: dbAdmin.id },
+            data: { passwordHash: user.passwordHash },
+          })
+          .catch(() => {
+            /* non-critical */
+          });
+      }
+
       db.adminUser
         .update({
           where: { id: dbAdmin.id },
@@ -164,11 +193,46 @@ export async function validateAdminCredentials(
         adminUserId: dbAdmin.id,
       };
     }
-  } catch {
-    // DB unavailable — fall through to env-var path
+
+    // --- 2) First-run bootstrap: ADMIN_EMAIL + existing User credentials ---
+    const bootstrapEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+    if (bootstrapEmail && normalizedEmail === bootstrapEmail) {
+      const bootstrapUser = await db.user.findUnique({
+        where: { email: normalizedEmail },
+        select: { passwordHash: true },
+      });
+
+      if (bootstrapUser?.passwordHash) {
+        const passwordMatch = await bcrypt.compare(password, bootstrapUser.passwordHash);
+        if (passwordMatch) {
+          const admin = await db.adminUser.upsert({
+            where: { email: normalizedEmail },
+            update: {
+              role: 'SUPER_ADMIN',
+              disabled: false,
+              passwordHash: bootstrapUser.passwordHash,
+              lastLoginAt: new Date(),
+            },
+            create: {
+              email: normalizedEmail,
+              role: 'SUPER_ADMIN',
+              passwordHash: bootstrapUser.passwordHash,
+              lastLoginAt: new Date(),
+            },
+          });
+
+          return {
+            email: admin.email,
+            role: 'SUPER_ADMIN',
+            source: 'bootstrap',
+            adminUserId: admin.id,
+          };
+        }
+      }
+    }
   }
 
-  // --- 2. Fallback: env-var bootstrap ---
+  // --- 3) Legacy env fallback (deprecated) ---
   const adminEmail = process.env.ADMIN_EMAIL;
   const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
 
@@ -183,6 +247,6 @@ export async function validateAdminCredentials(
   return {
     email: adminEmail,
     role: 'SUPER_ADMIN',
-    source: 'env',
+    source: 'env-legacy',
   };
 }

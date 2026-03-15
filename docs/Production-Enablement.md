@@ -57,9 +57,10 @@ All variables from `.env.example` must be set in the production provider. Critic
 - [ ] `STRIPE_PRICE_ID` — live mode price ID
 
 ### Admin
-- [ ] `ADMIN_EMAIL` — admin panel login email
-- [ ] `ADMIN_PASSWORD_HASH` — bcrypt hash of admin password
+- [ ] `ADMIN_EMAIL` — bootstrap target email for first admin promotion
 - [ ] `ADMIN_SESSION_SECRET` — 32+ character random secret
+- [ ] Run `npm run admin:bootstrap` once after creating the regular user account
+- [ ] `ADMIN_PASSWORD_HASH` only if using legacy env-only fallback (deprecated)
 
 ### Auth providers (optional but recommended)
 - [ ] `GOOGLE_OAUTH_CLIENT_ID`

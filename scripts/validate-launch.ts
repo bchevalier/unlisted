@@ -145,14 +145,25 @@ function checkEnvVars() {
     }
   }
 
-  // Admin vars (warn if missing)
-  const admin = ['ADMIN_EMAIL', 'ADMIN_PASSWORD_HASH', 'ADMIN_SESSION_SECRET'];
-  for (const key of admin) {
-    if (!envPresent(key)) {
-      warn(CAT, `${key} set`, 'Admin panel will be inaccessible');
-    } else {
-      pass(CAT, `${key} set`);
-    }
+  // Admin vars
+  // New preferred model: DB-backed admin_users + one-time bootstrap from
+  // ADMIN_EMAIL and regular User credentials.
+  if (!envPresent('ADMIN_SESSION_SECRET') && !envPresent('KEEPER_SESSION_SECRET')) {
+    warn(CAT, 'ADMIN_SESSION_SECRET/KEEPER_SESSION_SECRET set', 'Admin session signing secret missing');
+  } else {
+    pass(CAT, 'ADMIN session signing secret set');
+  }
+
+  if (!envPresent('ADMIN_EMAIL')) {
+    warn(CAT, 'ADMIN_EMAIL set', 'Optional, but recommended for first-run admin bootstrap');
+  } else {
+    pass(CAT, 'ADMIN_EMAIL set');
+  }
+
+  if (envPresent('ADMIN_PASSWORD_HASH')) {
+    warn(CAT, 'ADMIN_PASSWORD_HASH present', 'Legacy bootstrap path enabled; prefer DB-backed admin users');
+  } else {
+    pass(CAT, 'ADMIN_PASSWORD_HASH not required');
   }
 
   // Observability (provider-agnostic)
