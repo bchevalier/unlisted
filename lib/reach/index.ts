@@ -281,3 +281,37 @@ export type {
   SignedWebhookPayload,
   WebhookHealthStats,
 } from './webhooks';
+
+// Social verification (creator ownership + follower signals)
+export {
+  ReachSocialVerificationCreateSchema,
+  ReachSocialVerificationVerifySchema,
+  createSocialVerificationChallenge,
+  listSocialVerifications,
+  verifySocialVerification,
+  deleteSocialVerification,
+  getSocialPlatformEnvRequirements,
+  getAllSocialPlatformEnvRequirements,
+  assertBioOverrideSafe,
+  ReachSocialVerificationError,
+} from './social-verifications';
+
+export type {
+  ReachSocialVerificationCreateInput,
+  ReachSocialVerificationVerifyInput,
+} from './social-verifications';
+
+// Social adapter types and registry
+export {
+  getAdapter as getSocialAdapter,
+  getAllAdapters as getAllSocialAdapters,
+  SOCIAL_PLATFORMS,
+  PLATFORM_ENV_REQUIREMENTS as SOCIAL_PLATFORM_ENV_REQUIREMENTS,
+} from './social-adapters';
+
+export type {
+  SocialAdapter,
+  ReachSocialPlatform,
+  ProviderVerificationInput,
+  ProviderProfileResult,
+} from './social-adapters';

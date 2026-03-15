@@ -476,6 +476,22 @@ enum ReachAbuseReportStatus {
   DISMISSED
 }
 
+/// Social platforms supported for creator verification in Reach.
+enum ReachSocialPlatform {
+  YOUTUBE
+  INSTAGRAM
+  TIKTOK
+  FACEBOOK
+  X
+}
+
+/// Verification lifecycle for platform ownership checks.
+enum ReachSocialVerificationStatus {
+  PENDING
+  VERIFIED
+  FAILED
+}
+
 enum ReachPermission {
   ACTOR_READ // view own actor profile
   ACTOR_UPDATE // update displayName, capabilities, endpoint
@@ -514,11 +530,41 @@ model ReachActor {
   memberships        ReachOrgMember[]    @relation("OrgMember") // orgs this actor belongs to (as member)
   orgMembers         ReachOrgMember[]    @relation("OrgActor") // members of this actor (if it's an org)
   webhooks           ReachWebhook[]
+  socialVerifications ReachSocialVerification[]
   blockedByMe        ReachBlockedActor[] @relation("Blocker")
   blockedMe          ReachBlockedActor[] @relation("BlockedTarget")
   abuseReports       ReachAbuseReport[]  @relation("AbuseReporter")
 
   @@index([type, isActive])
+}
+
+/// Social ownership verification records for creators/actors.
+///
+/// V1 method: platform OAuth + profile bio marker challenge.
+model ReachSocialVerification {
+  id                     String                         @id @default(cuid())
+  actorId                String
+  platform               ReachSocialPlatform
+  status                 ReachSocialVerificationStatus  @default(PENDING)
+  handle                 String
+  platformUserId         String?
+  profileUrl             String?
+  challengeToken         String
+  challengePhrase        String // e.g. "knokio-AB12CD"
+  followerCount          Int?
+  followerCountUpdatedAt DateTime?
+  bioSnapshot            String?
+  failureReason          String?
+  verifiedAt             DateTime?
+  lastCheckedAt          DateTime?
+  metadata               Json?
+  createdAt              DateTime                       @default(now())
+  updatedAt              DateTime                       @updatedAt
+
+  actor ReachActor @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([actorId, platform, status])
+  @@unique([actorId, platform, handle])
 }
 
 /// Membership linking a human/AI actor to an organization actor.

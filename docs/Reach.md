@@ -139,6 +139,32 @@ DELETE /api/reach/actors/:handle          — Deactivate actor
 POST   /api/reach/actors/:handle/key      — Rotate API key
 ```
 
+### Creator Social Verification (V1 scaffold)
+
+Use this to prove ownership of creator/KOL accounts by adding a Knokio challenge phrase to profile bio.
+
+```
+GET    /api/reach/actors/:handle/social-verifications
+POST   /api/reach/actors/:handle/social-verifications
+POST   /api/reach/actors/:handle/social-verifications/:verificationId/verify
+DELETE /api/reach/actors/:handle/social-verifications/:verificationId
+```
+
+**Create challenge:**
+```json
+{
+  "platform": "YOUTUBE",
+  "handle": "mychannel",
+  "profileUrl": "https://youtube.com/@mychannel"
+}
+```
+
+Response includes a `challengePhrase` like `knokio-AB12CD`.
+Add that phrase to platform bio and call `.../verify`.
+
+> Provider adapters are scaffolded in V1. If platform creds are not configured,
+> verify returns `PLATFORM_NOT_CONFIGURED` (412). See `.env.example` for placeholders.
+
 ### Organization Members
 
 ```
