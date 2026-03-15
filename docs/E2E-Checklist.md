@@ -4,6 +4,26 @@ This checklist covers every critical user flow in Knokio Direct for launch valid
 
 ---
 
+## Playwright execution policy (project spec)
+
+- Use **Playwright** for end-to-end validation by default.
+- Run in **headless mode** whenever possible.
+- Execute browsers in this order:
+  1. **Chromium** (primary gate)
+  2. **Firefox** (run after Chromium passes)
+- Treat Chromium + Firefox as the required local baseline on environments where WebKit is unsupported.
+- Capture screenshots only when needed for debugging, test evidence, or incident documentation.
+
+Suggested commands:
+
+```bash
+# Primary local gate (headless by default)
+npx playwright test --project=chromium
+
+# Secondary cross-browser pass after Chromium is green
+npx playwright test --project=firefox
+```
+
 ## Prerequisites
 
 - [ ] Production database provisioned and migrated

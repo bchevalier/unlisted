@@ -48,6 +48,9 @@ This workspace exists for one thing: **designing and implementing Knokio** in th
 3. Propose a short implementation plan
 4. Implement in small, reviewable steps
 5. Run relevant checks (`npm run lint`, tests, build) when feasible
+   - E2E default: use **Playwright headless** when possible.
+   - Browser priority: **Chromium first**; once passing, run **Firefox**.
+   - Use screenshots only when needed for debugging/evidence.
 6. Commit with clear message and summary
 
 ## Git + Safety
