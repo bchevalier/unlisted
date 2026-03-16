@@ -57,6 +57,9 @@ This workspace exists for one thing: **designing and implementing Knokio** in th
 
 - Never commit secrets.
 - Never commit workspace-private key material (`.openclaw/ssh/*`).
+- Never reveal secrets/private keys/tokens in chat output.
+- Never send secrets as plain text, even to John; provide file paths/instructions only.
+- If asked for a secret value, tell John to retrieve it directly from workspace files.
 - Prefer small commits over giant ones.
 - Do not force-push unless explicitly asked.
 - If a command is destructive or irreversible, ask first.
