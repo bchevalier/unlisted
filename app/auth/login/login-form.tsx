@@ -55,7 +55,7 @@ export function LoginForm() {
   };
 
   return (
-    <form className="auth-card" onSubmit={handleSubmit}>
+    <form className="auth-form" onSubmit={handleSubmit}>
       <div className="field">
         <label htmlFor="email">Email</label>
         <input
@@ -63,6 +63,8 @@ export function LoginForm() {
           name="email"
           type="email"
           autoComplete="email"
+          inputMode="email"
+          placeholder="you@domain.com"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           required
@@ -77,6 +79,7 @@ export function LoginForm() {
           name="password"
           type="password"
           autoComplete="current-password"
+          placeholder="Your password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           minLength={8}
@@ -85,7 +88,11 @@ export function LoginForm() {
         />
       </div>
 
-      {error ? <p className="form-error">{error}</p> : null}
+      {error ? (
+        <p className="form-error" role="alert" aria-live="polite">
+          {error}
+        </p>
+      ) : null}
 
       <button className="button primary" type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Signing in…' : 'Sign in'}

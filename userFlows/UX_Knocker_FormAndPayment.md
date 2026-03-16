@@ -2,16 +2,16 @@
 
 ## Objective
 Allow a Knocker to submit a structured request via a form,
-with optional direct payment when required by the Keeper.
+with optional direct payment when required by the Host.
 
 ## Actors
 - Knocker
 - Knokio system
-- Keeper
+- Host
 - Payment provider (Stripe)
 
 ## Preconditions
-- Keeper has a form-based door
+- Host has a form-based door
 - Knocker has access to the door URL or email escalation link
 
 ## Flow Steps
@@ -29,7 +29,7 @@ with optional direct payment when required by the Keeper.
 4. Knocker fills in the form
 5. Knocker submits
 6. System creates a `pending` request
-7. Keeper is notified
+7. Host is notified
 
 ---
 
@@ -38,13 +38,13 @@ with optional direct payment when required by the Keeper.
 5. Knocker proceeds to payment
 6. Payment is authorized (not captured)
 7. System creates a `pending` request
-8. Keeper is notified
+8. Host is notified
 
 ---
 
-### Keeper Decision
-9. Keeper reviews the request
-10. Keeper chooses:
+### Host Decision
+9. Host reviews the request
+10. Host chooses:
     - Accept → payment is captured, contact revealed
     - Decline / Ignore → payment is released, request expires
 
@@ -57,9 +57,9 @@ with optional direct payment when required by the Keeper.
 
 ## Edge Cases
 - Payment authorization fails → request not created
-- Keeper never responds → request expires, no charge
+- Host never responds → request expires, no charge
 
 ## Acceptance Criteria
 - Knocker understands what they’re paying for
-- No payment is captured without Keeper acceptance
+- No payment is captured without Host acceptance
 - Flow feels fair and transparent to both sides

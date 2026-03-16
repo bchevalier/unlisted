@@ -1,21 +1,21 @@
 # UX Flow — Knocker Contact via Email
 
 ## Objective
-Allow a Knocker to contact a Keeper using an email-shaped interaction,
+Allow a Knocker to contact a Host using an email-shaped interaction,
 while preserving Knokio’s rules and structure.
 
 ## Actors
 - Knocker
 - Knokio system
-- Keeper
+- Host
 
 ## Preconditions
-- Keeper has an email-enabled door
-- Knocker has the email handle (e.g. `keeper@knokio.io`)
+- Host has an email-enabled door
+- Knocker has the email handle (e.g. `host@knokio.io`)
 
 ## Flow Steps
 
-1. Knocker sends an email to `keeper@knokio.io`
+1. Knocker sends an email to `host@knokio.io`
 2. Knokio receives the email via inbound proxy
 3. System parses:
    - Sender email
@@ -27,7 +27,7 @@ while preserving Knokio’s rules and structure.
 
 ### Case A — Door has no required fields
 5. System creates a `pending` request
-6. Keeper receives a “New request” notification
+6. Host receives a “New request” notification
 7. Knocker receives no immediate reply
 
 ---

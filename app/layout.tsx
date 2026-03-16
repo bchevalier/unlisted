@@ -3,7 +3,12 @@ import type { ReactNode } from 'react';
 
 export const metadata = {
   title: 'Knokio',
-  description: 'Privacy-first way to be reachable without being exposed.'
+  description: 'Privacy-first way to be reachable without being exposed.',
+  icons: {
+    icon: '/assets/logo_xs.png',
+    shortcut: '/assets/logo_xs.png',
+    apple: '/assets/logo_xs.png'
+  }
 };
 
 type RootLayoutProps = {

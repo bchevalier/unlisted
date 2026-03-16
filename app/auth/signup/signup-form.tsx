@@ -40,7 +40,7 @@ export function SignupForm() {
   }, [state, email, password, hasTriggeredSignin]);
 
   return (
-    <form className="auth-card" action={formAction}>
+    <form className="auth-form" action={formAction}>
       <div className="field">
         <label htmlFor="name">Name</label>
         <input
@@ -62,7 +62,9 @@ export function SignupForm() {
           name="email"
           type="email"
           autoComplete="email"
+          inputMode="email"
           required
+          placeholder="you@domain.com"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
         />
@@ -77,12 +79,17 @@ export function SignupForm() {
           autoComplete="new-password"
           required
           minLength={8}
+          placeholder="At least 8 characters"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
       </div>
 
-      {state.status === 'error' ? <p className="form-error">{state.error}</p> : null}
+      {state.status === 'error' ? (
+        <p className="form-error" role="alert" aria-live="polite">
+          {state.error}
+        </p>
+      ) : null}
 
       <SubmitButton />
 

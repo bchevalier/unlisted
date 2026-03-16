@@ -51,7 +51,7 @@ You decide:
 ## How it works (high level)
 
 **Terminology**
-- **Keepers** are door owners (previously referred to as Hosts).
+- **Hosts** are door owners.
 - **Knockers** are people who submit requests through a door.
 
 ### 1. You create a Knokio door
