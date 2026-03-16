@@ -8,7 +8,7 @@ Step-by-step checklist for enabling the Knokio production environment. Complete 
 
 ### 1.1 Hosting
 - [ ] Render web service created from `render.yaml`
-- [ ] Build command succeeds: `npm install && npm run build`
+- [ ] Build command succeeds: `npm ci && npm run build`
 - [ ] Start command succeeds: `npm run start`
 - [ ] Health check endpoint responds: `GET /api/reach/health`
 - [ ] Auto-deploy from `main` branch enabled

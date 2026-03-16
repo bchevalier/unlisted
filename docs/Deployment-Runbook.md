@@ -106,7 +106,7 @@ dig A knokio.io +short
 2. Connect the `bchevalier/unlisted` repository
 3. Select the `main` branch
 4. Render will auto-detect `render.yaml` — verify settings:
-   - **Build command:** `npm install && npm run build`
+   - **Build command:** `npm ci && npm run build`
    - **Start command:** `npm run start`
    - **Health check:** `/api/reach/health`
 5. Add custom domain: `knokio.io`
