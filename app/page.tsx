@@ -3,65 +3,57 @@ import Link from 'next/link';
 export default function HomePage() {
   return (
     <main className="home">
-      <header className="topbar">
-        <div className="topbar__brand">Knokio</div>
-        <div className="topbar__actions" aria-label="Authentication actions">
-          <Link className="button secondary" href="/direct/login">
+      <header className="home-topbar">
+        <div className="home-topbar-brand">
+          <span className="home-topbar-title">Knokio</span>
+        </div>
+        <nav className="home-topbar-actions" aria-label="Primary">
+          <Link className="topbar-link" href="/direct/login">
             Log in
           </Link>
-          <Link className="button primary" href="/direct/signup">
+          <Link className="topbar-button" href="/direct/signup">
             Sign up
           </Link>
-        </div>
+        </nav>
       </header>
 
-      <section className="hero">
-        <p className="eyebrow">Privacy-first reachability</p>
-        <h1>Be reachable without being exposed</h1>
-        <p className="lede">
-          Knokio turns cold outreach into structured, on-your-terms requests. Keep control while staying open
-          to the right opportunities.
-        </p>
-
-        <div className="actions" aria-label="Primary navigation">
-          <Link className="button primary" href="/direct">
-            Open Knokio Direct
-          </Link>
-          <Link className="button secondary" href="/reach">
-            Open Knokio Reach
-          </Link>
+      <section className="home-hero" aria-label="Knokio introduction">
+        <div className="home-hero-bg" aria-hidden="true">
+          <div className="home-hero-grid" />
+          <div data-hero-gradient="true" className="hero-gradient-rainbow home-hero-gradient" />
         </div>
-      </section>
 
-      <section className="clients" aria-label="Client lanes">
-        <article className="client-card">
-          <h2>Knokio Direct</h2>
-          <p>Protect your attention with filtered inbound and strict privacy by default.</p>
-          <Link className="client-link" href="/direct">
-            Go to Direct →
-          </Link>
-        </article>
-        <article className="client-card">
-          <h2>Knokio Reach</h2>
-          <p>Find and reach the right human or agent through policy-bound coordination paths.</p>
-          <Link className="client-link" href="/reach">
-            Go to Reach →
-          </Link>
-        </article>
+        <div className="home-hero-content">
+          <span className="eyebrow">Knokio</span>
+          <h1 className="hero-title">Be reachable. Stay private.</h1>
+          <p className="hero-subtitle">
+            A privacy-first coordination layer for structured inbound: reduce noise, keep control, and stay
+            accessible on your terms.
+          </p>
+
+          <div className="hero-actions">
+            <Link className="button primary" href="/direct">
+              Open Knokio Direct
+            </Link>
+            <Link className="button secondary" href="/reach">
+              Open Knokio Reach
+            </Link>
+          </div>
+        </div>
       </section>
 
       <section className="pillars">
         <div className="pillar">
-          <h3>Structured by default</h3>
-          <p>Requests land with the signal you need so triage stays fast and clear.</p>
+          <h2>
+            <span className="accent accent-cyan">Direct</span> filters your inbound
+          </h2>
+          <p>Collect structured requests, set boundaries, and protect your attention by default.</p>
         </div>
         <div className="pillar">
-          <h3>Control every step</h3>
-          <p>Set boundaries, choose reveal methods, and keep noise away from your inbox.</p>
-        </div>
-        <div className="pillar">
-          <h3>Built for trust</h3>
-          <p>Privacy-first defaults with clear rules for who gets access and when.</p>
+          <h2>
+            <span className="accent accent-magenta">Reach</span> compresses coordination distance
+          </h2>
+          <p>Find and connect with the right human or agent through policy-bound pathways.</p>
         </div>
       </section>
     </main>
