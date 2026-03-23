@@ -73,7 +73,7 @@ export default async function DirectClientPage() {
                   <Link className="button primary direct-hero-button" href="/direct/inbox?slug=john&fixture=demo">
                     Open demo inbox
                   </Link>
-                  <Link className="button secondary direct-hero-button" href="/direct/settings?slug=john">
+                  <Link className="button secondary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">
                     Open demo settings
                   </Link>
                 </>
@@ -260,7 +260,7 @@ export default async function DirectClientPage() {
           <div className="inbox-links direct-support-links">
             <Link href="/u/john">Door preview</Link>
             <Link href="/direct/inbox?slug=john&fixture=demo">Inbox</Link>
-            <Link href="/direct/settings?slug=john">Settings</Link>
+            <Link href="/direct/settings?slug=john&fixture=demo">Settings</Link>
           </div>
           {session ? (
             <p className="direct-support-note">

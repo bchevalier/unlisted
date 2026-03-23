@@ -1,50 +1,55 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { RequestStatus } from '@prisma/client';
 
 export const DIRECT_DEMO_FIXTURE_QUERY_VALUE = 'demo';
 export const DIRECT_DEMO_SLUG = 'john';
 
 const DEMO_PAGE_SIZE = 10;
+const DEFAULT_DEMO_FILE = 'data/direct-demo-default.json';
+const STATE_DEMO_FILE = 'data/direct-demo-state.json';
 
-const DEMO_DOOR_SETTINGS = {
-  autoReplyEnabled: true,
-  autoReplyMessage: 'Thanks — Direct needs a little more detail before this reaches the inbox.',
-  weeklyRequestCap: 50,
-  revealMethod: 'EMAIL',
-  revealValue: 'john@knokio.example',
-  notifyNewRequest: true,
-  notifyDigest: false,
-  paidQuoteAmountCents: 15000,
-  paidQuoteCurrency: 'USD',
-  paidQuoteNote: 'Paid advisory starts here when the brief is a fit.',
-  quoteVisibleToVerifiedOrgsOnly: true,
-  openToNonTargetedPaidReach: false,
-} as const;
+type DemoDoorField = {
+  key: string;
+  label: string;
+  required: boolean;
+};
 
-const DEMO_CATEGORIES = [
-  {
-    key: 'brand-deals',
-    label: 'Brand deals',
-    isEnabled: true,
-    weeklyCap: 10,
-    fields: [
-      { key: 'budget', label: 'Budget', required: true },
-      { key: 'timeline', label: 'Timeline', required: true },
-      { key: 'brief', label: 'Brief', required: true },
-    ],
-  },
-  {
-    key: 'advisory',
-    label: 'Advisory',
-    isEnabled: true,
-    weeklyCap: 5,
-    fields: [
-      { key: 'topic', label: 'Topic', required: true },
-      { key: 'budget', label: 'Budget', required: true },
-    ],
-  },
-] as const;
+type DemoDoorCategory = {
+  key: string;
+  label: string;
+  isEnabled: boolean;
+  weeklyCap: number | null;
+  fields: DemoDoorField[];
+};
 
-const DEMO_EMAIL_ALIASES = [{ alias: DIRECT_DEMO_SLUG, isEnabled: true }] as const;
+type DemoDoorAlias = {
+  alias: string;
+  isEnabled: boolean;
+};
+
+type DemoDoorSettings = {
+  autoReplyEnabled: boolean;
+  autoReplyMessage: string | null;
+  weeklyRequestCap: number | null;
+  revealMethod: 'NONE' | 'EMAIL' | 'URL';
+  revealValue: string | null;
+  notifyNewRequest: boolean;
+  notifyDigest: boolean;
+  paidQuoteAmountCents: number | null;
+  paidQuoteCurrency: string | null;
+  paidQuoteNote: string | null;
+  quoteVisibleToVerifiedOrgsOnly: boolean;
+  openToNonTargetedPaidReach: boolean;
+};
+
+type DemoRequestEvent = {
+  id: string;
+  type: string;
+  actor: string;
+  note?: string | null;
+  createdAt: string;
+};
 
 type DemoRequestSeed = {
   id: string;
@@ -70,181 +75,63 @@ type DemoRequestSeed = {
   keeperQuoteCurrency?: string | null;
   keeperQuoteNote?: string | null;
   structuredData?: Record<string, string> | null;
-  events: Array<{
-    id: string;
-    type: string;
-    actor: string;
-    note?: string | null;
-    createdAt: string;
-  }>;
+  events: DemoRequestEvent[];
 };
 
-const DEMO_REQUEST_SEEDS: DemoRequestSeed[] = [
-  {
-    id: 'demo-accepted',
-    requestToken: 'demo-token-accepted',
-    source: 'FORM',
-    status: 'ACCEPTED',
-    title: 'Brand partnership with launch budget',
-    message: 'We have a complete brief, confirmed budget, and a launch timeline ready for review.',
-    senderName: 'Maya Chen',
-    senderEmail: 'maya@northstar.studio',
-    createdAt: '2026-03-20T08:00:00.000Z',
-    updatedAt: '2026-03-20T09:30:00.000Z',
-    category: { label: 'Brand deals' },
-    paidAmountCents: null,
-    requesterType: 'ORGANIZATION',
-    requesterOrgName: 'Northstar Studio',
-    requesterOrgWebsite: 'https://northstar.example',
-    requesterRoleTitle: 'Partnerships Lead',
-    requesterVerificationStatus: 'ORG_VERIFIED',
-    requesterVerificationReason: 'Domain and org signals matched',
-    structuredData: {
-      budget: '$8,000',
-      timeline: 'Launch in April',
-      brief: 'Three short-form videos plus one story sequence',
-    },
-    events: [
-      {
-        id: 'event-demo-accepted-created',
-        type: 'CREATED',
-        actor: 'SYSTEM',
-        note: 'Complete brief qualified for inbox delivery.',
-        createdAt: '2026-03-20T08:00:00.000Z',
-      },
-      {
-        id: 'event-demo-accepted-routed',
-        type: 'STATUS_CHANGED',
-        actor: 'SYSTEM',
-        note: 'Accepted into inbox.',
-        createdAt: '2026-03-20T08:02:00.000Z',
-      },
-    ],
-  },
-  {
-    id: 'demo-auto-replied',
-    requestToken: 'demo-token-auto',
-    source: 'FORM',
-    status: 'AUTO_REPLIED',
-    title: 'Campaign idea missing budget',
-    message: 'The campaign idea looks relevant, but the sender skipped budget and timeline.',
-    senderName: 'Jon Perez',
-    senderEmail: 'jon@orbitmedia.example',
-    createdAt: '2026-03-20T10:00:00.000Z',
-    updatedAt: '2026-03-20T10:01:00.000Z',
-    category: { label: 'Brand deals' },
-    paidAmountCents: null,
-    requesterType: 'ORGANIZATION',
-    requesterOrgName: 'Orbit Media',
-    requesterOrgWebsite: 'https://orbitmedia.example',
-    requesterRoleTitle: 'Campaign Manager',
-    requesterVerificationStatus: 'BASIC_VERIFIED',
-    requesterVerificationReason: 'Email syntax and domain reputation passed',
-    structuredData: {
-      brief: 'Creator-led campaign around a product refresh',
-    },
-    events: [
-      {
-        id: 'event-demo-auto-created',
-        type: 'CREATED',
-        actor: 'SYSTEM',
-        note: 'Request captured with missing required fields.',
-        createdAt: '2026-03-20T10:00:00.000Z',
-      },
-      {
-        id: 'event-demo-auto-replied',
-        type: 'AUTO_REPLIED',
-        actor: 'SYSTEM',
-        note: 'Asked for budget and timeline before delivery.',
-        createdAt: '2026-03-20T10:01:00.000Z',
-      },
-    ],
-  },
-  {
-    id: 'demo-awaiting-completion',
-    requestToken: 'demo-token-awaiting',
-    source: 'FORM',
-    status: 'AWAITING_COMPLETION',
-    title: 'Advisory request awaiting completion',
-    message: 'The sender started the request, but Direct is waiting for the missing context fields.',
-    senderName: 'Sam Rivera',
-    senderEmail: 'sam@signalops.example',
-    createdAt: '2026-03-20T11:00:00.000Z',
-    updatedAt: '2026-03-20T11:05:00.000Z',
-    completionExpiresAt: '2026-03-23T11:00:00.000Z',
-    category: { label: 'Advisory' },
-    paidAmountCents: null,
-    requesterType: 'ORGANIZATION',
-    requesterOrgName: 'SignalOps',
-    requesterOrgWebsite: 'https://signalops.example',
-    requesterRoleTitle: 'Founder',
-    requesterVerificationStatus: 'BASIC_VERIFIED',
-    requesterVerificationReason: 'Completion link sent to verified sender email',
-    structuredData: {
-      topic: 'Growth advisory',
-    },
-    events: [
-      {
-        id: 'event-demo-awaiting-created',
-        type: 'CREATED',
-        actor: 'SYSTEM',
-        note: 'Request created before all required fields were completed.',
-        createdAt: '2026-03-20T11:00:00.000Z',
-      },
-      {
-        id: 'event-demo-awaiting-hold',
-        type: 'COMPLETION_REQUESTED',
-        actor: 'SYSTEM',
-        note: 'Waiting on budget and decision timeline.',
-        createdAt: '2026-03-20T11:05:00.000Z',
-      },
-    ],
-  },
-  {
-    id: 'demo-paid-intent',
-    requestToken: 'demo-token-paid',
-    source: 'FORM',
-    status: 'ACCEPTED',
-    title: 'Paid advisory request with verified org intent',
-    message: 'A verified org used the paid lane with a concrete brief and a proposed advisory budget.',
-    senderName: 'Leah Brooks',
-    senderEmail: 'leah@brightloop.example',
-    createdAt: '2026-03-20T12:30:00.000Z',
-    updatedAt: '2026-03-20T12:45:00.000Z',
-    category: { label: 'Advisory' },
-    paidAmountCents: 15000,
-    requesterType: 'ORGANIZATION',
-    requesterOrgName: 'Brightloop',
-    requesterOrgWebsite: 'https://brightloop.example',
-    requesterRoleTitle: 'CEO',
-    requesterVerificationStatus: 'ORG_VERIFIED',
-    requesterVerificationReason: 'Verified org signals plus paid intent',
-    keeperQuoteAmountCents: 15000,
-    keeperQuoteCurrency: 'USD',
-    keeperQuoteNote: 'Direct preserved the paid-intent signal before inbox delivery.',
-    structuredData: {
-      topic: 'Product positioning workshop',
-      budget: '$150',
-      timeline: 'Next week',
-    },
-    events: [
-      {
-        id: 'event-demo-paid-created',
-        type: 'CREATED',
-        actor: 'SYSTEM',
-        note: 'Paid-intent request created.',
-        createdAt: '2026-03-20T12:30:00.000Z',
-      },
-      {
-        id: 'event-demo-paid-routed',
-        type: 'STATUS_CHANGED',
-        actor: 'SYSTEM',
-        note: 'Accepted after verifying org and paid signal.',
-        createdAt: '2026-03-20T12:45:00.000Z',
-      },
-    ],
-  },
-];
+type DirectDemoState = {
+  slug: string;
+  displayName: string;
+  plan: 'FREE' | 'PAID';
+  settings: DemoDoorSettings;
+  categories: DemoDoorCategory[];
+  emailAliases: DemoDoorAlias[];
+  requests: DemoRequestSeed[];
+};
+
+function resolveDemoFilePath(filePath: string) {
+  return path.isAbsolute(filePath) ? filePath : path.join(process.cwd(), filePath);
+}
+
+export function getDirectDemoDefaultFilePath() {
+  return resolveDemoFilePath(process.env.DIRECT_DEMO_DEFAULT_FILE ?? DEFAULT_DEMO_FILE);
+}
+
+export function getDirectDemoStateFilePath() {
+  return resolveDemoFilePath(process.env.DIRECT_DEMO_STATE_FILE ?? STATE_DEMO_FILE);
+}
+
+function readJsonFile<T>(filePath: string): T {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8')) as T;
+}
+
+function cloneState<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
+export function getDefaultDirectDemoState(): DirectDemoState {
+  return cloneState(readJsonFile<DirectDemoState>(getDirectDemoDefaultFilePath()));
+}
+
+export function readDirectDemoState(): DirectDemoState {
+  const stateFile = getDirectDemoStateFilePath();
+  if (fs.existsSync(stateFile)) {
+    return cloneState(readJsonFile<DirectDemoState>(stateFile));
+  }
+  return getDefaultDirectDemoState();
+}
+
+export function writeDirectDemoState(state: DirectDemoState) {
+  const stateFile = getDirectDemoStateFilePath();
+  fs.mkdirSync(path.dirname(stateFile), { recursive: true });
+  fs.writeFileSync(stateFile, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+  return stateFile;
+}
+
+export function resetDirectDemoState() {
+  const state = getDefaultDirectDemoState();
+  const stateFile = writeDirectDemoState(state);
+  return { stateFile, state };
+}
 
 export function isDirectDemoFixture(value?: string | null) {
   return value === DIRECT_DEMO_FIXTURE_QUERY_VALUE;
@@ -257,17 +144,20 @@ function buildStatusCounts(requests: DemoRequestSeed[]) {
   }, {});
 }
 
-function buildDemoDoorBase(doorSlug: string) {
+function buildDemoDoorBase(state: DirectDemoState, doorSlug: string) {
   return {
     slug: doorSlug,
-    displayName: 'John',
-    plan: 'FREE',
-    settings: { ...DEMO_DOOR_SETTINGS },
-    categories: DEMO_CATEGORIES.map((category) => ({
+    displayName: state.displayName,
+    plan: state.plan,
+    settings: cloneState(state.settings),
+    categories: state.categories.map((category) => ({
       ...category,
       fields: category.fields.map((field) => ({ ...field })),
     })),
-    emailAliases: DEMO_EMAIL_ALIASES.map((alias) => ({ ...alias, alias: doorSlug })),
+    emailAliases: state.emailAliases.map((alias) => ({
+      ...alias,
+      alias: alias.alias === state.slug ? doorSlug : alias.alias,
+    })),
   };
 }
 
@@ -277,12 +167,13 @@ export function getDirectDemoInboxFixture(options?: {
   pageSize?: number;
   status?: RequestStatus;
 }) {
-  const doorSlug = options?.doorSlug ?? DIRECT_DEMO_SLUG;
+  const state = readDirectDemoState();
+  const doorSlug = options?.doorSlug ?? state.slug ?? DIRECT_DEMO_SLUG;
   const pageSize = Math.max(1, options?.pageSize ?? DEMO_PAGE_SIZE);
-  const statusCounts = buildStatusCounts(DEMO_REQUEST_SEEDS);
+  const statusCounts = buildStatusCounts(state.requests);
   const filteredRequests = options?.status
-    ? DEMO_REQUEST_SEEDS.filter((request) => request.status === options.status)
-    : DEMO_REQUEST_SEEDS;
+    ? state.requests.filter((request) => request.status === options.status)
+    : state.requests;
   const totalCount = filteredRequests.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const page = Math.min(Math.max(1, options?.page ?? 1), totalPages);
@@ -302,7 +193,7 @@ export function getDirectDemoInboxFixture(options?: {
   }));
 
   return {
-    ...buildDemoDoorBase(doorSlug),
+    ...buildDemoDoorBase(state, doorSlug),
     requests,
     pagination: {
       page,
@@ -314,12 +205,15 @@ export function getDirectDemoInboxFixture(options?: {
   };
 }
 
-export function getDirectDemoRequestFixture(requestId: string, doorSlug = DIRECT_DEMO_SLUG) {
-  const request = DEMO_REQUEST_SEEDS.find((item) => item.id === requestId);
+export function getDirectDemoRequestFixture(requestId: string, doorSlug?: string) {
+  const state = readDirectDemoState();
+  const request = state.requests.find((item) => item.id === requestId);
 
   if (!request) {
     return null;
   }
+
+  const resolvedDoorSlug = doorSlug ?? state.slug ?? DIRECT_DEMO_SLUG;
 
   return {
     id: request.id,
@@ -345,8 +239,8 @@ export function getDirectDemoRequestFixture(requestId: string, doorSlug = DIRECT
     keeperQuoteNote: request.keeperQuoteNote ?? null,
     category: { ...request.category },
     door: {
-      slug: doorSlug,
-      settings: { ...DEMO_DOOR_SETTINGS },
+      slug: resolvedDoorSlug,
+      settings: cloneState(state.settings),
     },
     events: request.events.map((event) => ({ ...event })),
   };

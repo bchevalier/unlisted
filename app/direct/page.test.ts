@@ -67,6 +67,8 @@ describe('DirectClientPage', () => {
     expect(html).toContain('john@example.com');
     expect(html).toContain('Open demo inbox');
     expect(html).toContain('Open demo settings');
+    expect(html).toContain('/direct/inbox?slug=john&amp;fixture=demo');
+    expect(html).toContain('/direct/settings?slug=john&amp;fixture=demo');
     expect(html).toContain('Demo configuration');
     expect(html).toContain('What finally reaches you');
   });

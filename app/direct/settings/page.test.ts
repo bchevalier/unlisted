@@ -73,4 +73,17 @@ describe('DirectSettingsPage', () => {
     expect(html).toContain('Open public door');
     expect(html).toContain('SettingsPanel');
   });
+
+  it('renders demo fixture settings without depending on live request rows', async () => {
+    listDoorsForKeeperMock.mockResolvedValue([{ slug: 'alice', displayName: 'Alice', plan: 'FREE' }] as never);
+
+    const html = renderToStaticMarkup(
+      await DirectSettingsPage({ searchParams: Promise.resolve({ slug: 'john', fixture: 'demo' }) })
+    );
+
+    expect(listRequestsByDoorSlugForKeeperMock).not.toHaveBeenCalled();
+    expect(html).toContain('John demo (FREE)');
+    expect(html).toContain('/direct/inbox?slug=john&amp;fixture=demo');
+    expect(html).toContain('SettingsPanel');
+  });
 });

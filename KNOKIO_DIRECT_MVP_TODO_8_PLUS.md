@@ -63,8 +63,8 @@ Purpose: drive Knokio Direct to a solid 8+/10 MVP with explicit implementation c
 
 ## Chunk 10 — End-to-end proof that Direct works
 - [x] Add a scripted end-to-end smoke test that submits a dummy request through the public door and verifies it appears in the keeper inbox with the expected routing state.
-- [ ] Add a dummy-data fixture path for accepted, auto-replied, awaiting-completion, and paid-intent requests so demos do not depend on ad hoc data.
-- [ ] Add a deterministic demo reset script so local demos always start from a known good state.
+- [x] Add a dummy-data fixture path for accepted, auto-replied, awaiting-completion, and paid-intent requests so demos do not depend on ad hoc data.
+- [x] Add a deterministic demo reset script so local demos always start from a known good state.
 
 ## Chunk 11 — Paid upgrade UX + trust clarity
 - [ ] Make the upgrade path visibly billing-authoritative in the UI (no ambiguity about how Paid unlocks).

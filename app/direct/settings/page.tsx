@@ -1,6 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
 import {
+  DIRECT_DEMO_SLUG,
+  getDirectDemoInboxFixture,
+  isDirectDemoFixture,
+} from '../../../features/direct/demo-fixtures';
+import {
   listDoorsForKeeper,
   listRequestsByDoorSlugForKeeper
 } from '../../../features/direct/server/requests';
@@ -12,6 +17,7 @@ import { TwoFactorPanel } from './two-factor-panel';
 type DirectSettingsPageProps = {
   searchParams?: Promise<{
     slug?: string;
+    fixture?: string;
   }>;
 };
 
@@ -20,7 +26,8 @@ export default async function DirectSettingsPage({ searchParams }: DirectSetting
   const resolvedSearchParams = (await searchParams) ?? {};
 
   const doors = await listDoorsForKeeper(session.userId);
-  const selectedSlug = resolvedSearchParams.slug ?? doors[0]?.slug;
+  const useDemoFixture = isDirectDemoFixture(resolvedSearchParams.fixture);
+  const selectedSlug = resolvedSearchParams.slug ?? doors[0]?.slug ?? (useDemoFixture ? DIRECT_DEMO_SLUG : undefined);
 
   if (!selectedSlug) {
     return (
@@ -34,7 +41,9 @@ export default async function DirectSettingsPage({ searchParams }: DirectSetting
   }
 
   const [door, securityProfile] = await Promise.all([
-    listRequestsByDoorSlugForKeeper(session.userId, selectedSlug),
+    useDemoFixture
+      ? Promise.resolve(getDirectDemoInboxFixture({ doorSlug: selectedSlug }))
+      : listRequestsByDoorSlugForKeeper(session.userId, selectedSlug),
     getKeeperSecurityProfile(session.userId)
   ]);
 
@@ -48,6 +57,10 @@ export default async function DirectSettingsPage({ searchParams }: DirectSetting
       </main>
     );
   }
+
+  const doorLinks = useDemoFixture && !doors.some((item) => item.slug === door.slug)
+    ? [{ slug: door.slug, displayName: `${door.displayName} demo`, plan: door.plan }, ...doors]
+    : doors;
 
   return (
     <main className="direct-surface-shell direct-settings-shell">
@@ -64,8 +77,11 @@ export default async function DirectSettingsPage({ searchParams }: DirectSetting
       </section>
       <section className="direct-surface-card direct-surface-card-toolbar">
         <p className="inbox-links">
-          {doors.map((item) => (
-            <Link key={item.slug} href={`/direct/settings?slug=${item.slug}`}>
+          {doorLinks.map((item) => (
+            <Link
+              key={item.slug}
+              href={`/direct/settings?slug=${item.slug}${useDemoFixture ? '&fixture=demo' : ''}`}
+            >
               {item.displayName} ({item.plan})
             </Link>
           ))}
@@ -74,7 +90,7 @@ export default async function DirectSettingsPage({ searchParams }: DirectSetting
           Active door plan: <strong>{door.plan}</strong>
         </p>
         <p className="inbox-links">
-          <Link href={`/direct/inbox?slug=${door.slug}`}>Inbox</Link>
+          <Link href={`/direct/inbox?slug=${door.slug}${useDemoFixture ? '&fixture=demo' : ''}`}>Inbox</Link>
           <Link href={`/u/${door.slug}`} target="_blank">
             Open public door
           </Link>
