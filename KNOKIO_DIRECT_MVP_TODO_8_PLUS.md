@@ -68,7 +68,7 @@ Purpose: drive Knokio Direct to a solid 8+/10 MVP with explicit implementation c
 
 ## Chunk 11 — Paid upgrade UX + trust clarity
 - [x] Make the upgrade path visibly billing-authoritative in the UI (no ambiguity about how Paid unlocks).
-- [ ] Add clear guardrail copy in settings for what Free protects and what Paid unlocks.
+- [x] Add clear guardrail copy in settings for what Free protects and what Paid unlocks.
 - [ ] Add tests proving paid-only controls are either disabled or clearly gated in the UI when entitlement is absent.
 
 ## Chunk 12 — Final 8+/10 polish + regression confidence

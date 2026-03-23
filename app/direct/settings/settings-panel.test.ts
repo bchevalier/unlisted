@@ -12,7 +12,7 @@ vi.mock('react', async () => {
   };
 });
 
-import { BillingAuthorityNotice, SettingsPanel } from './settings-panel';
+import { BillingAuthorityNotice, PlanGuardrailCard, SettingsPanel } from './settings-panel';
 
 describe('SettingsPanel', () => {
   it('reinforces that public aliases are separate from the keeper\'s private inbox', () => {
@@ -83,5 +83,22 @@ describe('SettingsPanel', () => {
     expect(html).toContain('Stripe status is');
     expect(html).toContain('past due');
     expect(html).toContain('Paid-only controls should be treated as unavailable.');
+  });
+
+  it('spells out what Free protects and what Paid unlocks', () => {
+    const html = renderToStaticMarkup(
+      React.createElement(PlanGuardrailCard, {
+        plan: 'FREE',
+      })
+    );
+
+    expect(html).toContain('Plan guardrails');
+    expect(html).toContain('What Free protects');
+    expect(html).toContain('Inbound caps stay on');
+    expect(html).toContain('Paid-intent lanes, quote controls, and non-targeted paid Reach stay unavailable until billing is active.');
+    expect(html).toContain('What Paid unlocks');
+    expect(html).toContain('Paid quote controls and paid-intent filtering become available once billing is active.');
+    expect(html).toContain('Current MVP guardrail: both Free and Paid remain solo-only, single-door, and privacy-first right now.');
+    expect(html).toContain('This door is on Free, so the inbox-protection defaults remain the active guardrails until billing unlocks Paid.');
   });
 });

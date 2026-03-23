@@ -118,6 +118,55 @@ async function postJson(url: string, body: unknown) {
   }
 }
 
+export function PlanGuardrailCard({ plan }: { plan: 'FREE' | 'PAID' }) {
+  const isPaid = plan === 'PAID';
+
+  return (
+    <article className="settings-card">
+      <h2>Plan guardrails</h2>
+      <p style={{ fontSize: '0.95em', color: '#666' }}>
+        Free is meant to protect the inbox by default. Paid unlocks more control and capacity,
+        but only after billing is active.
+      </p>
+
+      <div style={{ display: 'grid', gap: 12, marginTop: 12 }}>
+        <div style={{ padding: '12px 16px', border: '1px solid #dbeafe', borderRadius: 8, background: '#eff6ff' }}>
+          <p style={{ margin: 0, fontWeight: 600 }}>What Free protects</p>
+          <ul style={{ margin: '8px 0 0 18px', color: '#1e3a8a' }}>
+            <li>Inbound caps stay on to keep overflow and low-signal volume from turning into inbox clutter.</li>
+            <li>Paid-intent lanes, quote controls, and non-targeted paid Reach stay unavailable until billing is active.</li>
+            <li>Private inbox protection stays intact: the public alias can receive requests without exposing real contact details.</li>
+          </ul>
+        </div>
+
+        <div style={{ padding: '12px 16px', border: '1px solid #dcfce7', borderRadius: 8, background: '#f0fdf4' }}>
+          <p style={{ margin: 0, fontWeight: 600 }}>What Paid unlocks</p>
+          <ul style={{ margin: '8px 0 0 18px', color: '#166534' }}>
+            <li>Door and category caps can open up so serious inbound is not artificially throttled.</li>
+            <li>Paid quote controls and paid-intent filtering become available once billing is active.</li>
+            <li>Optional non-targeted paid Reach can be enabled for verified organizations.</li>
+          </ul>
+        </div>
+      </div>
+
+      <p style={{ fontSize: '0.9em', color: '#666', marginTop: 12 }}>
+        Current MVP guardrail: both Free and Paid remain solo-only, single-door, and privacy-first right now.
+        Paid expands control, not team access.
+      </p>
+
+      {isPaid ? (
+        <p style={{ fontSize: '0.9em', color: '#166534', marginTop: 8 }}>
+          This door is already on Paid, so these paid controls should be available when billing stays active.
+        </p>
+      ) : (
+        <p style={{ fontSize: '0.9em', color: '#1d4ed8', marginTop: 8 }}>
+          This door is on Free, so the inbox-protection defaults remain the active guardrails until billing unlocks Paid.
+        </p>
+      )}
+    </article>
+  );
+}
+
 export function SettingsPanel({ door }: SettingsPanelProps) {
   const isPaid = door.plan === 'PAID';
 
@@ -127,6 +176,7 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
   return (
     <section className="settings-panel">
       <BillingCard doorSlug={door.slug} plan={door.plan} />
+      <PlanGuardrailCard plan={door.plan} />
 
       {!emailProxyEnabled ? (
         <article className="settings-card" style={{ borderLeft: '4px solid #e5a00d', background: '#fffbe6' }}>
