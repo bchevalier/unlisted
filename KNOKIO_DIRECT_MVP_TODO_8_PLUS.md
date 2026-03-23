@@ -93,3 +93,8 @@ Purpose: drive Knokio Direct to a solid 8+/10 MVP with explicit implementation c
 - [x] Add isolated component tests for login/password-recovery/reset-password/verify-email forms plus the two-factor panel so auth/control widgets cannot drift silently.
 - [x] Add isolated tests for `request-actions`, `direct-walkthrough-banner`, and `logout-button` so reusable Direct UI helpers are protected directly instead of only through page smoke coverage.
 - [x] Add dedicated unit tests for `auth-security`, `digest`, `abuse-reports`, `session`, `security`, and `door` server helpers so the remaining Direct backend modules are no longer uncovered.
+
+## Chunk 16 — Final backend coverage follow-ups
+- [x] Add dedicated unit coverage for `features/direct/server/auth.ts` so the core auth orchestration is protected directly, not only through route tests.
+- [ ] Add dedicated unit coverage for `features/direct/server/requests.ts` so the core request engine is protected directly, not only through route and page tests.
+- [ ] Add dedicated unit coverage for `features/direct/server/admin.ts` and `features/direct/server/admin-session.ts` so the last uncovered admin/authz helpers are no longer untested.

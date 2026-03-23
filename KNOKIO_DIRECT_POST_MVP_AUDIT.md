@@ -1,45 +1,53 @@
 # Knokio Direct Post-MVP Audit
 
-Date: 2026-03-23
+Date: 2026-03-24
 
 ## Current assessment
 
-Knokio Direct is now in a reviewer-ready **8+/10 MVP** state for the core demo and proof-of-value loop:
+Knokio Direct is in a reviewer-ready **8+/10 MVP** state for the core Direct loop:
 
 - landing/demo flow is clear and Direct-first
 - signup shows useful presets and a launch path
-- public door, inbox, and settings are visually/systemically coherent
-- deterministic demo fixtures exist for inbox, request detail, signup launch, and public door
+- public door, inbox, request detail, and settings are visually/systemically coherent
+- deterministic demo fixtures exist for signup launch, public door, inbox, and request detail
 - canonical screenshots and a regression checklist exist
+- screenshot capture is self-contained (`start/reset/capture/stop`)
+- Direct route-level auth, billing, request lifecycle, keeper-control, and operational webhook coverage now exists
+- auth/recovery pages, auth/control widgets, reusable Direct UI helpers, and most server helpers now have direct tests
 - `npm run test:all` is currently green
 
-## Why the work is not truly “finished” yet
+## What was closed since the previous audit
 
-The remaining gaps are less about core product clarity and more about **release hardening / regression confidence**:
+The previous UI/helper coverage gaps are now covered:
 
-1. **Route-level billing/settings coverage is still thin**
-   - billing status / checkout / portal routes exist
-   - settings plan route exists
-   - current protection is stronger in server tests than in route tests
+- `/direct/login`, `/direct/verify-email`, and `/direct/reset-password` page tests were added
+- isolated tests were added for login/password-recovery/reset-password/verify-email forms and the two-factor panel
+- isolated tests were added for `request-actions`, `direct-walkthrough-banner`, and `logout-button`
+- dedicated unit tests were added for `auth-security`, `digest`, `abuse-reports`, `session`, `security`, and `door`
 
-2. **Request-detail regression coverage is weaker than inbox-level coverage**
-   - inbox proof-of-value is covered well
-   - request-detail proof-of-value still deserves its own stable regression pass
+## Remaining hardening gaps
 
-3. **Canonical screenshot capture still assumes a running app**
-   - the capture flow is deterministic
-   - but it is not fully self-contained yet (start/reset/capture/stop in one command)
+The current gaps are now very narrow and concentrated in the last untested Direct backend modules:
 
-4. **Auth route regression coverage is incomplete for MVP signoff depth**
-   - signup/provider routes are covered
-   - login/logout/session/email verification/password reset still need direct route-level regression protection
+1. **Core auth orchestration still lacks dedicated unit coverage**
+   - `features/direct/server/auth.ts`
+   - this remains one of the most important internal modules because signup/login/verification/2FA flows all converge here
+
+2. **Core request orchestration still lacks dedicated unit coverage**
+   - `features/direct/server/requests.ts`
+   - route coverage is now broad, but the shared request engine is still large and behavior-dense enough to justify direct helper coverage
+
+3. **Admin/authz helper modules still lack dedicated coverage**
+   - `features/direct/server/admin.ts`
+   - `features/direct/server/admin-session.ts`
+   - these are smaller than `auth.ts` / `requests.ts`, but they are still uncovered backend surfaces
 
 ## Follow-up recommendation
 
-Treat the current Direct build as **reviewable and demoable now**, but continue with one more hardening chunk focused on:
+Treat the current build as **reviewable and demoable now**. The next chunk should focus on the final uncovered backend modules:
 
-- route-level auth/billing/settings regression coverage
-- request-detail regression coverage
-- self-contained evidence capture
+- direct unit coverage for `auth.ts`
+- direct unit coverage for `requests.ts`
+- direct unit coverage for `admin.ts` and `admin-session.ts`
 
 These follow-ups are now tracked back in `KNOKIO_DIRECT_MVP_TODO_8_PLUS.md` as the next unchecked tasks.
