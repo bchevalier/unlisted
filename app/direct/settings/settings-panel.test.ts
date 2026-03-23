@@ -49,6 +49,12 @@ describe('SettingsPanel', () => {
     expect(html).toContain('The alias is public-facing.');
     expect(html).toContain('Your real inbox stays hidden');
     expect(html).toContain('Direct is solo-only in the current MVP.');
+    expect(html).toContain('Locked on Free. Active billing is required before these controls become editable.');
+    expect(html).toContain('This is a paid-only control. Start billing checkout and wait for active billing before enabling it.');
+    expect(html).toMatch(/name="paidQuoteAmount"[^>]*disabled=""/);
+    expect(html).toMatch(/name="paidQuoteNote"[^>]*disabled=""/);
+    expect(html).toMatch(/name="quoteVisibleToVerifiedOrgsOnly"[^>]*disabled=""/);
+    expect(html).toMatch(/name="openToNonTargetedPaidReach"[^>]*disabled=""/);
   });
 
   it('makes the upgrade path explicitly billing-authoritative before paid unlocks', () => {
