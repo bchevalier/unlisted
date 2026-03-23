@@ -77,7 +77,7 @@ Purpose: drive Knokio Direct to a solid 8+/10 MVP with explicit implementation c
 - [x] Add one final top-level regression checklist doc for MVP review/signoff.
 
 ## Chunk 13 — Post-MVP hardening audit follow-ups
-- [ ] Add route tests for billing status / checkout / portal and settings plan endpoints so billing-authoritative behavior is protected at the HTTP layer.
+- [x] Add route tests for billing status / checkout / portal and settings plan endpoints so billing-authoritative behavior is protected at the HTTP layer.
 - [ ] Add stable request-detail regression coverage for demo-fixture and live-request states so inbox → detail proof-of-value cannot drift.
 - [ ] Make canonical screenshot capture self-contained (start/reset/capture/stop) so review evidence does not depend on a manually running dev server.
 - [ ] Add route tests for Direct login / logout / session / email verification / password reset paths to close the remaining auth regression gap.
