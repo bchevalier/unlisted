@@ -13,6 +13,7 @@ import {
 } from '../../../../../features/direct/server/auth-security';
 import { sendEmailVerificationMail } from '../../../../../lib/auth-mailer';
 import { captureException } from '../../../../../lib/error-tracking';
+import { extractEmailDomain, isDisposableDomain } from '../../../../../features/direct/server/verification';
 import { logger } from '../../../../../lib/logger';
 
 const log = logger('auth:signup');
@@ -44,7 +45,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: 'Invalid signup attempt' }, { status: 400 });
     }
 
-    const user = await signupKeeper(payload);
+    const emailDomain = email ? extractEmailDomain(email) : null;
+    if (emailDomain && isDisposableDomain(emailDomain)) {
+      await recordAuthAttempt({
+        action: AuthActionType.SIGNUP,
+        ipAddress,
+        email,
+        success: false
+      });
+
+      return NextResponse.json(
+        { ok: false, error: 'Temporary or disposable email addresses are not allowed for Direct signups' },
+        { status: 400 }
+      );
+    }
+
+    const user = await signupKeeper({
+      name: typeof payload?.name === 'string' ? payload.name : undefined,
+      email: typeof payload?.email === 'string' ? payload.email : '',
+      password: typeof payload?.password === 'string' ? payload.password : '',
+      desiredSlug: typeof payload?.desiredSlug === 'string' ? payload.desiredSlug : undefined,
+      preset:
+        typeof payload?.preset === 'string' && ['CREATOR', 'ADVISOR', 'PUBLIC_FACING'].includes(payload.preset)
+          ? payload.preset
+          : 'CREATOR',
+      plan: 'FREE'
+    });
     await sendEmailVerificationMail(user.email, user.verificationToken);
 
     await recordAuthAttempt({

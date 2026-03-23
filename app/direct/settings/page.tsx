@@ -1,3 +1,4 @@
+import React from 'react';
 import Link from 'next/link';
 import {
   listDoorsForKeeper,
@@ -23,9 +24,11 @@ export default async function DirectSettingsPage({ searchParams }: DirectSetting
 
   if (!selectedSlug) {
     return (
-      <main>
-        <h1>Knokio Direct Settings</h1>
-        <p>No door found for this account.</p>
+      <main className="direct-surface-shell direct-settings-shell">
+        <section className="direct-surface-card direct-surface-card-header">
+          <h1>Knokio Direct Settings</h1>
+          <p>No door found for this account.</p>
+        </section>
       </main>
     );
   }
@@ -37,35 +40,46 @@ export default async function DirectSettingsPage({ searchParams }: DirectSetting
 
   if (!door) {
     return (
-      <main>
-        <h1>Knokio Direct Settings</h1>
-        <p>Door not found or not owned by this account.</p>
+      <main className="direct-surface-shell direct-settings-shell">
+        <section className="direct-surface-card direct-surface-card-header">
+          <h1>Knokio Direct Settings</h1>
+          <p>Door not found or not owned by this account.</p>
+        </section>
       </main>
     );
   }
 
   return (
-    <main>
-      <h1>Knokio Direct Settings</h1>
-      <p>
-        Signed in as <strong>{session.email}</strong>
-      </p>
-      <p className="inbox-links">
-        {doors.map((item) => (
-          <Link key={item.slug} href={`/direct/settings?slug=${item.slug}`}>
-            {item.displayName} ({item.plan})
+    <main className="direct-surface-shell direct-settings-shell">
+      <section className="direct-surface-card direct-surface-card-header">
+        <p className="direct-surface-eyebrow">Knokio Direct</p>
+        <h1>Settings</h1>
+        <p>
+          Signed in as <strong>{session.email}</strong>
+        </p>
+        <p>
+          This is where you define how Direct protects your inbox: what gets through, what needs more detail, and what
+          stays outside your private contact surface.
+        </p>
+      </section>
+      <section className="direct-surface-card direct-surface-card-toolbar">
+        <p className="inbox-links">
+          {doors.map((item) => (
+            <Link key={item.slug} href={`/direct/settings?slug=${item.slug}`}>
+              {item.displayName} ({item.plan})
+            </Link>
+          ))}
+        </p>
+        <p>
+          Active door plan: <strong>{door.plan}</strong>
+        </p>
+        <p className="inbox-links">
+          <Link href={`/direct/inbox?slug=${door.slug}`}>Inbox</Link>
+          <Link href={`/u/${door.slug}`} target="_blank">
+            Open public door
           </Link>
-        ))}
-      </p>
-      <p>
-        Active door plan: <strong>{door.plan}</strong>
-      </p>
-      <p className="inbox-links">
-        <Link href={`/direct/inbox?slug=${door.slug}`}>Inbox</Link>
-        <Link href={`/u/${door.slug}`} target="_blank">
-          Open public door
-        </Link>
-      </p>
+        </p>
+      </section>
 
       {securityProfile ? (
         <TwoFactorPanel

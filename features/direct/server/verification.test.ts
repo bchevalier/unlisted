@@ -2,6 +2,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import {
   extractEmailDomain,
   getRegistrableDomain,
+  isDisposableDomain,
   isFreeDomain,
   checkDomainDns,
   computeVerificationStatus,
@@ -119,6 +120,22 @@ describe('isFreeDomain', () => {
 
   it('is case-insensitive', () => {
     expect(isFreeDomain('GMAIL.COM')).toBe(true);
+  });
+});
+
+describe('isDisposableDomain', () => {
+  it('returns true for known temporary providers', () => {
+    expect(isDisposableDomain('mailinator.com')).toBe(true);
+    expect(isDisposableDomain('tempmail.com')).toBe(true);
+  });
+
+  it('returns false for normal free inbox providers', () => {
+    expect(isDisposableDomain('gmail.com')).toBe(false);
+    expect(isDisposableDomain('outlook.com')).toBe(false);
+  });
+
+  it('returns false for custom domains', () => {
+    expect(isDisposableDomain('acme.com')).toBe(false);
   });
 });
 

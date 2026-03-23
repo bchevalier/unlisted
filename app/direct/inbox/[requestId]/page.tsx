@@ -1,11 +1,12 @@
 import Link from 'next/link';
+import { getDirectDemoRequestFixture, isDirectDemoFixture } from '../../../../features/direct/demo-fixtures';
 import { getRequestDetailForKeeper } from '../../../../features/direct/server/requests';
 import { requireKeeperSession } from '../../../../features/direct/server/session';
 import { RequestActions } from '../request-actions';
 
 type RequestDetailPageProps = {
   params: Promise<{ requestId: string }>;
-  searchParams?: Promise<{ slug?: string }>;
+  searchParams?: Promise<{ slug?: string; fixture?: string }>;
 };
 
 /** Human-readable verification status label */
@@ -29,8 +30,11 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
   const session = await requireKeeperSession('/direct/inbox');
   const { requestId } = await params;
   const resolvedSearchParams = (await searchParams) ?? {};
+  const useDemoFixture = isDirectDemoFixture(resolvedSearchParams.fixture);
 
-  const request = await getRequestDetailForKeeper(session.userId, requestId);
+  const request = useDemoFixture
+    ? getDirectDemoRequestFixture(requestId, resolvedSearchParams.slug)
+    : await getRequestDetailForKeeper(session.userId, requestId);
 
   if (!request) {
     return (
@@ -43,6 +47,7 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
   }
 
   const backSlug = resolvedSearchParams.slug ?? request.door.slug;
+  const backHref = `/direct/inbox?slug=${backSlug}${useDemoFixture ? '&fixture=demo' : ''}`;
   const rawStructuredData = request.structuredData as Record<string, unknown> | null;
   const emailMeta = rawStructuredData?._emailMeta as Record<string, string> | undefined;
   // Filter out internal metadata keys for display
@@ -58,7 +63,7 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
   return (
     <main>
       <p>
-        <Link href={`/direct/inbox?slug=${backSlug}`}>← Back to inbox</Link>
+        <Link href={backHref}>← Back to inbox</Link>
       </p>
 
       <h1>{request.title ?? '(No title)'}</h1>
@@ -204,7 +209,7 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
         </div>
       )}
 
-      <RequestActions requestId={request.id} status={request.status} />
+      <RequestActions requestId={request.id} status={request.status as 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'EXPIRED' | 'AWAITING_COMPLETION'} />
 
       {request.status === 'ACCEPTED' && request.door.settings && (
         <>

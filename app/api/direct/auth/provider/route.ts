@@ -1,4 +1,4 @@
-import { AuthActionType, AuthProvider, DoorPlan } from '@prisma/client';
+import { AuthActionType, AuthProvider } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import { ZodError, z } from 'zod';
 import {
@@ -16,6 +16,7 @@ import {
   KEEPER_SESSION_COOKIE,
   keeperSessionCookieOptions
 } from '../../../../../lib/keeper-auth';
+import { extractEmailDomain, isDisposableDomain } from '../../../../../features/direct/server/verification';
 import { logger } from '../../../../../lib/logger';
 import { verifyProviderToken } from '../../../../../lib/provider-auth';
 
@@ -31,7 +32,7 @@ const providerAuthSchema = z.object({
   website: z.string().optional(),
   name: z.string().trim().min(1).max(120).optional(),
   desiredSlug: z.string().trim().min(2).max(40).regex(/^[a-z0-9-]+$/).optional(),
-  plan: z.enum([DoorPlan.FREE, DoorPlan.PAID]).default(DoorPlan.FREE)
+  preset: z.enum(['CREATOR', 'ADVISOR', 'PUBLIC_FACING']).default('CREATOR')
 });
 
 export async function POST(request: Request) {
@@ -62,6 +63,21 @@ export async function POST(request: Request) {
       token: parsed.token
     });
 
+    const verifiedEmailDomain = verifiedIdentity.email ? extractEmailDomain(verifiedIdentity.email) : null;
+    if (verifiedEmailDomain && isDisposableDomain(verifiedEmailDomain)) {
+      await recordAuthAttempt({
+        action: AuthActionType.LOGIN,
+        ipAddress,
+        email: verifiedIdentity.email,
+        success: false
+      });
+
+      return NextResponse.json(
+        { ok: false, error: 'Temporary or disposable email addresses are not allowed for Direct signups' },
+        { status: 400 }
+      );
+    }
+
     const keeper = await authenticateKeeperWithExternalIdentity({
       provider: verifiedIdentity.provider,
       providerSubject: verifiedIdentity.providerSubject,
@@ -70,7 +86,8 @@ export async function POST(request: Request) {
       walletAddress: verifiedIdentity.walletAddress,
       name: parsed.name ?? verifiedIdentity.name,
       desiredSlug: parsed.desiredSlug,
-      plan: parsed.plan
+      preset: parsed.preset,
+      plan: 'FREE'
     });
 
     const response = NextResponse.json({

@@ -17,31 +17,24 @@ import {
   hashRecoveryCode,
   verifyTotpCode
 } from './auth-security';
+import { getDirectPlanEntitlements } from './plan-entitlements';
+import {
+  DIRECT_ONBOARDING_PRESETS,
+  getDirectPresetConfig,
+  type CategorySeed,
+  type DirectOnboardingPreset,
+} from './onboarding-presets';
 
 const externalAuthProviders = [AuthProvider.GOOGLE, AuthProvider.APPLE, AuthProvider.LINKEDIN, AuthProvider.PRIVY] as const;
 
 type ExternalAuthProvider = (typeof externalAuthProviders)[number];
-
-type CategorySeed = {
-  key: string;
-  label: string;
-  description: string;
-  sortOrder: number;
-  fields: Array<{
-    key: string;
-    label: string;
-    type: CategoryFieldType;
-    required: boolean;
-    sortOrder: number;
-    placeholder?: string;
-  }>;
-};
 
 const signupSchema = z.object({
   email: z.string().trim().email(),
   password: z.string().min(10).max(200),
   name: z.string().trim().min(1).max(120).optional(),
   desiredSlug: z.string().trim().min(2).max(40).regex(/^[a-z0-9-]+$/).optional(),
+  preset: z.enum(DIRECT_ONBOARDING_PRESETS).default('CREATOR'),
   plan: z.enum([DoorPlan.FREE, DoorPlan.PAID]).default(DoorPlan.FREE)
 });
 
@@ -62,6 +55,7 @@ const externalIdentitySchema = z.object({
   name: z.string().trim().min(1).max(120).optional(),
   walletAddress: z.string().trim().min(6).max(120).optional(),
   desiredSlug: z.string().trim().min(2).max(40).regex(/^[a-z0-9-]+$/).optional(),
+  preset: z.enum(DIRECT_ONBOARDING_PRESETS).default('CREATOR'),
   plan: z.enum([DoorPlan.FREE, DoorPlan.PAID]).default(DoorPlan.FREE)
 });
 
@@ -78,49 +72,6 @@ const verifyTwoFactorSchema = z.object({
 const confirmTwoFactorSetupSchema = z.object({
   code: z.string().trim().min(6).max(20)
 });
-
-const FREE_CATEGORY_SEED: CategorySeed[] = [
-  {
-    key: 'business',
-    label: 'Business Inquiry',
-    description: 'Partnerships, consulting, and commercial opportunities',
-    sortOrder: 1,
-    fields: [
-      { key: 'company', label: 'Company', type: CategoryFieldType.TEXT, required: true, sortOrder: 1 },
-      {
-        key: 'budget',
-        label: 'Budget (NZD)',
-        type: CategoryFieldType.NUMBER,
-        required: false,
-        sortOrder: 2
-      },
-      {
-        key: 'website',
-        label: 'Website',
-        type: CategoryFieldType.URL,
-        required: false,
-        sortOrder: 3
-      }
-    ]
-  },
-  {
-    key: 'collab',
-    label: 'Collaboration',
-    description: 'Creator and project collaborations',
-    sortOrder: 2,
-    fields: [
-      { key: 'project', label: 'Project name', type: CategoryFieldType.TEXT, required: true, sortOrder: 1 },
-      { key: 'timeline', label: 'Timeline', type: CategoryFieldType.TEXT, required: false, sortOrder: 2 }
-    ]
-  },
-  {
-    key: 'other',
-    label: 'Other',
-    description: 'General request',
-    sortOrder: 3,
-    fields: []
-  }
-];
 
 const PAID_CATEGORY_SEED: CategorySeed[] = [
   {
@@ -285,8 +236,12 @@ function syntheticEmailForIdentity(provider: ExternalAuthProvider, providerSubje
   return `id-${hash}@auth.knokio.local`;
 }
 
-function getDefaultCategoriesForPlan(plan: DoorPlan): CategorySeed[] {
-  return plan === DoorPlan.PAID ? PAID_CATEGORY_SEED : FREE_CATEGORY_SEED;
+function getDefaultCategoriesForPlan(plan: DoorPlan, preset: DirectOnboardingPreset = 'CREATOR'): CategorySeed[] {
+  if (plan === DoorPlan.PAID && preset === 'CREATOR') {
+    return PAID_CATEGORY_SEED;
+  }
+
+  return getDirectPresetConfig(preset, plan).categories;
 }
 
 function getDefaultWeeklyCapForPlan(plan: DoorPlan): number | null {
@@ -330,10 +285,8 @@ async function ensureUniqueSlug(base: string): Promise<string> {
   throw new AuthValidationError('Unable to allocate unique door slug');
 }
 
-function doorHeadlineForPlan(plan: DoorPlan) {
-  return plan === DoorPlan.PAID
-    ? 'Paid opportunities only. Send complete details for priority review.'
-    : 'Send a structured request. Noise stays out.';
+function doorHeadlineForPlan(plan: DoorPlan, preset: DirectOnboardingPreset = 'CREATOR') {
+  return getDirectPresetConfig(preset, plan).headline;
 }
 
 async function createDoorForUser(params: {
@@ -341,18 +294,33 @@ async function createDoorForUser(params: {
   displayNameSeed: string;
   slugSeed: string;
   desiredSlug?: string;
+  preset?: 'CREATOR' | 'ADVISOR' | 'PUBLIC_FACING';
   plan: DoorPlan;
 }) {
+  const entitlements = getDirectPlanEntitlements(params.plan);
+  const existingDoorCount = await db.door.count({ where: { userId: params.userId } });
+
+  if (existingDoorCount >= entitlements.maxDoors) {
+    throw new AuthValidationError('Current Direct plan allows only one door per account');
+  }
+
+  // MVP note: web-form intake is the only public door surface right now, so
+  // maxFormDoors is documented here even before multiple door types ship.
+  if (entitlements.maxFormDoors < 1) {
+    throw new AuthValidationError('Current Direct plan does not allow form doors');
+  }
+
+  const preset = params.preset ?? 'CREATOR';
   const slugBase = normalizeSlug(params.desiredSlug ?? fallbackSlug(params.slugSeed));
   const slug = await ensureUniqueSlug(slugBase);
-  const categorySeed = getDefaultCategoriesForPlan(params.plan);
+  const categorySeed = getDefaultCategoriesForPlan(params.plan, preset);
 
   return db.door.create({
     data: {
       userId: params.userId,
       slug,
       displayName: `${params.displayNameSeed}'s Door`,
-      headline: doorHeadlineForPlan(params.plan),
+      headline: doorHeadlineForPlan(params.plan, preset),
       plan: params.plan,
       settings: {
         create: {
@@ -390,6 +358,7 @@ async function ensureDoorForUser(params: {
   displayNameSeed: string;
   slugSeed: string;
   desiredSlug?: string;
+  preset?: 'CREATOR' | 'ADVISOR' | 'PUBLIC_FACING';
   plan: DoorPlan;
 }) {
   const existing = await db.door.findUnique({
@@ -475,6 +444,7 @@ export async function signupKeeper(input: unknown) {
     displayNameSeed: displayName,
     slugSeed: email,
     desiredSlug: payload.desiredSlug,
+    preset: payload.preset,
     plan: payload.plan
   });
 
@@ -876,6 +846,7 @@ export async function authenticateKeeperWithExternalIdentity(input: unknown) {
       displayNameSeed: displayName,
       slugSeed: accountEmail,
       desiredSlug: payload.desiredSlug,
+      preset: payload.preset,
       plan: payload.plan
     });
 

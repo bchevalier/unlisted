@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import React, { FormEvent, useCallback, useEffect, useState } from 'react';
 
 type BillingStatus = {
   plan: 'FREE' | 'PAID';
@@ -91,11 +91,19 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
             Knockers can email <strong>{activeAlias.alias}@knokio.io</strong> to submit requests
             to this door.
           </p>
+          <p style={{ fontSize: '0.9em', color: '#666' }}>
+            The alias is public-facing. Your real inbox stays hidden unless your workflow explicitly
+            reveals contact later.
+          </p>
         </article>
       ) : null}
 
       <article className="settings-card">
         <h2>Door settings</h2>
+        <p style={{ fontSize: '0.9em', color: '#666' }}>
+          Direct is solo-only in the current MVP. Team access and shared operator workflows are
+          intentionally out of scope for both Free and Paid right now.
+        </p>
         <form
           onSubmit={async (event) => {
             event.preventDefault();

@@ -163,8 +163,12 @@ function mapSubscriptionStatus(
  * Derive DoorPlan from Stripe subscription status.
  * Only ACTIVE and TRIALING grant PAID access.
  */
+export function hasPaidEntitlement(status: string | null | undefined): boolean {
+  return status === 'ACTIVE' || status === 'TRIALING' || status === 'active' || status === 'trialing';
+}
+
 function planFromSubStatus(status: string): DoorPlan {
-  return status === 'active' || status === 'trialing' ? DoorPlan.PAID : DoorPlan.FREE;
+  return hasPaidEntitlement(status) ? DoorPlan.PAID : DoorPlan.FREE;
 }
 
 export async function handleStripeWebhook(rawBody: Buffer, signature: string): Promise<void> {

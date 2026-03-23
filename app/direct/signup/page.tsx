@@ -1,3 +1,4 @@
+import React from 'react';
 import Link from 'next/link';
 import { ExternalProviderAuthForm } from '../external-provider-auth-form';
 import { SignupForm } from './signup-form';
@@ -8,7 +9,12 @@ export default function SignupPage() {
       <h1>Create Keeper account</h1>
       <p>Create your account and first Knokio Direct door.</p>
       <p>
-        Paid doors are optimized for product placement and paid advisory access with unlimited paid reaches.
+        Direct is built to keep your private inbox private while still letting serious requests reach you through a
+        structured, controlled door.
+      </p>
+      <p>
+        Start on Free, then upgrade after billing is active when you want paid request lanes, more doors, or more
+        capacity.
       </p>
       <SignupForm />
       <ExternalProviderAuthForm mode="signup" />
