@@ -10,6 +10,62 @@ type BillingStatus = {
   hasStripeCustomer: boolean;
 };
 
+function hasActiveBillingEntitlement(status: string | null | undefined) {
+  return status === 'ACTIVE' || status === 'TRIALING' || status === 'active' || status === 'trialing';
+}
+
+export function BillingAuthorityNotice({
+  plan,
+  billing,
+  loading,
+}: {
+  plan: 'FREE' | 'PAID';
+  billing: BillingStatus | null;
+  loading: boolean;
+}) {
+  if (loading) {
+    return <p>Checking whether billing is active before unlocking Paid…</p>;
+  }
+
+  const status = billing?.stripeSubscriptionStatus ?? null;
+  const hasActiveBilling = hasActiveBillingEntitlement(status);
+  const effectivePlan = billing?.plan ?? plan;
+
+  if (effectivePlan === 'PAID' && hasActiveBilling) {
+    return (
+      <div className="settings-billing-authority" style={{ padding: '12px 16px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, marginTop: 12 }}>
+        <p style={{ margin: 0, fontWeight: 600 }}>Paid is unlocked by active billing.</p>
+        <p style={{ margin: '6px 0 0 0', color: '#166534' }}>
+          This door is currently using Paid because Stripe reports an active or trialing subscription.
+          Paid controls are server-authoritative, not a manual toggle.
+        </p>
+      </div>
+    );
+  }
+
+  if (status) {
+    return (
+      <div className="settings-billing-authority" style={{ padding: '12px 16px', background: '#fffbe6', border: '1px solid #fde68a', borderRadius: 8, marginTop: 12 }}>
+        <p style={{ margin: 0, fontWeight: 600 }}>Billing exists, but Paid is still locked.</p>
+        <p style={{ margin: '6px 0 0 0', color: '#854d0e' }}>
+          Stripe status is <strong>{status.toLowerCase().replaceAll('_', ' ')}</strong>. Until billing becomes active or trialing,
+          this door stays on Free protections and Paid-only controls should be treated as unavailable.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="settings-billing-authority" style={{ padding: '12px 16px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, marginTop: 12 }}>
+      <p style={{ margin: 0, fontWeight: 600 }}>Paid unlocks only after billing is active.</p>
+      <p style={{ margin: '6px 0 0 0', color: '#1d4ed8' }}>
+        Starting checkout does not flip this door to Paid by itself. The server unlocks Paid only after Stripe confirms an
+        active or trialing subscription.
+      </p>
+    </div>
+  );
+}
+
 type SettingsPanelProps = {
   door: {
     slug: string;
@@ -470,10 +526,12 @@ function BillingCard({ doorSlug, plan }: { doorSlug: string; plan: 'FREE' | 'PAI
             </p>
           ) : null}
 
+          <BillingAuthorityNotice plan={plan} billing={billing} loading={loading} />
+
           <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
             {!isPaid ? (
               <button type="button" onClick={handleUpgrade} disabled={actionLoading}>
-                {actionLoading ? 'Redirecting…' : 'Upgrade to Paid'}
+                {actionLoading ? 'Redirecting…' : 'Start billing checkout'}
               </button>
             ) : null}
 
@@ -483,6 +541,12 @@ function BillingCard({ doorSlug, plan }: { doorSlug: string; plan: 'FREE' | 'PAI
               </button>
             ) : null}
           </div>
+
+          {!isPaid ? (
+            <p style={{ fontSize: '0.9em', color: '#666', marginTop: 8 }}>
+              Checkout starts the billing flow. Paid features unlock only after billing becomes active.
+            </p>
+          ) : null}
         </>
       )}
     </article>

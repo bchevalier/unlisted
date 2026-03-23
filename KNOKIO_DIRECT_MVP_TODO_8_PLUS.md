@@ -67,7 +67,7 @@ Purpose: drive Knokio Direct to a solid 8+/10 MVP with explicit implementation c
 - [x] Add a deterministic demo reset script so local demos always start from a known good state.
 
 ## Chunk 11 — Paid upgrade UX + trust clarity
-- [ ] Make the upgrade path visibly billing-authoritative in the UI (no ambiguity about how Paid unlocks).
+- [x] Make the upgrade path visibly billing-authoritative in the UI (no ambiguity about how Paid unlocks).
 - [ ] Add clear guardrail copy in settings for what Free protects and what Paid unlocks.
 - [ ] Add tests proving paid-only controls are either disabled or clearly gated in the UI when entitlement is absent.
 

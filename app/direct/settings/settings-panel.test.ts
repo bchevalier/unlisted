@@ -12,7 +12,7 @@ vi.mock('react', async () => {
   };
 });
 
-import { SettingsPanel } from './settings-panel';
+import { BillingAuthorityNotice, SettingsPanel } from './settings-panel';
 
 describe('SettingsPanel', () => {
   it('reinforces that public aliases are separate from the keeper\'s private inbox', () => {
@@ -49,5 +49,39 @@ describe('SettingsPanel', () => {
     expect(html).toContain('The alias is public-facing.');
     expect(html).toContain('Your real inbox stays hidden');
     expect(html).toContain('Direct is solo-only in the current MVP.');
+  });
+
+  it('makes the upgrade path explicitly billing-authoritative before paid unlocks', () => {
+    const html = renderToStaticMarkup(
+      React.createElement(BillingAuthorityNotice, {
+        plan: 'FREE',
+        billing: null,
+        loading: false,
+      })
+    );
+
+    expect(html).toContain('Paid unlocks only after billing is active.');
+    expect(html).toContain('Starting checkout does not flip this door to Paid by itself.');
+  });
+
+  it('shows that non-active Stripe states do not unlock paid controls', () => {
+    const html = renderToStaticMarkup(
+      React.createElement(BillingAuthorityNotice, {
+        plan: 'FREE',
+        loading: false,
+        billing: {
+          plan: 'FREE',
+          stripeSubscriptionStatus: 'PAST_DUE',
+          stripePriceId: 'price_123',
+          currentPeriodEnd: null,
+          hasStripeCustomer: true,
+        },
+      })
+    );
+
+    expect(html).toContain('Billing exists, but Paid is still locked.');
+    expect(html).toContain('Stripe status is');
+    expect(html).toContain('past due');
+    expect(html).toContain('Paid-only controls should be treated as unavailable.');
   });
 });
