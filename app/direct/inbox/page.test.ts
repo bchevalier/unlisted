@@ -52,5 +52,8 @@ describe('DirectInboxPage demo fixture', () => {
     expect(html).toContain('Paid advisory request with verified org intent');
     expect(html).toContain('/direct/inbox/demo-awaiting-completion?slug=john&amp;fixture=demo');
     expect(html).toContain('Paid-intent filtered');
+    expect(html).toContain('Signup → public door → inbox → settings');
+    expect(html).toContain('You are here');
+    expect(html).toContain('/direct/settings?slug=john&amp;fixture=demo');
   });
 });

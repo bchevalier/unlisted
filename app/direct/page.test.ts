@@ -53,6 +53,12 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Paid requests work as an intent filter.');
     expect(html).toContain('Create account');
     expect(html).toContain('View demo door');
+    expect(html).toContain('Signup → public door → inbox → settings');
+    expect(html).toContain('Reviewer walkthrough');
+    expect(html).toContain('/direct/signup');
+    expect(html).toContain('/u/john');
+    expect(html).toContain('/direct/inbox?slug=john&amp;fixture=demo');
+    expect(html).toContain('/direct/settings?slug=john&amp;fixture=demo');
     expect(html.indexOf('Demo configuration')).toBeLessThan(html.indexOf('Plans at a glance'));
   });
 

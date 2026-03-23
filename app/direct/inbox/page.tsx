@@ -11,6 +11,7 @@ import {
   listRequestsByDoorSlugForKeeper
 } from '../../../features/direct/server/requests';
 import { requireKeeperSession } from '../../../features/direct/server/session';
+import { DirectWalkthroughBanner } from '../direct-walkthrough-banner';
 import { OutcomeSummary } from './outcome-summary';
 import { RequestActions } from './request-actions';
 
@@ -128,6 +129,8 @@ export default async function DirectInboxPage({ searchParams }: DirectInboxPageP
           Open public door
         </Link>
       </p>
+
+      <DirectWalkthroughBanner currentStep="inbox" doorSlug={door.slug} useDemoFixture={useDemoFixture} />
 
       {/* Status filter tabs with counts */}
       <nav className="inbox-filters">

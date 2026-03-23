@@ -72,6 +72,6 @@ Purpose: drive Knokio Direct to a solid 8+/10 MVP with explicit implementation c
 - [x] Add tests proving paid-only controls are either disabled or clearly gated in the UI when entitlement is absent.
 
 ## Chunk 12 — Final 8+/10 polish + regression confidence
-- [ ] Add a concise walkthrough/demo banner connecting signup → public door → inbox → settings so first-time reviewers understand the whole loop.
+- [x] Add a concise walkthrough/demo banner connecting signup → public door → inbox → settings so first-time reviewers understand the whole loop.
 - [ ] Capture/update canonical screenshots for Direct landing, signup launch state, public door, settings, and inbox proof-of-value.
 - [ ] Add one final top-level regression checklist doc for MVP review/signoff.

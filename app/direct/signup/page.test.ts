@@ -34,5 +34,10 @@ describe('SignupPage', () => {
     expect(html).toContain('keep your private inbox private');
     expect(html).toContain('structured, controlled door');
     expect(html).toContain('Start on Free');
+    expect(html).toContain('Signup → public door → inbox → settings');
+    expect(html).toContain('You are here');
+    expect(html).toContain('/u/john');
+    expect(html).toContain('/direct/inbox?slug=john&amp;fixture=demo');
+    expect(html).toContain('/direct/settings?slug=john&amp;fixture=demo');
   });
 });

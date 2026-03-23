@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { DIRECT_PRESET_METADATA, getDirectPresetMetadata } from '../../features/direct/preset-metadata';
 import { getKeeperSessionFromCookies } from '../../lib/keeper-auth';
+import { DirectWalkthroughBanner } from './direct-walkthrough-banner';
 import { LogoutButton } from './logout-button';
 
 export default async function DirectClientPage() {
@@ -92,6 +93,8 @@ export default async function DirectClientPage() {
             <p className="hero-meta direct-hero-meta">Private by default · Structured inbound · High-intent access lanes</p>
           </div>
         </section>
+
+        <DirectWalkthroughBanner currentStep={session ? 'inbox' : 'signup'} />
 
         <section className="lane-panel direct-system-showcase" aria-label="Direct system walkthrough">
           <div className="direct-system-intro">

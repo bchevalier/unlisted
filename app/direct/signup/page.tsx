@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { DirectWalkthroughBanner } from '../direct-walkthrough-banner';
 import { ExternalProviderAuthForm } from '../external-provider-auth-form';
 import { SignupForm } from './signup-form';
 
@@ -16,6 +17,7 @@ export default function SignupPage() {
         Start on Free, then upgrade after billing is active when you want paid request lanes, more doors, or more
         capacity.
       </p>
+      <DirectWalkthroughBanner currentStep="signup" />
       <SignupForm />
       <ExternalProviderAuthForm mode="signup" />
       <p>

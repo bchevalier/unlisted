@@ -175,9 +175,11 @@ describe('Direct coherence smoke', () => {
     expect(settingsHtml).toContain('direct-surface-shell direct-settings-shell');
     expect(settingsHtml).toContain('direct-surface-card direct-surface-card-toolbar');
     expect(settingsHtml).toContain('SettingsPanel');
+    expect(settingsHtml).toContain('You are here');
 
     expect(inboxHtml).toContain('Inbox outcome summary');
     expect(inboxHtml).toContain('Paid-intent filtered');
     expect(inboxHtml).toContain('RequestActions');
+    expect(inboxHtml).toContain('You are here');
   });
 });

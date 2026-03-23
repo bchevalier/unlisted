@@ -72,6 +72,8 @@ describe('DirectSettingsPage', () => {
     expect(html).toContain('Active door plan:');
     expect(html).toContain('Open public door');
     expect(html).toContain('SettingsPanel');
+    expect(html).toContain('Signup → public door → inbox → settings');
+    expect(html).toContain('You are here');
   });
 
   it('renders demo fixture settings without depending on live request rows', async () => {

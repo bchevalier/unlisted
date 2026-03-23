@@ -11,6 +11,7 @@ import {
 } from '../../../features/direct/server/requests';
 import { getKeeperSecurityProfile } from '../../../features/direct/server/security';
 import { requireKeeperSession } from '../../../features/direct/server/session';
+import { DirectWalkthroughBanner } from '../direct-walkthrough-banner';
 import { SettingsPanel } from './settings-panel';
 import { TwoFactorPanel } from './two-factor-panel';
 
@@ -75,6 +76,8 @@ export default async function DirectSettingsPage({ searchParams }: DirectSetting
           stays outside your private contact surface.
         </p>
       </section>
+      <DirectWalkthroughBanner currentStep="settings" doorSlug={door.slug} useDemoFixture={useDemoFixture} />
+
       <section className="direct-surface-card direct-surface-card-toolbar">
         <p className="inbox-links">
           {doorLinks.map((item) => (

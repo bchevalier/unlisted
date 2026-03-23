@@ -2085,3 +2085,40 @@ a:hover {
     letter-spacing: 0.02em;
   }
 }
+
+.direct-walkthrough-banner {
+  display: grid;
+  gap: 12px;
+}
+
+.direct-walkthrough-steps {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.direct-walkthrough-step {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: rgba(11, 15, 25, 0.42);
+}
+
+.direct-walkthrough-step-index {
+  margin: 0 0 6px;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.direct-walkthrough-step-title {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+
+.direct-walkthrough-step-detail {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(226, 232, 240, 0.82);
+}
