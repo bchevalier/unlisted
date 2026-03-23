@@ -38,11 +38,13 @@ function isValidStatus(value: string): value is RequestStatus {
 }
 
 export default async function DirectInboxPage({ searchParams }: DirectInboxPageProps) {
-  const session = await requireKeeperSession('/direct/inbox');
   const resolvedSearchParams = (await searchParams) ?? {};
-
-  const doors = await listDoorsForKeeper(session.userId);
   const useDemoFixture = isDirectDemoFixture(resolvedSearchParams.fixture);
+  const session = useDemoFixture
+    ? { userId: 'direct_demo_fixture', email: 'demo@knokio.example' }
+    : await requireKeeperSession('/direct/inbox');
+
+  const doors = useDemoFixture ? [] : await listDoorsForKeeper(session.userId);
   const defaultSlug = doors[0]?.slug ?? (useDemoFixture ? DIRECT_DEMO_SLUG : undefined);
   const selectedSlug = resolvedSearchParams.slug ?? defaultSlug;
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { getDirectDemoPublicDoorFixture, isDirectDemoFixture } from '../../../features/direct/demo-fixtures';
 import { getPublicDoorBySlug } from '../../../features/direct/server/door';
 import { getTurnstileSiteKey } from '../../../lib/turnstile';
 import { KnockForm } from './knock-form';
@@ -8,11 +9,15 @@ type DoorPageProps = {
   params: Promise<{
     slug: string;
   }>;
+  searchParams?: Promise<{ fixture?: string }>;
 };
 
-export default async function DoorPage({ params }: DoorPageProps) {
+export default async function DoorPage({ params, searchParams }: DoorPageProps) {
   const { slug } = await params;
-  const door = await getPublicDoorBySlug(slug);
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const door = isDirectDemoFixture(resolvedSearchParams.fixture)
+    ? getDirectDemoPublicDoorFixture(slug)
+    : await getPublicDoorBySlug(slug);
 
   if (!door) {
     return (

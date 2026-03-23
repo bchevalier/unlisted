@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { RequestStatus } from '@prisma/client';
+import type { PublicDoor } from './types';
 
 export const DIRECT_DEMO_FIXTURE_QUERY_VALUE = 'demo';
 export const DIRECT_DEMO_SLUG = 'john';
@@ -202,6 +203,43 @@ export function getDirectDemoInboxFixture(options?: {
       totalPages,
     },
     statusCounts,
+  };
+}
+
+export function getDirectDemoPublicDoorFixture(doorSlug = DIRECT_DEMO_SLUG): PublicDoor {
+  const state = readDirectDemoState();
+  const headline = 'A private-by-default door for brand deals, collabs, and other serious inbound';
+
+  return {
+    id: 'direct-demo-door',
+    slug: doorSlug,
+    displayName: state.displayName,
+    headline,
+    isPaidDoor: state.plan === 'PAID',
+    categories: state.categories.map((category) => ({
+      key: category.key,
+      label: category.label,
+      description:
+        category.key === 'brand-deals'
+          ? 'Share the brief, budget, and timeline before this reaches the inbox.'
+          : 'Give enough context for Direct to route serious requests properly.',
+      fields: category.fields.map((field) => ({
+        key: field.key,
+        label: field.label,
+        required: field.required,
+        type: field.key === 'budget' ? 'NUMBER' : field.key === 'brief' ? 'TEXTAREA' : field.key === 'website' ? 'URL' : 'TEXT',
+        placeholder:
+          field.key === 'budget'
+            ? '5000'
+            : field.key === 'timeline'
+              ? 'Launch in April'
+              : field.key === 'brief'
+                ? 'What is the opportunity?'
+                : field.key === 'topic'
+                  ? 'What do you need help with?'
+                  : null,
+      })),
+    })),
   };
 }
 

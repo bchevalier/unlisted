@@ -7,6 +7,7 @@ import {
   DIRECT_DEMO_SLUG,
   getDefaultDirectDemoState,
   getDirectDemoInboxFixture,
+  getDirectDemoPublicDoorFixture,
   getDirectDemoRequestFixture,
   isDirectDemoFixture,
   readDirectDemoState,

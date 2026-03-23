@@ -23,11 +23,13 @@ type DirectSettingsPageProps = {
 };
 
 export default async function DirectSettingsPage({ searchParams }: DirectSettingsPageProps) {
-  const session = await requireKeeperSession('/direct/settings');
   const resolvedSearchParams = (await searchParams) ?? {};
-
-  const doors = await listDoorsForKeeper(session.userId);
   const useDemoFixture = isDirectDemoFixture(resolvedSearchParams.fixture);
+  const session = useDemoFixture
+    ? { userId: 'direct_demo_fixture', email: 'demo@knokio.example' }
+    : await requireKeeperSession('/direct/settings');
+
+  const doors = useDemoFixture ? [] : await listDoorsForKeeper(session.userId);
   const selectedSlug = resolvedSearchParams.slug ?? doors[0]?.slug ?? (useDemoFixture ? DIRECT_DEMO_SLUG : undefined);
 
   if (!selectedSlug) {

@@ -29,7 +29,8 @@
     "seed:load": "dotenv -e .env.local -- npx tsx scripts/seed-profiles.ts --profile load",
     "seed:staging-lite:chunk": "dotenv -e .env.local -- npx tsx scripts/seed-staging-lite-chunk.ts",
     "design:iterate:ui": "node scripts/design-iterations/run-ui-iterations.mjs",
-    "demo:reset": "node scripts/reset-direct-demo.mjs"
+    "demo:reset": "node scripts/reset-direct-demo.mjs",
+    "screenshots:direct": "node scripts/capture-direct-canonical.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.14.0",

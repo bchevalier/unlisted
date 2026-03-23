@@ -45,4 +45,18 @@ describe('DoorPage', () => {
     expect(html).toContain('Contact details stay hidden unless the keeper chooses to reveal them later.');
     expect(html).toContain('Private by default. Reachable without searchable.');
   });
+
+  it('supports a deterministic demo fixture for canonical screenshot capture', async () => {
+    const html = renderToStaticMarkup(
+      await DoorPage({
+        params: Promise.resolve({ slug: 'john' }),
+        searchParams: Promise.resolve({ fixture: 'demo' }),
+      })
+    );
+
+    expect(getPublicDoorBySlugMock).not.toHaveBeenCalled();
+    expect(html).toContain('A private-by-default door for brand deals, collabs, and other serious inbound');
+    expect(html).toContain('KnockForm');
+    expect(html).toContain('Requests here are structured before they reach a private inbox.');
+  });
 });
