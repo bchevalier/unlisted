@@ -87,3 +87,9 @@ Purpose: drive Knokio Direct to a solid 8+/10 MVP with explicit implementation c
 - [x] Add route tests for public request submission / status / expire and email completion so the public request lifecycle is protected at the HTTP layer.
 - [x] Add route tests for door/category/field/blocklist settings mutations plus abuse reports so keeper-control routes are protected at the HTTP layer.
 - [x] Add route tests for inbound email / digest / billing webhook handling so operational surfaces have direct regression protection.
+
+## Chunk 15 — Final UI/auth and helper coverage follow-ups
+- [x] Add direct page tests for `/direct/login`, `/direct/verify-email`, and `/direct/reset-password` so auth/recovery surfaces have first-class regression protection.
+- [x] Add isolated component tests for login/password-recovery/reset-password/verify-email forms plus the two-factor panel so auth/control widgets cannot drift silently.
+- [x] Add isolated tests for `request-actions`, `direct-walkthrough-banner`, and `logout-button` so reusable Direct UI helpers are protected directly instead of only through page smoke coverage.
+- [x] Add dedicated unit tests for `auth-security`, `digest`, `abuse-reports`, `session`, `security`, and `door` server helpers so the remaining Direct backend modules are no longer uncovered.
