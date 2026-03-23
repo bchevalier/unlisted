@@ -86,4 +86,4 @@ Purpose: drive Knokio Direct to a solid 8+/10 MVP with explicit implementation c
 - [x] Add route tests for 2FA setup / confirm / verify / disable and agent signup so the remaining auth surfaces are protected at the HTTP layer.
 - [x] Add route tests for public request submission / status / expire and email completion so the public request lifecycle is protected at the HTTP layer.
 - [x] Add route tests for door/category/field/blocklist settings mutations plus abuse reports so keeper-control routes are protected at the HTTP layer.
-- [ ] Add route tests for inbound email / digest / billing webhook handling so operational surfaces have direct regression protection.
+- [x] Add route tests for inbound email / digest / billing webhook handling so operational surfaces have direct regression protection.
