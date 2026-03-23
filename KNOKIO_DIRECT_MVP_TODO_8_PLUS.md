@@ -81,3 +81,9 @@ Purpose: drive Knokio Direct to a solid 8+/10 MVP with explicit implementation c
 - [x] Add stable request-detail regression coverage for demo-fixture and live-request states so inbox → detail proof-of-value cannot drift.
 - [x] Make canonical screenshot capture self-contained (start/reset/capture/stop) so review evidence does not depend on a manually running dev server.
 - [x] Add route tests for Direct login / logout / session / email verification / password reset paths to close the remaining auth regression gap.
+
+## Chunk 14 — Final route-hardening follow-ups
+- [x] Add route tests for 2FA setup / confirm / verify / disable and agent signup so the remaining auth surfaces are protected at the HTTP layer.
+- [ ] Add route tests for public request submission / status / expire and email completion so the public request lifecycle is protected at the HTTP layer.
+- [ ] Add route tests for door/category/field/blocklist settings mutations plus abuse reports so keeper-control routes are protected at the HTTP layer.
+- [ ] Add route tests for inbound email / digest / billing webhook handling so operational surfaces have direct regression protection.
