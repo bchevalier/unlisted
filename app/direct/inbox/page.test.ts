@@ -38,6 +38,8 @@ describe('DirectInboxPage demo fixture', () => {
   });
 
   it('renders deterministic demo requests without depending on live inbox rows', async () => {
+    requireKeeperSessionMock.mockRejectedValue(new Error('should not be called') as never);
+
     const html = renderToStaticMarkup(
       await DirectInboxPage({
         searchParams: Promise.resolve({ slug: 'john', fixture: 'demo' }),

@@ -23,9 +23,21 @@
       "isEnabled": true,
       "weeklyCap": 10,
       "fields": [
-        { "key": "budget", "label": "Budget", "required": true },
-        { "key": "timeline", "label": "Timeline", "required": true },
-        { "key": "brief", "label": "Brief", "required": true }
+        {
+          "key": "budget",
+          "label": "Budget",
+          "required": true
+        },
+        {
+          "key": "timeline",
+          "label": "Timeline",
+          "required": true
+        },
+        {
+          "key": "brief",
+          "label": "Brief",
+          "required": true
+        }
       ]
     },
     {
@@ -34,13 +46,24 @@
       "isEnabled": true,
       "weeklyCap": 5,
       "fields": [
-        { "key": "topic", "label": "Topic", "required": true },
-        { "key": "budget", "label": "Budget", "required": true }
+        {
+          "key": "topic",
+          "label": "Topic",
+          "required": true
+        },
+        {
+          "key": "budget",
+          "label": "Budget",
+          "required": true
+        }
       ]
     }
   ],
   "emailAliases": [
-    { "alias": "john", "isEnabled": true }
+    {
+      "alias": "john",
+      "isEnabled": true
+    }
   ],
   "requests": [
     {
@@ -54,7 +77,9 @@
       "senderEmail": "maya@northstar.studio",
       "createdAt": "2026-03-20T08:00:00.000Z",
       "updatedAt": "2026-03-20T09:30:00.000Z",
-      "category": { "label": "Brand deals" },
+      "category": {
+        "label": "Brand deals"
+      },
       "paidAmountCents": null,
       "requesterType": "ORGANIZATION",
       "requesterOrgName": "Northstar Studio",
@@ -95,7 +120,9 @@
       "senderEmail": "jon@orbitmedia.example",
       "createdAt": "2026-03-20T10:00:00.000Z",
       "updatedAt": "2026-03-20T10:01:00.000Z",
-      "category": { "label": "Brand deals" },
+      "category": {
+        "label": "Brand deals"
+      },
       "paidAmountCents": null,
       "requesterType": "ORGANIZATION",
       "requesterOrgName": "Orbit Media",
@@ -135,7 +162,9 @@
       "createdAt": "2026-03-20T11:00:00.000Z",
       "updatedAt": "2026-03-20T11:05:00.000Z",
       "completionExpiresAt": "2026-03-23T11:00:00.000Z",
-      "category": { "label": "Advisory" },
+      "category": {
+        "label": "Advisory"
+      },
       "paidAmountCents": null,
       "requesterType": "ORGANIZATION",
       "requesterOrgName": "SignalOps",
@@ -174,7 +203,9 @@
       "senderEmail": "leah@brightloop.example",
       "createdAt": "2026-03-20T12:30:00.000Z",
       "updatedAt": "2026-03-20T12:45:00.000Z",
-      "category": { "label": "Advisory" },
+      "category": {
+        "label": "Advisory"
+      },
       "paidAmountCents": 15000,
       "requesterType": "ORGANIZATION",
       "requesterOrgName": "Brightloop",

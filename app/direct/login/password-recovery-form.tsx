@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 
 export function PasswordRecoveryForm() {
   const [error, setError] = useState<string | null>(null);

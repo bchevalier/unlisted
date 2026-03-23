@@ -64,6 +64,12 @@ vi.mock('./signup/signup-form', () => ({
       null,
       'Choose your starting setup Creator / influencer Advisor / expert Public-facing professional Your first door launches with'
     ),
+  SignupLaunchPanel: () =>
+    React.createElement(
+      'div',
+      null,
+      'Your first Direct door is ready to launch First-run checklist Open public door Review settings @john'
+    ),
 }));
 
 import { getKeeperSessionFromCookies } from '../../lib/keeper-auth';
@@ -157,7 +163,7 @@ describe('Direct coherence smoke', () => {
 
   it('renders the main Direct surfaces with coherent proof-of-value cues', async () => {
     const directHtml = renderToStaticMarkup(await DirectPage());
-    const signupHtml = renderToStaticMarkup(React.createElement(SignupPage));
+    const signupHtml = renderToStaticMarkup(await SignupPage({}));
     const settingsHtml = renderToStaticMarkup(
       await DirectSettingsPage({ searchParams: Promise.resolve({ slug: 'john' }) })
     );

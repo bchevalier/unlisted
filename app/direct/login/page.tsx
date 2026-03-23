@@ -1,3 +1,4 @@
+import React from 'react';
 import Link from 'next/link';
 import { ExternalProviderAuthForm } from '../external-provider-auth-form';
 import { LoginForm } from './login-form';

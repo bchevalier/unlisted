@@ -1,3 +1,4 @@
+import React from 'react';
 import { VerifyEmailForm } from './verify-email-form';
 
 type VerifyEmailPageProps = {

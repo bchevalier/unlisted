@@ -77,6 +77,7 @@ describe('DirectSettingsPage', () => {
   });
 
   it('renders demo fixture settings without depending on live request rows', async () => {
+    requireKeeperSessionMock.mockRejectedValue(new Error('should not be called') as never);
     listDoorsForKeeperMock.mockResolvedValue([{ slug: 'alice', displayName: 'Alice', plan: 'FREE' }] as never);
 
     const html = renderToStaticMarkup(

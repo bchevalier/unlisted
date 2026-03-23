@@ -1,3 +1,4 @@
+import React from 'react';
 import { ResetPasswordForm } from './reset-password-form';
 
 type ResetPasswordPageProps = {
