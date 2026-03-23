@@ -27,26 +27,17 @@ The previous UI/helper coverage gaps are now covered:
 
 ## Remaining hardening gaps
 
-The current gaps are now very narrow and concentrated in the last untested admin/authz backend helpers:
+No remaining tracked Direct hardening gaps were found in this audit pass.
 
-1. **Core auth orchestration now has dedicated unit coverage**
-   - `features/direct/server/auth.test.ts`
-   - signup/login/verification orchestration now has direct helper-level regression protection alongside the route tests
+Confirmed in this pass:
 
-2. **Core request orchestration now has dedicated unit coverage**
-   - `features/direct/server/requests.test.ts`
-   - form/email intake, keeper acceptance, and stale-request expiry now have direct helper-level regression protection alongside route/page coverage
-
-3. **Admin/authz helper modules still lack dedicated coverage**
-   - `features/direct/server/admin.ts`
-   - `features/direct/server/admin-session.ts`
-   - these are now the last clearly uncovered Direct backend surfaces in the audit
+- `features/direct/server/auth.ts`, `requests.ts`, `admin.ts`, and `admin-session.ts` now have dedicated unit coverage
+- `app/api/direct/**/route.ts` has matching route-level regression coverage
+- Direct page-level gaps are closed, including the request-detail surface covered by `app/direct/inbox/request-detail.test.ts`
+- `npm run test:all` remains green after the final backend coverage additions
 
 ## Follow-up recommendation
 
-Treat the current build as **reviewable and demoable now**. The next chunk should focus on the final uncovered backend modules:
+Treat the current build as **reviewable, demoable, and fully tracked against the current Direct MVP hardening backlog**.
 
-- direct unit coverage for `admin.ts`
-- direct unit coverage for `admin-session.ts`
-
-These follow-ups are now tracked back in `KNOKIO_DIRECT_MVP_TODO_8_PLUS.md` as the next unchecked task.
+If new work is added, it should come from new product scope or newly discovered regressions rather than the previous coverage backlog.
