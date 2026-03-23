@@ -74,4 +74,4 @@ Purpose: drive Knokio Direct to a solid 8+/10 MVP with explicit implementation c
 ## Chunk 12 — Final 8+/10 polish + regression confidence
 - [x] Add a concise walkthrough/demo banner connecting signup → public door → inbox → settings so first-time reviewers understand the whole loop.
 - [x] Capture/update canonical screenshots for Direct landing, signup launch state, public door, settings, and inbox proof-of-value.
-- [ ] Add one final top-level regression checklist doc for MVP review/signoff.
+- [x] Add one final top-level regression checklist doc for MVP review/signoff.
