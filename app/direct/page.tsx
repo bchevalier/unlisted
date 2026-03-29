@@ -78,14 +78,6 @@ const WHO_FOR = [
   },
 ] as const;
 
-const REQUESTER_FIELDS = ['Request type', 'Short brief', 'Budget', 'Timeline', 'Relevant links'] as const;
-const KEEPER_OUTCOMES = [
-  'accepted into inbox',
-  'auto-replied for missing info',
-  'capped or ignored if low-signal',
-  'routed based on request type',
-] as const;
-
 const HERO_TRUST_POINTS = ['No credit card to start', 'Keep your existing inbox', 'Turn Direct off anytime'] as const;
 
 const HERO_PREVIEW_FLOW = [
@@ -324,6 +316,22 @@ export default async function DirectClientPage() {
           <span className="direct-social-proof-note">Free to start — no credit card</span>
         </div>
 
+        <section className="lane-panel direct-audience-panel" aria-label="Who Direct is for">
+          <div className="direct-panel-intro">
+            <p className="lane-kicker">Who Direct is for</p>
+            <h2>Designed for people who need to stay reachable without becoming exposed.</h2>
+          </div>
+          <div className="direct-audience-grid">
+            {WHO_FOR.map((item) => (
+              <article key={item.title} className="direct-audience-card">
+                <span className="direct-audience-icon" aria-hidden="true">{item.icon}</span>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="lane-panel direct-diff-panel direct-section-accent" aria-label="How Direct differs from a contact form">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Not just another contact form</p>
@@ -397,7 +405,7 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        <section className="lane-panel direct-steps-panel direct-section-tinted" aria-label="How Direct works">
+        <section className="lane-panel direct-steps-panel direct-section-dark" aria-label="How Direct works">
           <div className="direct-steps-intro">
             <p className="lane-kicker">How Direct works</p>
             <h2>Three steps from public contact to a cleaner inbox.</h2>
@@ -461,49 +469,7 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        <section className="lane-panel direct-audience-panel direct-section-tinted" aria-label="Who Direct is for">
-          <div className="direct-panel-intro">
-            <p className="lane-kicker">Who Direct is for</p>
-            <h2>Designed for people who need to stay reachable without becoming exposed.</h2>
-          </div>
-          <div className="direct-audience-grid">
-            {WHO_FOR.map((item) => (
-              <article key={item.title} className="direct-audience-card">
-                <span className="direct-audience-icon" aria-hidden="true">{item.icon}</span>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="lane-panel direct-example-panel direct-section-tinted" aria-label="Direct request example">
-          <div className="direct-panel-intro">
-            <p className="lane-kicker">Simple example</p>
-            <h2>What requesters see, and what finally reaches you.</h2>
-          </div>
-          <div className="direct-example-grid">
-            <article className="direct-example-card">
-              <h3>What requesters see</h3>
-              <p>A requester fills out a structured form like:</p>
-              <ul>
-                {REQUESTER_FIELDS.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-
-            <article className="direct-example-card">
-              <h3>What reaches you</h3>
-              <p>Only the requests that meet your rules:</p>
-              <ul>
-                {KEEPER_OUTCOMES.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-          </div>
-        </section>
+        {/* "Who Direct is for" moved above diff panel; example section consolidated into diff + hero */}
 
         <section className="lane-panel direct-faq-panel" aria-label="Common first-time Direct questions">
           <div className="direct-faq-intro">
@@ -568,7 +534,7 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        <section className="lane-panel direct-final-cta direct-section-accent" aria-label="Direct final call to action">
+        <section className="lane-panel direct-final-cta direct-section-dark" aria-label="Direct final call to action">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Ready to take control?</p>
             <h2>Keep your inbox private. Stay reachable for real opportunities.</h2>
@@ -599,15 +565,7 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        <section className="lane-panel direct-footer-note" aria-label="How Knokio works for Direct">
-          <div className="direct-panel-intro">
-            <p className="lane-kicker">How Knokio works</p>
-            <p>
-              Knokio is an access layer. Direct protects inbound before it reaches your inbox, DMs, or personal email.
-              Private contact details stay hidden unless you choose otherwise.
-            </p>
-          </div>
-        </section>
+        {/* Footer note removed — this info is covered in the hero and FAQ */}
 
         <details className="lane-panel direct-demo-disclosure">
           <summary>Explore live demo</summary>

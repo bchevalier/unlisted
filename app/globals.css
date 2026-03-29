@@ -3374,3 +3374,203 @@ a:hover {
 }
 
 /* === End Pass 7 === */
+
+/* === Pass 8: Section consolidation, dark "How it works", CTA glow bump, readability === */
+
+/* --- Dark "How it works" section --- */
+.direct-section-dark {
+  background: linear-gradient(160deg, #0c1425 0%, #0f1b2e 40%, #111827 100%) !important;
+  border-color: rgba(83, 240, 226, 0.14) !important;
+  color: #e2e8f0;
+  box-shadow:
+    0 0 0 1px rgba(83, 240, 226, 0.06),
+    0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.direct-section-dark .lane-kicker {
+  color: rgba(83, 240, 226, 0.78);
+}
+
+.direct-section-dark h2 {
+  color: #f1f5f9;
+}
+
+.direct-section-dark .direct-step-card {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.direct-section-dark .direct-step-card h3 {
+  color: #f1f5f9;
+}
+
+.direct-section-dark .direct-step-card p {
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.direct-section-dark .direct-step-number {
+  background: rgba(83, 240, 226, 0.16);
+  color: rgba(83, 240, 226, 0.9);
+}
+
+.direct-section-dark .direct-step-icon {
+  filter: brightness(1.2);
+}
+
+/* --- Body text readability bump --- */
+.direct-proof-copy,
+.direct-audience-card p,
+.direct-step-card p,
+.direct-fit-card li,
+.direct-start-here-card p,
+.direct-diff-card p,
+.direct-example-card p,
+.direct-compare-card ul,
+.direct-pricing-card p,
+.direct-pricing-list li {
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+  color: rgba(31, 42, 68, 0.84) !important;
+}
+
+.direct-section-dark .direct-step-card p {
+  color: rgba(226, 232, 240, 0.8) !important;
+}
+
+/* Override readability bump for dark-themed sections */
+.direct-section-accent p,
+.direct-section-accent li,
+.direct-section-accent .direct-diff-card p {
+  color: rgba(203, 213, 225, 0.9) !important;
+}
+
+.direct-inline-cta p {
+  color: rgba(226, 232, 240, 0.88) !important;
+}
+
+/* --- Audience card heading bump --- */
+.direct-audience-card h3 {
+  font-size: 1.06rem !important;
+  line-height: 1.3;
+}
+
+/* --- Proof strip title bump --- */
+.direct-proof-title {
+  font-size: 17px !important;
+  line-height: 1.28 !important;
+}
+
+/* --- Mid-page inline CTA: dark strip for rhythm break --- */
+.direct-inline-cta {
+  display: grid;
+  gap: 14px;
+  text-align: center;
+  padding: 36px 28px;
+  border-radius: var(--iter-panel-radius);
+  border: 1px solid rgba(83, 240, 226, 0.14);
+  background: linear-gradient(160deg, #0e1729 0%, #111d33 50%, #0f1b2e 100%);
+  color: #f1f5f9;
+  box-shadow:
+    0 0 0 1px rgba(83, 240, 226, 0.06),
+    0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.direct-inline-cta p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.45;
+  color: rgba(226, 232, 240, 0.88);
+  max-width: 580px;
+  justify-self: center;
+}
+
+.direct-inline-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.direct-inline-cta .button.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: rgba(241, 245, 249, 0.9);
+}
+
+.direct-inline-cta .button.secondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* --- Kicker labels: slightly bigger for scanability --- */
+.lane-kicker {
+  font-size: 13px !important;
+  letter-spacing: 0.1em !important;
+}
+
+/* --- Section gap tightening --- */
+.direct-main-shell {
+  gap: 22px;
+}
+
+/* --- Diff card headings: bolder --- */
+.direct-diff-card h3 {
+  font-size: 1.05rem !important;
+  font-weight: 700;
+}
+
+/* --- FAQ section: subtle dark background for rhythm --- */
+.direct-faq-panel {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(83, 240, 226, 0.08) 0%, transparent 40%),
+    rgba(248, 250, 252, 0.94) !important;
+}
+
+/* --- Start-here timing pills: teal accent --- */
+.direct-start-here-timing {
+  border-color: rgba(14, 165, 163, 0.24) !important;
+  color: rgba(13, 148, 136, 0.88) !important;
+  background: rgba(83, 240, 226, 0.1) !important;
+}
+
+/* --- Start-here step numbers: teal accent --- */
+.direct-start-here-step {
+  background: rgba(83, 240, 226, 0.14) !important;
+  color: rgba(13, 148, 136, 0.9) !important;
+}
+
+/* --- Hero subtitle: bump for readability --- */
+.direct-hero-subtitle {
+  font-size: 17px !important;
+  line-height: 1.52;
+}
+
+/* --- Hero anchor line: slightly larger --- */
+.direct-hero-anchor {
+  font-size: 16px !important;
+}
+
+/* --- Final CTA dark section text --- */
+.direct-final-cta.direct-section-dark .lane-kicker {
+  color: rgba(83, 240, 226, 0.78);
+}
+
+.direct-final-cta.direct-section-dark h2 {
+  color: #f1f5f9;
+}
+
+.direct-final-cta.direct-section-dark p {
+  color: rgba(226, 232, 240, 0.82) !important;
+}
+
+.direct-final-cta.direct-section-dark .direct-faq-actions .button.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: rgba(241, 245, 249, 0.9);
+}
+
+.direct-final-cta.direct-section-dark .direct-faq-actions .button.secondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* === End Pass 8 === */
