@@ -8,14 +8,17 @@ import { LogoutButton } from './logout-button';
 
 const VALUE_CARDS = [
   {
+    icon: '🔒',
     title: 'Stop publishing your personal inbox',
     description: 'Share one Direct page while your private email and contact details stay hidden by default.',
   },
   {
+    icon: '📋',
     title: 'Stop chasing missing details',
     description: 'Collect budget, brief, category, and timeline before a request can reach your inbox.',
   },
   {
+    icon: '🚫',
     title: 'Stop low-signal noise from becoming work',
     description: 'Use caps, routing, and auto-replies so low-quality inbound never turns into manual triage.',
   },
@@ -23,14 +26,17 @@ const VALUE_CARDS = [
 
 const HOW_IT_WORKS = [
   {
+    icon: '🔗',
     title: 'Share one public Direct page',
     description: 'Use one public intake page instead of exposing your inbox, DMs, or personal email.',
   },
   {
+    icon: '✏️',
     title: 'Ask for the right details upfront',
     description: 'Require the information you need before you spend time reading or replying.',
   },
   {
+    icon: '⚡',
     title: 'Let Direct filter what reaches you',
     description: 'Qualified requests go through. Low-signal inbound gets capped, auto-replied to, routed, or ignored.',
   },
@@ -53,16 +59,19 @@ const BEFORE_AFTER = {
 
 const WHO_FOR = [
   {
+    icon: '🎨',
     title: 'Creators and public-facing professionals',
     description:
       'Get brand deals and collaboration asks without exposing your private inbox or letting low-quality DMs consume your week.',
   },
   {
+    icon: '💼',
     title: 'Advisors, consultants, and operators',
     description:
       'Stop chasing missing details manually. Collect scope, budget, and timeline before requests earn your attention.',
   },
   {
+    icon: '👥',
     title: 'Teams handling constant outreach',
     description:
       'Keep your team reachable while filtering low-signal requests before they become operational noise.',
@@ -300,6 +309,7 @@ export default async function DirectClientPage() {
         <section className="direct-proof-strip" aria-label="Direct value proof">
           {VALUE_CARDS.map((item) => (
             <article key={item.title} className="direct-proof-card">
+              <span className="direct-proof-icon" aria-hidden="true">{item.icon}</span>
               <p className="direct-proof-title">{item.title}</p>
               <p className="direct-proof-copy">{item.description}</p>
             </article>
@@ -395,7 +405,10 @@ export default async function DirectClientPage() {
           <div className="direct-steps-grid">
             {HOW_IT_WORKS.map((step, index) => (
               <article key={step.title} className="direct-step-card">
-                <span className="direct-step-number">0{index + 1}</span>
+                <div className="direct-step-head">
+                  <span className="direct-step-number">0{index + 1}</span>
+                  <span className="direct-step-icon" aria-hidden="true">{step.icon}</span>
+                </div>
                 <h3>{step.title}</h3>
                 <p>{step.description}</p>
               </article>
@@ -429,7 +442,7 @@ export default async function DirectClientPage() {
 
           <div className="direct-before-after-grid">
             <article className="direct-compare-card direct-compare-card-before">
-              <p className="direct-compare-label">Without Direct</p>
+              <p className="direct-compare-label">⚠️ Without Direct</p>
               <ul>
                 {BEFORE_AFTER.without.map((item) => (
                   <li key={item}>{item}</li>
@@ -438,7 +451,7 @@ export default async function DirectClientPage() {
             </article>
 
             <article className="direct-compare-card direct-compare-card-after">
-              <p className="direct-compare-label">With Direct</p>
+              <p className="direct-compare-label">✅ With Direct</p>
               <ul>
                 {BEFORE_AFTER.with.map((item) => (
                   <li key={item}>{item}</li>
@@ -456,6 +469,7 @@ export default async function DirectClientPage() {
           <div className="direct-audience-grid">
             {WHO_FOR.map((item) => (
               <article key={item.title} className="direct-audience-card">
+                <span className="direct-audience-icon" aria-hidden="true">{item.icon}</span>
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>
               </article>
@@ -491,9 +505,9 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        <section className="lane-panel direct-faq-panel direct-section-tinted" aria-label="Common first-time Direct questions">
+        <section className="lane-panel direct-faq-panel" aria-label="Common first-time Direct questions">
           <div className="direct-faq-intro">
-            <p className="lane-kicker">Questions first-time Direct users usually ask</p>
+            <p className="lane-kicker">Common questions</p>
             <h2>Objections answered before you commit.</h2>
           </div>
 
@@ -515,6 +529,7 @@ export default async function DirectClientPage() {
           <div className="direct-pricing-grid">
             <article className="direct-pricing-card direct-pricing-card-free">
               <p className="direct-compare-label">Free plan</p>
+              <p className="direct-pricing-amount">$0<span>/forever</span></p>
               <h3>Launch a Direct page and protect your baseline inbound.</h3>
               <p>Best when you want immediate control without changing your current workflow.</p>
               <ul className="direct-pricing-list">
@@ -522,12 +537,18 @@ export default async function DirectClientPage() {
                   <li key={item}>{item}</li>
                 ))}
               </ul>
+              {!session && (
+                <Link className="button secondary direct-pricing-cta" href="/direct/signup">
+                  Start free
+                </Link>
+              )}
             </article>
-            <article className="direct-pricing-card direct-pricing-card-paid">
+            <article className="direct-pricing-card direct-pricing-card-paid direct-pricing-card-recommended">
               <div className="direct-pricing-card-head">
                 <p className="direct-compare-label">Paid plan</p>
-                <span className="direct-pricing-pill">Built for heavier inbound</span>
+                <span className="direct-pricing-pill">Recommended</span>
               </div>
+              <p className="direct-pricing-amount">Custom<span> pricing</span></p>
               <h3>Scale Direct with higher limits, automation, and protected paid lanes.</h3>
               <p>Best for operators handling frequent, commercial, or high-stakes requests.</p>
               <ul className="direct-pricing-list">
@@ -535,6 +556,9 @@ export default async function DirectClientPage() {
                   <li key={item}>{item}</li>
                 ))}
               </ul>
+              <Link className="button primary direct-pricing-cta" href="/direct/settings?slug=john&fixture=demo">
+                Compare plans
+              </Link>
             </article>
           </div>
           <div className="direct-pricing-actions">
@@ -544,9 +568,9 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        <section className="lane-panel direct-final-cta" aria-label="Direct final call to action">
+        <section className="lane-panel direct-final-cta direct-section-accent" aria-label="Direct final call to action">
           <div className="direct-panel-intro">
-            <p className="lane-kicker">Final call to action</p>
+            <p className="lane-kicker">Ready to take control?</p>
             <h2>Keep your inbox private. Stay reachable for real opportunities.</h2>
             <p>
               Start with one public Direct page, gather context upfront, and choose which requests deserve your time.
@@ -555,7 +579,7 @@ export default async function DirectClientPage() {
           <div className="direct-faq-actions">
             {session ? (
               <>
-                <Link className="button primary" href="/direct/settings?slug=john&fixture=demo">
+                <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">
                   Protect inbox in settings
                 </Link>
                 <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">
@@ -564,8 +588,8 @@ export default async function DirectClientPage() {
               </>
             ) : (
               <>
-                <Link className="button primary" href="/direct/signup">
-                  Create my free Direct page
+                <Link className="button primary direct-hero-button" href="/direct/signup">
+                  Create my free Direct page →
                 </Link>
                 <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">
                   Explore demo inbox

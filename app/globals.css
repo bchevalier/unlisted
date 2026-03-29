@@ -3212,3 +3212,165 @@ a:hover {
   font-size: 0.95rem;
   color: rgba(226, 232, 240, 0.82);
 }
+
+/* === Pass 7: Visual hierarchy, CTA punch, icons, typography, pricing, FAQ, final CTA === */
+
+/* --- Hero title size boost --- */
+.direct-hero-title {
+  font-size: clamp(32px, 5vw, 48px);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+/* --- Section h2 size boost --- */
+.direct-panel-intro h2,
+.direct-before-after-intro h2,
+.direct-steps-intro h2,
+.direct-faq-intro h2 {
+  font-size: clamp(22px, 3.2vw, 30px);
+  line-height: 1.22;
+  letter-spacing: -0.015em;
+}
+
+/* --- Hero CTA gradient button with glow --- */
+.direct-hero-button {
+  min-width: 220px;
+  padding: 14px 28px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand-cyan-600) 0%, var(--brand-cyan-500) 50%, var(--brand-cyan-400) 100%) !important;
+  color: #0b1220 !important;
+  border: none !important;
+  box-shadow:
+    0 0 20px rgba(83, 240, 226, 0.35),
+    0 4px 14px rgba(14, 165, 163, 0.3) !important;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.direct-hero-button:hover {
+  box-shadow:
+    0 0 28px rgba(83, 240, 226, 0.5),
+    0 6px 20px rgba(14, 165, 163, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+/* --- Value proof card icons --- */
+.direct-proof-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(83, 240, 226, 0.14);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.direct-proof-card {
+  padding: 20px !important;
+}
+
+.direct-proof-title {
+  font-size: 16px !important;
+  line-height: 1.3;
+}
+
+/* --- Step card icons --- */
+.direct-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.direct-step-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* --- Audience card icons --- */
+.direct-audience-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(83, 240, 226, 0.12) 0%, rgba(255, 68, 171, 0.08) 100%);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.direct-audience-card {
+  padding: 20px !important;
+}
+
+/* --- FAQ cards: accent left border --- */
+.direct-faq-card {
+  border-left: 3px solid var(--brand-cyan-500) !important;
+  padding: 18px 18px 18px 20px !important;
+}
+
+.direct-faq-card h3 {
+  font-size: 16px !important;
+}
+
+/* --- Pricing amount display --- */
+.direct-pricing-amount {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: rgba(15, 23, 42, 0.94);
+  line-height: 1.1;
+}
+
+.direct-pricing-amount span {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(31, 42, 68, 0.58);
+  letter-spacing: 0;
+}
+
+/* --- Recommended pricing card highlight --- */
+.direct-pricing-card-recommended {
+  border-width: 2px;
+  border-color: rgba(225, 26, 143, 0.38) !important;
+  box-shadow:
+    0 0 0 1px rgba(225, 26, 143, 0.12),
+    0 12px 32px rgba(225, 26, 143, 0.1);
+  position: relative;
+}
+
+/* --- Pricing CTA button --- */
+.direct-pricing-cta {
+  margin-top: 6px;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+
+/* --- Final CTA dark section overrides --- */
+.direct-final-cta.direct-section-accent .direct-faq-actions .button.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(241, 245, 249, 0.92);
+}
+
+.direct-final-cta.direct-section-accent .direct-faq-actions .button.secondary:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.direct-final-cta.direct-section-accent .direct-hero-button {
+  min-width: 240px;
+}
+
+/* --- Before/After compare label with emoji --- */
+.direct-compare-label {
+  font-size: 12px !important;
+}
+
+/* === End Pass 7 === */

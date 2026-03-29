@@ -171,9 +171,9 @@ describe('Direct coherence smoke', () => {
       await DirectInboxPage({ searchParams: Promise.resolve({ slug: 'john' }) })
     );
 
-    expect(directHtml).toContain('direct-system-showcase');
-    expect(directHtml).toContain('Creator / influencer');
-    expect(directHtml).toContain('Intent filter');
+    expect(directHtml).toContain('direct-system-intro');
+    expect(directHtml).toContain('Creators getting brand deals and collabs');
+    expect(directHtml).toContain('Structured intake');
 
     expect(signupHtml).toContain('Choose your starting setup');
     expect(signupHtml).toContain('Your first door launches with');
