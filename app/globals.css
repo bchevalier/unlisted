@@ -3818,3 +3818,159 @@ a:hover {
 }
 
 /* === End Pass 10 === */
+
+/* === Pass 13: Hero contrast, icons, social proof, pricing features, mid-page CTA === */
+
+/* --- Hero: solid dark overlay for text contrast --- */
+.direct-hero-panel {
+  background: linear-gradient(160deg, #0a1628 0%, #0e1d35 50%, #0c1a30 100%) !important;
+  border-color: rgba(83, 240, 226, 0.1) !important;
+  box-shadow:
+    0 0 0 1px rgba(83, 240, 226, 0.06),
+    0 12px 48px rgba(0, 0, 0, 0.3) !important;
+}
+
+.direct-hero-bg {
+  background:
+    radial-gradient(circle at 16% 54%, rgba(83, 240, 226, 0.18) 0%, rgba(83, 240, 226, 0.06) 18%, transparent 40%),
+    radial-gradient(circle at 82% 18%, rgba(255, 68, 171, 0.1) 0%, transparent 24%),
+    radial-gradient(circle at 76% 82%, rgba(255, 208, 138, 0.08) 0%, transparent 30%) !important;
+}
+
+.direct-hero-grid {
+  opacity: 0.06 !important;
+}
+
+.direct-hero-content .hero-word {
+  color: rgba(83, 240, 226, 0.78) !important;
+}
+
+.direct-hero-title {
+  color: #f1f5f9 !important;
+}
+
+.direct-hero-subtitle {
+  color: rgba(226, 232, 240, 0.85) !important;
+}
+
+.direct-hero-concrete-line {
+  color: rgba(203, 213, 225, 0.9) !important;
+}
+
+.direct-hero-meta {
+  color: rgba(148, 163, 184, 0.8) !important;
+}
+
+.direct-hero-actions .button.secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: rgba(241, 245, 249, 0.9) !important;
+}
+
+.direct-hero-actions .button.secondary:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+/* --- Proof card icons --- */
+.direct-proof-icon {
+  display: block;
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+/* --- Audience card icons --- */
+.direct-audience-icon {
+  display: block;
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+/* --- Social proof / What changes section --- */
+.direct-proof-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.direct-proof-examples {
+  display: grid;
+  gap: 14px;
+}
+
+.direct-proof-example {
+  display: flex;
+  gap: 16px;
+  align-items: start;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(229, 231, 235, 0.7);
+  background: linear-gradient(160deg, rgba(248, 250, 252, 0.9) 0%, rgba(255, 255, 255, 0.95) 100%);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.03);
+}
+
+.direct-proof-example-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.direct-proof-example-headline {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.direct-proof-example-detail {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(31, 42, 68, 0.78);
+}
+
+/* --- Pricing: feature lists and price tag --- */
+.direct-pricing-price {
+  margin: 4px 0 12px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.direct-pricing-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.direct-pricing-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: rgba(31, 42, 68, 0.82);
+}
+
+.direct-pricing-list li::before {
+  content: '✓';
+  color: rgba(14, 165, 163, 0.85);
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.direct-pricing-card-paid {
+  border-color: rgba(14, 165, 163, 0.24) !important;
+  background: linear-gradient(160deg, rgba(236, 253, 245, 0.5) 0%, rgba(255, 255, 255, 0.92) 100%) !important;
+}
+
+.direct-pricing-card-paid .direct-pricing-price {
+  color: rgba(14, 165, 163, 0.88);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* === End Pass 13 === */
