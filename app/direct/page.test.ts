@@ -38,31 +38,34 @@ describe('DirectClientPage', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the config-first system walkthrough and shared preset cards for signed-out visitors', async () => {
+  it('renders a first-visit sales narrative with stronger proof, qualified CTAs, and objection handling for signed-out visitors', async () => {
     getKeeperSessionFromCookiesMock.mockResolvedValue(null as never);
 
     const html = await renderPage();
 
-    expect(html).toContain('Demo configuration');
-    expect(html).toContain('See the door, the rules, and the outcome in one place.');
-    expect(html).toContain('Creator / influencer');
-    expect(html).toContain('Advisor / expert');
-    expect(html).toContain('Public-facing professional');
-    expect(html).toContain('Intent filter');
-    expect(html).toContain('Create a protected access lane for serious outreach.');
-    expect(html).toContain('Paid requests work as an intent filter.');
-    expect(html).toContain('Create account');
+    expect(html).toContain('Filter inbound before it reaches your inbox.');
+    expect(html).toContain('Knokio Direct turns public contact into structured requests');
+    expect(html).toContain('Create your free door');
     expect(html).toContain('View demo door');
-    expect(html).toContain('Signup → public door → inbox → settings');
-    expect(html).toContain('Reviewer walkthrough');
+    expect(html).toContain('Prefer to inspect first? Open the demo inbox.');
+    expect(html).toContain('Your inbox stays private by default');
+    expect(html).toContain('Every request arrives with context');
+    expect(html).toContain('Silence is still a valid outcome');
+    expect(html).toContain('How Direct works');
+    expect(html).toContain('Three steps from public contact to a cleaner inbox.');
+    expect(html).toContain('Why people use Direct');
+    expect(html).toContain('How one Direct door becomes a clean inbox.');
+    expect(html).toContain('I get brand deals and collaboration requests');
+    expect(html).toContain('What reaches your inbox');
+    expect(html).toContain('Questions first-time Direct visitors usually ask.');
+    expect(html).toContain('Will people still be able to reach me easily?');
+    expect(html).toContain('Is this just another contact form?');
     expect(html).toContain('/direct/signup');
-    expect(html).toContain('/u/john');
     expect(html).toContain('/direct/inbox?slug=john&amp;fixture=demo');
-    expect(html).toContain('/direct/settings?slug=john&amp;fixture=demo');
-    expect(html.indexOf('Demo configuration')).toBeLessThan(html.indexOf('Plans at a glance'));
+    expect(html.indexOf('Why people use Direct')).toBeLessThan(html.indexOf('Demo configuration'));
   });
 
-  it('switches to signed-in actions while preserving the config-first walkthrough', async () => {
+  it('keeps signed-in demo actions while preserving proof and objection-handling sections', async () => {
     getKeeperSessionFromCookiesMock.mockResolvedValue({
       userId: 'user_123',
       email: 'john@example.com',
@@ -73,9 +76,10 @@ describe('DirectClientPage', () => {
     expect(html).toContain('john@example.com');
     expect(html).toContain('Open demo inbox');
     expect(html).toContain('Open demo settings');
-    expect(html).toContain('/direct/inbox?slug=john&amp;fixture=demo');
-    expect(html).toContain('/direct/settings?slug=john&amp;fixture=demo');
-    expect(html).toContain('Demo configuration');
-    expect(html).toContain('What finally reaches you');
+    expect(html).toContain('Your inbox stays private by default');
+    expect(html).toContain('Three steps from public contact to a cleaner inbox.');
+    expect(html).toContain('How one Direct door becomes a clean inbox.');
+    expect(html).toContain('Questions first-time Direct visitors usually ask.');
+    expect(html).toContain('Tune demo settings');
   });
 });

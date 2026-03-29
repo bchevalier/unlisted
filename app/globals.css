@@ -1083,6 +1083,21 @@ a:hover {
   margin-top: 4px;
 }
 
+.direct-hero-secondary-link {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(31, 42, 68, 0.74);
+}
+
+.direct-hero-secondary-link a {
+  font-weight: 600;
+  color: rgba(15, 23, 42, 0.86);
+}
+
+.direct-hero-secondary-link a:hover {
+  text-decoration: underline;
+}
+
 .lane-kicker {
   margin: 0;
   text-transform: uppercase;
@@ -1110,11 +1125,95 @@ a:hover {
   gap: var(--iter-lane-grid-gap);
 }
 
+.direct-proof-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.direct-proof-card {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.76);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(248, 250, 252, 0.8) 100%);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.03);
+}
+
+.direct-proof-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.direct-proof-copy {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.48;
+  color: rgba(31, 42, 68, 0.78);
+}
+
+.direct-steps-panel,
 .direct-system-showcase {
   display: grid;
   gap: 20px;
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(10px);
+}
+
+.direct-steps-intro {
+  display: grid;
+  gap: 8px;
+  max-width: 760px;
+}
+
+.direct-steps-intro h2 {
+  margin: 0;
+}
+
+.direct-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.direct-step-card {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(229, 231, 235, 0.82);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(248, 250, 252, 0.78) 100%);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.direct-step-number {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.08);
+  color: rgba(15, 23, 42, 0.82);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.direct-step-card h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(15, 23, 42, 0.94);
+}
+
+.direct-step-card p {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.5;
+  color: rgba(31, 42, 68, 0.78);
 }
 
 .direct-system-intro {
@@ -1319,6 +1418,57 @@ a:hover {
 
 .direct-plan-list li {
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.94) 0%, rgba(247, 250, 252, 0.86) 100%);
+}
+
+.direct-faq-panel {
+  display: grid;
+  gap: 18px;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.direct-faq-intro {
+  display: grid;
+  gap: 8px;
+  max-width: 760px;
+}
+
+.direct-faq-intro h2 {
+  margin: 0;
+}
+
+.direct-faq-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.direct-faq-card {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(229, 231, 235, 0.74);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.direct-faq-card h3 {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.35;
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.direct-faq-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(31, 42, 68, 0.78);
+}
+
+.direct-faq-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .lane-session-line {
@@ -1978,6 +2128,14 @@ a:hover {
     grid-template-columns: 1fr;
   }
 
+  .direct-proof-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .direct-faq-grid {
+    grid-template-columns: 1fr;
+  }
+
   .direct-topbar-session {
     max-width: 100%;
     overflow: hidden;
@@ -2123,6 +2281,15 @@ a:hover {
   .lane-action-row .button {
     width: auto;
     min-width: 100%;
+  }
+
+  .direct-proof-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .direct-faq-actions .button {
+    width: 100%;
+    min-width: 0;
   }
 
   .inbox-links a {
