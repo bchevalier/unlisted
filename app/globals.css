@@ -3973,4 +3973,76 @@ a:hover {
   font-weight: 700;
 }
 
+/* --- Pricing: pass 13 additions --- */
+.direct-pricing-lead {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(31, 42, 68, 0.78);
+}
+
+.direct-pricing-period {
+  font-size: 0.55em;
+  font-weight: 500;
+  color: rgba(31, 42, 68, 0.6);
+  letter-spacing: 0;
+}
+
+.direct-pricing-card-highlighted {
+  border-color: rgba(14, 165, 163, 0.36);
+  box-shadow: 0 0 0 1px rgba(14, 165, 163, 0.12), 0 8px 20px rgba(14, 165, 163, 0.08);
+}
+
+.direct-pricing-cta {
+  margin-top: 8px;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+}
+
+.direct-pricing-waitlist {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(31, 42, 68, 0.6);
+  font-style: italic;
+}
+
+/* --- Proof panel: pass 13 lead text --- */
+.direct-proof-lead {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(31, 42, 68, 0.78);
+}
+
+/* --- Final CTA dark variant --- */
+.direct-final-cta.direct-section-dark {
+  background: linear-gradient(160deg, rgba(15, 23, 42, 0.97) 0%, rgba(30, 41, 59, 0.95) 100%);
+  border-radius: 20px;
+  color: #fff;
+}
+
+.direct-final-cta.direct-section-dark .lane-kicker {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.direct-final-cta.direct-section-dark h2 {
+  color: #fff;
+}
+
+.direct-final-cta.direct-section-dark p {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.direct-final-cta.direct-section-dark .direct-faq-actions .button.secondary {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.direct-final-cta.direct-section-dark .direct-faq-actions .button.secondary:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
 /* === End Pass 13 === */

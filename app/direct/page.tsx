@@ -5,9 +5,9 @@ import { getKeeperSessionFromCookies } from '../../lib/keeper-auth';
 import { LogoutButton } from './logout-button';
 
 const BENEFITS = [
-  { icon: '🔒', title: 'Your inbox stays private by default', copy: 'Share one public Direct page while your personal email stays hidden.' },
+  { icon: '🔒', title: 'Your inbox stays private', copy: 'Share one public Direct page while your personal email stays hidden.' },
   { icon: '📋', title: 'Every request arrives with context', copy: 'Collect budget, brief, category, and timeline before a request ever reaches you.' },
-  { icon: '🚫', title: 'Noise never reaches you', copy: 'Caps, automation, and routing stop spam, cold pitches, and vague asks from becoming your to-do list.' },
+  { icon: '🚫', title: 'Noise never reaches you', copy: 'Volume limits, automation, and smart routing stop spam, cold pitches, and vague asks before they become your problem.' },
 ] as const;
 
 const WHO_FOR = [
@@ -17,15 +17,18 @@ const WHO_FOR = [
 ] as const;
 
 const HOW_IT_WORKS = [
-  { step: '01', title: 'Share one public Direct page', copy: 'Replace scattered contact points with one structured intake page.' },
-  { step: '02', title: 'Ask for the right details upfront', copy: 'Require the information you need before you spend time reading.' },
-  { step: '03', title: 'Let Direct filter what reaches you', copy: 'Qualified requests go through. Low-signal inbound is capped, routed, or ignored.' },
+  { step: '01', title: 'Share one public Direct page', copy: 'Replace scattered contact details with one structured intake page.' },
+  { step: '02', title: 'Ask for the right details upfront', copy: 'Get budget, scope, and timelines before you spend a second reviewing.' },
+  { step: '03', title: 'Let Direct filter what reaches you', copy: 'Qualified requests go through. Vague, irrelevant, or spammy inbound is filtered, routed, or ignored.' },
 ] as const;
 
 const FAQ = [
-  { q: 'Will people still be able to reach me easily?', a: 'Yes. Direct keeps you reachable, but turns random inbound into structured requests.' },
-  { q: 'Do I have to reply to every request?', a: 'No. Direct helps you filter, cap, route, and ignore requests that are not worth your time.' },
-  { q: 'Is this just another contact form?', a: 'No. Direct is an inbound control layer. It protects your inbox, structures requests, and keeps your private contact details hidden.' },
+  { q: 'Will people still be able to reach me easily?', a: 'Yes. Direct keeps you reachable — it just turns random inbound into structured requests with the context you need.' },
+  { q: 'Do I have to reply to every request?', a: 'No. You can accept, decline, or let requests expire on their own. Silence is a valid response.' },
+  { q: 'Is this just another contact form?', a: 'No. A contact form drops messages into your inbox with no filtering. Direct is an inbound control layer — it protects your inbox, structures requests, enforces volume limits, and keeps your private email hidden.' },
+  { q: 'What happens to requests I don\u2019t accept?', a: 'They stay in your inbox with a "pending" status until you act on them or they expire automatically. Senders see a neutral status page — no ghosting guilt.' },
+  { q: 'Can I customize what information is required?', a: 'Yes. You control which fields are required for each request category — budget, timeline, brief, links, or anything relevant to your workflow.' },
+  { q: 'Will my free plan features go away if paid plans launch?', a: 'No. The free tier is permanent. Paid plans add advanced features like uncapped volume and custom routing — they never remove what you already have.' },
 ] as const;
 
 export default async function DirectClientPage() {
@@ -77,7 +80,7 @@ export default async function DirectClientPage() {
               ) : (
                 <Link className="button primary direct-hero-button" href="/direct/signup">Protect my inbox — free</Link>
               )}
-              <Link className="button secondary direct-hero-button" href="/direct/inbox?slug=john&fixture=demo">View demo inbox</Link>
+              <Link className="button secondary direct-hero-button" href="/direct/inbox?slug=john&fixture=demo">See a live example</Link>
             </div>
             <p className="hero-meta direct-hero-meta">No credit card required · Set up in under 2 minutes</p>
           </div>
@@ -128,14 +131,14 @@ export default async function DirectClientPage() {
 
         {/* 4b. Mid-page CTA */}
         <section className="direct-inline-cta" aria-label="Get started">
-          <p>Ready to take back control of your inbound?</p>
+          <p>Most people either expose themselves and get overwhelmed — or hide and miss good opportunities. Direct sits in between.</p>
           <div className="direct-inline-cta-actions">
             {session ? (
-              <Link className="button primary" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — free</Link>
+              <Link className="button primary" href="/direct/settings?slug=john&fixture=demo">Set up in under 2 minutes</Link>
             ) : (
-              <Link className="button primary" href="/direct/signup">Protect my inbox — free</Link>
+              <Link className="button primary" href="/direct/signup">Set up in under 2 minutes</Link>
             )}
-            <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">View demo inbox</Link>
+            <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">See a live example</Link>
           </div>
         </section>
 
@@ -143,33 +146,41 @@ export default async function DirectClientPage() {
         <section className="lane-panel direct-demo-entry" aria-label="See Direct in action">
           <div className="direct-panel-intro">
             <p className="lane-kicker">See Direct in action</p>
-            <p>Explore a live demo inbox with accepted, auto-replied, and filtered request examples.</p>
+            <p>Walk through a working inbox with real request examples — accepted, filtered, and auto-replied.</p>
           </div>
           <div className="direct-demo-entry-actions">
             <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">Open demo inbox</Link>
-            <Link className="button secondary" href="/u/john">View public Direct page</Link>
-            <Link className="button secondary" href="/direct/settings?slug=john&fixture=demo">Inspect rules &amp; settings</Link>
+            <Link className="button secondary" href="/u/john">View a public Direct page</Link>
+            <Link className="button secondary" href="/direct/settings?slug=john&fixture=demo">See how filtering works</Link>
           </div>
         </section>
 
-        {/* 6. Social proof */}
-        <section className="lane-panel direct-proof-panel" aria-label="How it helps">
+        {/* 6. Example use cases */}
+        <section className="lane-panel direct-proof-panel" aria-label="Example use cases">
           <div className="direct-panel-intro">
-            <p className="lane-kicker">What changes</p>
+            <p className="lane-kicker">Example scenarios</p>
+            <p className="direct-proof-lead">How different people use Direct to manage inbound on their terms.</p>
           </div>
           <div className="direct-proof-examples">
             <article className="direct-proof-example">
               <span className="direct-proof-example-icon" aria-hidden="true">🎙️</span>
               <div>
-                <p className="direct-proof-example-headline">A creator with 80K followers</p>
-                <p className="direct-proof-example-detail">Replaced a public email with a Direct page. Brand deals now arrive with budget and brief attached — spam doesn&apos;t arrive at all.</p>
+                <p className="direct-proof-example-headline">Creator with 80K followers</p>
+                <p className="direct-proof-example-detail">Replaced a public email with a Direct page. Brand deals now arrive with budget and brief attached. Spam and cold pitches never make it through.</p>
               </div>
             </article>
             <article className="direct-proof-example">
               <span className="direct-proof-example-icon" aria-hidden="true">📊</span>
               <div>
-                <p className="direct-proof-example-headline">An independent advisor</p>
-                <p className="direct-proof-example-detail">Requires scope, budget range, and timeline on every inbound request. Unqualified asks are filtered out before they reach the inbox.</p>
+                <p className="direct-proof-example-headline">Independent advisor</p>
+                <p className="direct-proof-example-detail">Requires scope, budget range, and timeline on every inbound request. Only qualified asks make it to the inbox — everything else is filtered automatically.</p>
+              </div>
+            </article>
+            <article className="direct-proof-example">
+              <span className="direct-proof-example-icon" aria-hidden="true">🏢</span>
+              <div>
+                <p className="direct-proof-example-headline">Startup founder</p>
+                <p className="direct-proof-example-detail">Uses one Direct page for investor intros, partnership requests, and hiring leads. Each category collects different fields — no more sorting through a shared inbox.</p>
               </div>
             </article>
           </div>
@@ -179,28 +190,35 @@ export default async function DirectClientPage() {
         <section className="lane-panel direct-pricing-panel" aria-label="Direct pricing overview">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Plans</p>
+            <p className="direct-pricing-lead">Start free with everything you need. Upgrade later if you outgrow it.</p>
           </div>
           <div className="direct-pricing-grid">
-            <article className="direct-pricing-card direct-pricing-card-free">
+            <article className="direct-pricing-card direct-pricing-card-free direct-pricing-card-highlighted">
               <h3>Free</h3>
-              <p className="direct-pricing-price">$0</p>
+              <p className="direct-pricing-price">$0<span className="direct-pricing-period"> / forever</span></p>
               <ul className="direct-pricing-list">
                 <li>Public Direct page</li>
                 <li>Structured request forms</li>
-                <li>Basic caps and filtering</li>
-                <li>Email stays private</li>
+                <li>Volume limits and filtering</li>
+                <li>Your email stays private</li>
               </ul>
+              {session ? (
+                <Link className="button primary direct-pricing-cta" href="/direct/settings?slug=john&fixture=demo">Get started free</Link>
+              ) : (
+                <Link className="button primary direct-pricing-cta" href="/direct/signup">Get started free</Link>
+              )}
             </article>
             <article className="direct-pricing-card direct-pricing-card-paid">
-              <h3>Paid</h3>
+              <h3>Pro</h3>
               <p className="direct-pricing-price">Coming soon</p>
               <ul className="direct-pricing-list">
                 <li>Everything in Free</li>
                 <li>Uncapped request volume</li>
-                <li>Advanced routing rules</li>
-                <li>Paid request flows</li>
+                <li>Custom routing rules</li>
+                <li>Paid inbound requests</li>
                 <li>Priority support</li>
               </ul>
+              <p className="direct-pricing-waitlist">Free tier is permanent — Pro adds power, never removes features.</p>
             </article>
           </div>
         </section>
@@ -221,16 +239,16 @@ export default async function DirectClientPage() {
         </section>
 
         {/* 9. Final CTA */}
-        <section className="lane-panel direct-final-cta" aria-label="Final call to action">
+        <section className="lane-panel direct-final-cta direct-section-dark" aria-label="Final call to action">
           <h2>Your inbox is yours. Keep it that way.</h2>
-          <p>Share one public Direct page. Keep your personal email private. Let only structured, qualified requests through.</p>
+          <p>One page. Structured requests. No spam, no exposure, no obligation to reply. Set up takes under 2&nbsp;minutes.</p>
           <div className="direct-faq-actions">
             {session ? (
-              <Link className="button primary" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — free</Link>
+              <Link className="button primary" href="/direct/settings?slug=john&fixture=demo">Get started free</Link>
             ) : (
-              <Link className="button primary" href="/direct/signup">Protect my inbox — free</Link>
+              <Link className="button primary" href="/direct/signup">Get started free</Link>
             )}
-            <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">View demo inbox</Link>
+            <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">See a live example</Link>
           </div>
         </section>
       </div>
