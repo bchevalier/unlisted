@@ -27,18 +27,31 @@ const DIRECT_STEPS = [
   },
 ] as const;
 
+const DIRECT_BEFORE_AFTER = {
+  withoutDirect: [
+    'Public inbox or DMs shared everywhere',
+    'Back-and-forth just to collect basic context',
+    'Low-signal requests mixed with serious opportunities',
+  ],
+  withDirect: [
+    'One public Direct door instead of exposing private contact',
+    'Budget, brief, and timeline requested before delivery',
+    'Caps and automation keep low-signal requests out of your inbox',
+  ],
+} as const;
+
 const DIRECT_PROOF_STRIP = [
   {
-    title: 'Your inbox stays private by default',
-    description: 'Share a public Direct door while your personal email and private channels stay hidden.',
+    title: 'Keep your real inbox private',
+    description: 'Share one public Direct link while your personal email and private channels stay hidden.',
   },
   {
-    title: 'Every request arrives with context',
-    description: 'Direct asks for budget, brief, and timeline before anything can earn inbox space.',
+    title: 'Require context before delivery',
+    description: 'Direct asks for budget, brief, and timeline before a request can reach you.',
   },
   {
-    title: 'Silence is still a valid outcome',
-    description: 'Caps, automation, and decline paths keep low-signal inbound from becoming your to-do list.',
+    title: 'Stop low-signal inbound at the door',
+    description: 'Caps, automation, and decline paths prevent low-intent requests from becoming inbox clutter.',
   },
 ] as const;
 
@@ -46,17 +59,22 @@ const DIRECT_FAQ = [
   {
     question: 'Will people still be able to reach me easily?',
     answer:
-      'Yes. You still share one public link, but Direct turns random inbound into structured requests so serious senders can qualify fast.',
+      'Yes. You still share one link, but Direct asks for the right context up front so serious senders can qualify quickly.',
   },
   {
     question: 'Do I have to respond to every request?',
     answer:
-      'No. Direct is built so silence, decline, caps, and auto-replies are all legitimate outcomes when a request is not worth your time.',
+      'No. Decline, silence, caps, and auto-replies are all valid outcomes when a request does not deserve your time.',
+  },
+  {
+    question: 'What does this cost to start?',
+    answer:
+      'You can launch on Free. Paid is for people who need higher volume, more flexibility, or optional paid-intent lanes.',
   },
   {
     question: 'Is this just another contact form?',
     answer:
-      'No. Direct combines intake structure with routing, request caps, and private-channel protection so your inbox stays controlled after submission.',
+      'No. Direct combines structured intake, routing rules, and inbox protection so your private channels stay controlled after submission.',
   },
 ] as const;
 
@@ -116,13 +134,14 @@ export default async function DirectClientPage() {
 
           <div className="direct-hero-content">
             <p className="hero-word">KNOKIO DIRECT</p>
-            <h1 className="hero-title direct-hero-title">Filter inbound before it reaches your inbox.</h1>
+            <h1 className="hero-title direct-hero-title">Stop random DMs and emails from hijacking your inbox.</h1>
             <p className="hero-subtitle direct-hero-subtitle">
-              Knokio Direct turns public contact into structured requests so brand deals, advisory asks, and business
-              inquiries arrive with context instead of chaos.
+              Knokio Direct is for creators, advisors, and public-facing operators who need to stay reachable without
+              exposing private contact details.
             </p>
             <p className="direct-hero-concrete-line">
-              Share one public door, ask for the right details upfront, and let only serious inbound earn inbox space.
+              A Direct door is one public intake link that collects budget, brief, and timeline before a request can
+              reach your inbox.
             </p>
 
             <div className="lane-action-row direct-hero-actions">
@@ -138,10 +157,10 @@ export default async function DirectClientPage() {
               ) : (
                 <>
                   <Link className="button primary direct-hero-button" href="/direct/signup">
-                    Create your free door
+                    Protect my inbox (free)
                   </Link>
                   <Link className="button secondary direct-hero-button" href="/u/john">
-                    View demo door
+                    See live demo door
                   </Link>
                 </>
               )}
@@ -149,11 +168,11 @@ export default async function DirectClientPage() {
 
             {!session ? (
               <p className="direct-hero-secondary-link">
-                <Link href="/direct/inbox?slug=john&fixture=demo">Prefer to inspect first? Open the demo inbox.</Link>
+                <Link href="/direct/inbox?slug=john&fixture=demo">Want to evaluate first? Inspect the demo inbox.</Link>
               </p>
             ) : null}
 
-            <p className="hero-meta direct-hero-meta">Private inbox protected · Structured requests · Serious inbound only</p>
+            <p className="hero-meta direct-hero-meta">Private inbox protected · Structured intake · Reachable on your terms</p>
           </div>
         </section>
 
@@ -164,6 +183,33 @@ export default async function DirectClientPage() {
               <p className="direct-proof-copy">{item.description}</p>
             </article>
           ))}
+        </section>
+
+        <section className="lane-panel direct-before-after" aria-label="Direct before and after comparison">
+          <div className="direct-before-after-intro">
+            <p className="lane-kicker">Before vs after</p>
+            <h2>What changes when you switch from public inbox access to Direct.</h2>
+          </div>
+
+          <div className="direct-before-after-grid">
+            <article className="direct-compare-card direct-compare-card-before">
+              <p className="direct-compare-label">Without Direct</p>
+              <ul>
+                {DIRECT_BEFORE_AFTER.withoutDirect.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+
+            <article className="direct-compare-card direct-compare-card-after">
+              <p className="direct-compare-label">With Direct</p>
+              <ul>
+                {DIRECT_BEFORE_AFTER.withDirect.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+          </div>
         </section>
 
         <section className="lane-panel direct-steps-panel" aria-label="How Direct works">
@@ -217,31 +263,25 @@ export default async function DirectClientPage() {
           </article>
 
           <article className="lane-panel direct-lane-panel">
-            <h2>Plans at a glance</h2>
+            <h2>Free vs Paid (when each makes sense)</h2>
             <ul className="lane-list direct-feature-list direct-plan-list">
               <li>
                 <div>
-                  <strong>Free doors cover core control.</strong>
-                  <span>
-                    Use caps, routing, and silence as an answer to stay reachable without exposing private contact.
-                  </span>
+                  <strong>Start on Free for core inbox protection.</strong>
+                  <span>Launch one door with structured intake, routing, and caps that block low-signal noise.</span>
                 </div>
               </li>
               <li>
                 <div>
-                  <strong>Paid plans open more capacity.</strong>
-                  <span>
-                    Add doors, remove inbound caps, and unlock more flexible rerouting for higher-volume or commercial
-                    access.
-                  </span>
+                  <strong>Upgrade when inbound volume grows.</strong>
+                  <span>Paid plans unlock higher capacity, more flexibility, and more room for commercial workflows.</span>
                 </div>
               </li>
               <li>
                 <div>
-                  <strong>Paid requests work as an intent filter.</strong>
+                  <strong>Optional paid-intent lanes for serious asks.</strong>
                   <span>
-                    Use them when you want serious outreach to pass through a protected access lane, not when you want
-                    to put a vanity paywall on ordinary contact.
+                    Use paid request lanes only for high-intent outreach where a clear intent filter protects your time.
                   </span>
                 </div>
               </li>
@@ -370,7 +410,7 @@ export default async function DirectClientPage() {
         <section className="lane-panel direct-faq-panel" aria-label="Common first-time Direct questions">
           <div className="direct-faq-intro">
             <p className="lane-kicker">Common objections</p>
-            <h2>Questions first-time Direct visitors usually ask.</h2>
+            <h2>Questions first-time visitors ask before signing up.</h2>
           </div>
 
           <div className="direct-faq-grid">
@@ -395,7 +435,7 @@ export default async function DirectClientPage() {
             ) : (
               <>
                 <Link className="button primary" href="/direct/signup">
-                  Create your free door
+                  Protect my inbox (free)
                 </Link>
                 <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">
                   Review demo inbox first

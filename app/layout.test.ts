@@ -11,7 +11,9 @@ import RootLayout from './layout';
 
 describe('RootLayout', () => {
   it('frames the shared note as suite-level trust copy', () => {
-    const html = renderToStaticMarkup(React.createElement(RootLayout, { children: React.createElement('main', null, 'test') }));
+    const html = renderToStaticMarkup(
+      React.createElement(RootLayout, null, React.createElement('main', null, 'test'))
+    );
 
     expect(html).toContain('How Knokio works');
     expect(html).toContain('Knokio is an access layer.');
