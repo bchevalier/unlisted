@@ -42,20 +42,24 @@ const HOW_IT_WORKS = [
   },
 ] as const;
 
-const BEFORE_AFTER = {
-  without: [
-    'Your email or DMs are exposed',
-    'Requests arrive with missing context',
-    'You have to ask basic questions manually',
-    'Low-signal inbound mixes with real opportunities',
-  ],
-  with: [
-    'Your real inbox stays private',
-    'Requesters choose a category',
-    'Budget, brief, and timeline are collected upfront',
-    'Incomplete or low-signal requests are filtered before they reach you',
-  ],
-} as const;
+const FIT_COMPARISON = [
+  {
+    without: 'Your email or DMs are exposed',
+    with: 'Your real inbox stays private',
+  },
+  {
+    without: 'Requests arrive with missing context',
+    with: 'Budget, brief, and timeline are collected upfront',
+  },
+  {
+    without: 'You have to ask basic questions manually',
+    with: 'Requesters choose a category and provide required details',
+  },
+  {
+    without: 'Low-signal inbound mixes with real opportunities',
+    with: 'Incomplete or low-signal requests are filtered before they reach you',
+  },
+] as const;
 
 const WHO_FOR = [
   {
@@ -316,7 +320,7 @@ export default async function DirectClientPage() {
           <span className="direct-social-proof-note">Free to start — no credit card</span>
         </div>
 
-        <section className="lane-panel direct-audience-panel" aria-label="Who Direct is for">
+        <section className="lane-panel direct-audience-panel direct-section-tinted" aria-label="Who Direct is for">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Who Direct is for</p>
             <h2>Designed for people who need to stay reachable without becoming exposed.</h2>
@@ -352,32 +356,40 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        <section className="lane-panel direct-fit-panel" aria-label="Who Direct is a fit for">
+        <section className="lane-panel direct-fit-panel" aria-label="Quick fit check and comparison">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Quick fit check</p>
             <h2>Direct is for people who need inbound control, not more inbox volume.</h2>
           </div>
-          <div className="direct-fit-grid">
-            <article className="direct-fit-card">
-              <p className="direct-fit-label">If this sounds like you</p>
-              <ul>
-                {FIT_SIGNALS.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-            <article className="direct-fit-card direct-fit-card-outcomes">
-              <p className="direct-fit-label">What changes with Direct</p>
-              <ul>
-                {FIT_OUTCOMES.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
+          <div className="direct-fit-signals">
+            <p className="direct-fit-signals-lead">Direct is a good fit if:</p>
+            <ul>
+              {FIT_SIGNALS.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="direct-fit-comparison">
+            <div className="direct-fit-comparison-header">
+              <span className="direct-fit-col-label direct-fit-col-without">Without Direct</span>
+              <span className="direct-fit-col-label direct-fit-col-with">With Direct</span>
+            </div>
+            {FIT_COMPARISON.map((row) => (
+              <div key={row.without} className="direct-fit-comparison-row">
+                <span className="direct-fit-cell direct-fit-cell-without">
+                  <span className="direct-fit-marker" aria-hidden="true">✕</span>
+                  {row.without}
+                </span>
+                <span className="direct-fit-cell direct-fit-cell-with">
+                  <span className="direct-fit-marker" aria-hidden="true">✓</span>
+                  {row.with}
+                </span>
+              </div>
+            ))}
           </div>
         </section>
 
-        <section className="lane-panel direct-start-here-panel" aria-label="First-time Direct setup path">
+        <section className="lane-panel direct-start-here-panel direct-section-tinted" aria-label="First-time Direct setup path">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Start here (first 10 minutes)</p>
             <h2>Use this quick path to understand Direct before you commit.</h2>
@@ -442,47 +454,18 @@ export default async function DirectClientPage() {
           </div>
         </div>
 
-        <section className="lane-panel direct-before-after" aria-label="Direct before and after comparison">
-          <div className="direct-before-after-intro">
-            <p className="lane-kicker">From public contact to a cleaner inbox</p>
-            <h2>What changes when Direct stands in front of your private channels.</h2>
-          </div>
-
-          <div className="direct-before-after-grid">
-            <article className="direct-compare-card direct-compare-card-before">
-              <p className="direct-compare-label">⚠️ Without Direct</p>
-              <ul>
-                {BEFORE_AFTER.without.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-
-            <article className="direct-compare-card direct-compare-card-after">
-              <p className="direct-compare-label">✅ With Direct</p>
-              <ul>
-                {BEFORE_AFTER.with.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-          </div>
-        </section>
-
-        {/* "Who Direct is for" moved above diff panel; example section consolidated into diff + hero */}
-
         <section className="lane-panel direct-faq-panel" aria-label="Common first-time Direct questions">
           <div className="direct-faq-intro">
             <p className="lane-kicker">Common questions</p>
             <h2>Objections answered before you commit.</h2>
           </div>
 
-          <div className="direct-faq-grid">
+          <div className="direct-faq-accordion">
             {FAQ.map((item) => (
-              <article key={item.question} className="direct-faq-card">
-                <h3>{item.question}</h3>
-                <p>{item.answer}</p>
-              </article>
+              <details key={item.question} className="direct-faq-item">
+                <summary className="direct-faq-question">{item.question}</summary>
+                <p className="direct-faq-answer">{item.answer}</p>
+              </details>
             ))}
           </div>
         </section>
@@ -534,7 +517,7 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        <section className="lane-panel direct-final-cta direct-section-dark" aria-label="Direct final call to action">
+        <section className="lane-panel direct-final-cta direct-section-accent" aria-label="Direct final call to action">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Ready to take control?</p>
             <h2>Keep your inbox private. Stay reachable for real opportunities.</h2>
