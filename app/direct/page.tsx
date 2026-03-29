@@ -98,9 +98,10 @@ export default async function DirectClientPage() {
         </section>
 
         {/* 3. Who it is for */}
-        <section className="lane-panel direct-audience-panel" aria-label="Who Direct is for">
+        <section className="lane-panel direct-audience-panel direct-section-tinted" aria-label="Who Direct is for">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Who Direct is for</p>
+            <h2>Built for anyone who&apos;s publicly reachable</h2>
           </div>
           <div className="direct-audience-grid">
             {WHO_FOR.map((w) => (
@@ -117,6 +118,7 @@ export default async function DirectClientPage() {
         <section className="lane-panel direct-steps-panel" aria-label="How Direct works">
           <div className="direct-steps-intro">
             <p className="lane-kicker">How Direct works</p>
+            <h2>Three steps to a protected inbox</h2>
           </div>
           <div className="direct-steps-grid">
             {HOW_IT_WORKS.map((s) => (
@@ -143,15 +145,28 @@ export default async function DirectClientPage() {
         </section>
 
         {/* 5. Demo entry point */}
-        <section className="lane-panel direct-demo-entry" aria-label="See Direct in action">
+        <section className="lane-panel direct-demo-entry direct-section-tinted" aria-label="See Direct in action">
           <div className="direct-panel-intro">
             <p className="lane-kicker">See Direct in action</p>
+            <h2>Explore the product before you sign up</h2>
             <p>Walk through a working inbox with real request examples — accepted, filtered, and auto-replied.</p>
           </div>
-          <div className="direct-demo-entry-actions">
-            <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">Open demo inbox</Link>
-            <Link className="button secondary" href="/u/john">View a public Direct page</Link>
-            <Link className="button secondary" href="/direct/settings?slug=john&fixture=demo">See how filtering works</Link>
+          <div className="direct-demo-cards">
+            <Link className="direct-demo-card" href="/direct/inbox?slug=john&fixture=demo">
+              <span className="direct-demo-card-icon" aria-hidden="true">📥</span>
+              <span className="direct-demo-card-title">Demo inbox</span>
+              <span className="direct-demo-card-desc">See requests arrive, get filtered, and get resolved</span>
+            </Link>
+            <Link className="direct-demo-card" href="/u/john">
+              <span className="direct-demo-card-icon" aria-hidden="true">🚪</span>
+              <span className="direct-demo-card-title">Public Direct page</span>
+              <span className="direct-demo-card-desc">What visitors see when they knock on your door</span>
+            </Link>
+            <Link className="direct-demo-card" href="/direct/settings?slug=john&fixture=demo">
+              <span className="direct-demo-card-icon" aria-hidden="true">⚙️</span>
+              <span className="direct-demo-card-title">Filtering rules</span>
+              <span className="direct-demo-card-desc">How you control what reaches you and what doesn&apos;t</span>
+            </Link>
           </div>
         </section>
 
@@ -159,7 +174,7 @@ export default async function DirectClientPage() {
         <section className="lane-panel direct-proof-panel" aria-label="Example use cases">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Example scenarios</p>
-            <p className="direct-proof-lead">How different people use Direct to manage inbound on their terms.</p>
+            <h2>How people use Direct to take back their inbox</h2>
           </div>
           <div className="direct-proof-examples">
             <article className="direct-proof-example">
@@ -187,10 +202,10 @@ export default async function DirectClientPage() {
         </section>
 
         {/* 7. Pricing summary */}
-        <section className="lane-panel direct-pricing-panel" aria-label="Direct pricing overview">
+        <section className="lane-panel direct-pricing-panel direct-section-tinted" aria-label="Direct pricing overview">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Plans</p>
-            <p className="direct-pricing-lead">Start free with everything you need. Upgrade later if you outgrow it.</p>
+            <h2>Start free. Upgrade when you need to.</h2>
           </div>
           <div className="direct-pricing-grid">
             <article className="direct-pricing-card direct-pricing-card-free direct-pricing-card-highlighted">
@@ -218,6 +233,7 @@ export default async function DirectClientPage() {
                 <li>Paid inbound requests</li>
                 <li>Priority support</li>
               </ul>
+              <Link className="button secondary direct-pricing-cta direct-pricing-waitlist-btn" href="/direct/signup">Join the waitlist</Link>
               <p className="direct-pricing-waitlist">Free tier is permanent — Pro adds power, never removes features.</p>
             </article>
           </div>
@@ -227,6 +243,7 @@ export default async function DirectClientPage() {
         <section className="lane-panel direct-faq-panel" aria-label="FAQ">
           <div className="direct-faq-intro">
             <p className="lane-kicker">FAQ</p>
+            <h2>Common questions</h2>
           </div>
           <div className="direct-faq-accordion">
             {FAQ.map((f) => (
