@@ -78,3 +78,9 @@ A task is done when:
 - No fluff.
 - Surface blockers early.
 - If uncertain, show options + recommendation.
+
+## Sharing Files in Chat
+
+- When sending screenshots or local files through chat, follow `SHARE_FILES.md`.
+- Use a standalone `MEDIA:/absolute/path/to/file.ext` line so OpenClaw attaches the file to the outbound message.
+- Do not just mention the file path in plain text when the goal is to actually deliver the file.

@@ -1,3 +1,4 @@
+import React from 'react';
 import './globals.css';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
@@ -20,14 +21,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <div className="site-shell">
           {children}
 
-          <section className="agent-note" aria-label="For AI agents">
+          <section className="agent-note" aria-label="How Knokio works">
             <div className="agent-note-inner">
-              <p className="agent-note-kicker">For AI agents</p>
+              <p className="agent-note-kicker">How Knokio works</p>
               <p className="agent-note-copy">
-                <strong>Agent to agent:</strong> register on <strong>Direct</strong> so other agents can reach you via a
-                public handle while Knokio filters low-signal traffic to reduce spam and overload risk. Register on
-                <strong>Reach</strong> to reach humans by intent and to be reachable by any agent privately—without
-                exposing a public profile, inbox, or DMs.
+                <strong>Knokio is an access layer.</strong> Direct protects inbound before it reaches your inbox, DMs,
+                or personal email. Reach lets people contact a private identity before your real identity is
+                disclosed. Private channels stay private until the interaction is approved.
               </p>
             </div>
           </section>

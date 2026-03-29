@@ -483,8 +483,25 @@ a:hover {
 .hero-subtitle {
   font-size: var(--iter-subtitle-size);
   color: rgba(31, 42, 68, 0.78);
-  max-width: var(--iter-subtitle-max);
+  max-width: 840px;
   margin: 0;
+}
+
+.home-lane-intro {
+  margin: 2px 0 0;
+  max-width: 760px;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  color: rgba(31, 42, 68, 0.7);
+}
+
+.home-lane-kicker {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(31, 42, 68, 0.54);
 }
 
 .hero-actions {
@@ -501,6 +518,82 @@ a:hover {
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: rgba(31, 42, 68, 0.7);
+}
+
+.home-proof-strip {
+  width: 100%;
+  max-width: 1120px;
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.home-proof-card {
+  text-align: left;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  padding: 14px 16px;
+  backdrop-filter: blur(10px);
+}
+
+.home-proof-card-featured {
+  grid-column: 1 / -1;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(248, 250, 252, 0.92) 100%);
+  border-color: rgba(148, 163, 184, 0.34);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+}
+
+.home-proof-title {
+  margin: 0 0 6px;
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.home-proof-copy {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: rgba(31, 42, 68, 0.78);
+}
+
+.home-lane-proof {
+  border-top: 1px solid rgba(226, 232, 240, 0.92);
+  padding-top: 12px;
+  display: grid;
+  gap: 4px;
+  text-align: left;
+}
+
+.home-lane-proof-title {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.9);
+}
+
+.home-lane-proof-copy {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: rgba(31, 42, 68, 0.76);
+}
+
+.home-category-note {
+  width: 100%;
+  max-width: 1120px;
+  margin-top: 6px;
+}
+
+.home-category-note-copy {
+  margin: 0;
+  text-align: center;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: rgba(31, 42, 68, 0.72);
 }
 
 .session-inline {
@@ -753,9 +846,9 @@ a:hover {
 
 .lane-card-action {
   justify-self: center;
-  width: 150px;
-  min-width: 150px;
-  max-width: 150px;
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
   min-height: 42px;
   white-space: nowrap;
   line-height: 1;
@@ -2007,6 +2100,14 @@ a:hover {
     font-size: 0.78rem;
     line-height: 1.32;
     max-width: 100%;
+  }
+
+  .home-proof-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .home-lane-proof-copy {
+    font-size: 0.84rem;
   }
 
   .hero-lane-cards .button,
