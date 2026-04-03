@@ -6191,3 +6191,139 @@ a:hover {
 }
 
 /* === End Pass 5/16 === */
+
+/* === Pass 6/16 (cron iter-06): Testimonial credibility, Before/After bullets, section rhythm === */
+
+/* --- Testimonial: avatar + structured attribution --- */
+.direct-testimonial-attribution {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.direct-testimonial-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.direct-testimonial-meta {
+  display: grid;
+  gap: 1px;
+}
+
+.direct-testimonial-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.direct-testimonial-role {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(31, 42, 68, 0.58);
+}
+
+/* --- Before/After: bullet lists instead of paragraphs --- */
+.direct-proof-col-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 7px;
+}
+
+.direct-proof-col-list li {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+
+.direct-proof-col-before .direct-proof-col-list li::before {
+  content: '✕';
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 12px;
+  margin-top: 2px;
+  color: rgba(239, 68, 68, 0.7);
+}
+
+.direct-proof-col-after .direct-proof-col-list li::before {
+  content: '✓';
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 12px;
+  margin-top: 2px;
+  color: rgba(34, 197, 94, 0.8);
+}
+
+/* Dark section overrides for bullet lists */
+.direct-section-dark .direct-proof-col-before .direct-proof-col-list li {
+  color: rgba(203, 213, 225, 0.75);
+}
+
+.direct-section-dark .direct-proof-col-before .direct-proof-col-list li::before {
+  color: rgba(252, 165, 165, 0.7);
+}
+
+.direct-section-dark .direct-proof-col-after .direct-proof-col-list li {
+  color: rgba(226, 232, 240, 0.88);
+}
+
+.direct-section-dark .direct-proof-col-after .direct-proof-col-list li::before {
+  color: rgba(83, 240, 226, 0.75);
+}
+
+/* --- Section rhythm: more breathing room between major sections --- */
+.direct-proof-panel-large {
+  margin-top: 6px;
+}
+
+.direct-testimonials-panel {
+  margin-top: 4px;
+}
+
+/* --- Testimonial card: tighter, more polished --- */
+.direct-testimonial-card {
+  padding: 24px 22px !important;
+  gap: 14px !important;
+}
+
+.direct-testimonial-quote {
+  font-size: 15px !important;
+  line-height: 1.62 !important;
+  font-style: normal !important;
+  color: rgba(15, 23, 42, 0.84) !important;
+}
+
+/* --- Section heading: "What changes" → "What users say" --- */
+.direct-testimonials-panel .direct-panel-intro h2 {
+  font-size: 1.65rem !important;
+}
+
+/* --- Benefit stat accent: larger number --- */
+.direct-proof-stat strong {
+  font-size: 22px !important;
+  color: rgba(14, 165, 163, 0.92) !important;
+}
+
+/* --- Mobile: testimonial grid stacks --- */
+@media (max-width: 860px) {
+  .direct-testimonial-attribution {
+    gap: 8px;
+  }
+}
+
+/* === End Pass 6/16 === */

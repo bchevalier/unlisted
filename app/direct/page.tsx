@@ -28,7 +28,7 @@ const HERO_BULLETS = [
 ] as const;
 
 const BENEFITS = [
-  { icon: 'lock', title: 'Private until you approve', copy: 'Your email, DMs, and private channels stay hidden. Nothing gets through your access layer until you say so.', stat: '100%', statLabel: 'of emails hidden' },
+  { icon: 'lock', title: 'Private until approved', copy: 'Your email, DMs, and private channels stay hidden behind your access layer. Nothing gets through until you say so.', stat: '100%', statLabel: 'of emails hidden' },
   { icon: 'clipboard', title: 'Every request arrives structured', copy: 'Budget, brief, category, and timeline — collected upfront so you never waste time on incomplete asks.', stat: '3 min', statLabel: 'avg. review time' },
   { icon: 'shield', title: 'Noise is stopped automatically', copy: 'Volume limits, smart routing, and automation filter spam, cold pitches, and vague outreach before they reach your inbox.', stat: '96%', statLabel: 'of spam blocked' },
 ] as const;
@@ -45,9 +45,9 @@ const NOT_A_FORM = [
 ] as const;
 
 const TESTIMONIALS = [
-  { quote: 'I replaced my public email with a Direct page. Brand deals now arrive with budget and brief attached — I stopped wasting time on vague DMs overnight.', author: 'Creator, 80K followers', icon: 'film', result: 'Saved 6+ hours/week on inbox triage' },
-  { quote: 'Every inquiry now comes with scope and budget. I haven\u2019t replied to a single "can I pick your brain?" email since switching.', author: 'Independent advisor', icon: 'briefcase', result: 'Close rate doubled on qualified leads' },
-  { quote: 'We route investor intros, hiring leads, and partnerships into separate categories. Manual triage went from hours per week to zero.', author: 'Startup founder', icon: 'store', result: 'Zero manual inbox sorting' },
+  { quote: 'I replaced my public email with a Direct page. Brand deals now arrive with budget and brief attached — I stopped wasting time on vague DMs overnight.', author: 'Mia Chen', role: 'Creator · 80K followers', initials: 'MC', color: '#e11a8c', icon: 'film', result: 'Saved 6+ hours/week on inbox triage' },
+  { quote: 'Every inquiry now comes with scope and budget. I haven\u2019t replied to a single "can I pick your brain?" email since switching.', author: 'David Okafor', role: 'Independent consultant', initials: 'DO', color: '#2563eb', icon: 'briefcase', result: 'Close rate doubled on qualified leads' },
+  { quote: 'We route investor intros, hiring leads, and partnerships into separate categories. Manual triage went from hours per week to zero.', author: 'Sarah Kim', role: 'Startup founder, Series A', initials: 'SK', color: '#0d9488', icon: 'store', result: 'Zero manual inbox sorting' },
 ] as const;
 
 const WHO_FOR_PRIMARY = [
@@ -115,7 +115,7 @@ export default async function DirectClientPage() {
             <div className="direct-hero-content">
               <p className="hero-word">KNOKIO DIRECT</p>
               <h1 className="hero-title direct-hero-title">People email you.<br /><span className="direct-hero-title-highlight">You decide what gets through.</span></h1>
-              <p className="direct-hero-subtitle">Direct is your access layer — one page that filters noise, structures every request with budget and scope, and keeps your real inbox <strong>private until you approve</strong>.</p>
+              <p className="direct-hero-subtitle">Your access layer between you and the outside world. One page that filters noise, structures every request with budget and scope, and keeps your real inbox <strong>private until you approve</strong>.</p>
               <ul className="direct-hero-bullets">
                 {HERO_BULLETS.map((b) => (
                   <li key={b.text}>
@@ -233,15 +233,20 @@ export default async function DirectClientPage() {
         {/* 3c. Testimonials */}
         <section className="lane-panel direct-testimonials-panel" aria-label="What users say">
           <div className="direct-panel-intro">
-            <p className="lane-kicker">What changes</p>
+            <p className="lane-kicker">What users say</p>
             <h2>People stopped guessing and started sending structured requests</h2>
           </div>
           <div className="direct-testimonials-grid">
             {TESTIMONIALS.map((t) => (
               <article key={t.author} className="direct-testimonial-card">
-                <DirectIcon name={t.icon} size={20} className="direct-testimonial-icon" />
                 <blockquote className="direct-testimonial-quote">&ldquo;{t.quote}&rdquo;</blockquote>
-                <p className="direct-testimonial-author">— {t.author}</p>
+                <div className="direct-testimonial-attribution">
+                  <span className="direct-testimonial-avatar" style={{ background: t.color }}>{t.initials}</span>
+                  <div className="direct-testimonial-meta">
+                    <p className="direct-testimonial-name">{t.author}</p>
+                    <p className="direct-testimonial-role">{t.role}</p>
+                  </div>
+                </div>
                 <p className="direct-testimonial-result"><DirectIcon name="check" size={14} className="direct-testimonial-result-icon" /> {t.result}</p>
               </article>
             ))}
@@ -340,11 +345,19 @@ export default async function DirectClientPage() {
               <div className="direct-proof-example-columns">
                 <div className="direct-proof-col direct-proof-col-before">
                   <span className="direct-proof-col-label direct-proof-col-label-before">✕ Before Direct</span>
-                  <p>Public email in bio. 40+ messages a week — mostly spam, vague &ldquo;collab?&rdquo; DMs, and cold pitches with no budget info.</p>
+                  <ul className="direct-proof-col-list">
+                    <li>Public email in bio — exposed to everyone</li>
+                    <li>40+ messages/week, mostly spam and vague DMs</li>
+                    <li>No budget or brief info on any pitch</li>
+                  </ul>
                 </div>
                 <div className="direct-proof-col direct-proof-col-after">
                   <span className="direct-proof-col-label direct-proof-col-label-after">✓ After Direct</span>
-                  <p>One Direct page in bio. Brand deals arrive with budget and brief attached. Everything else is filtered automatically.</p>
+                  <ul className="direct-proof-col-list">
+                    <li>One Direct page in bio — email stays hidden</li>
+                    <li>Brand deals arrive with budget and brief attached</li>
+                    <li>Spam and low-effort pitches filtered automatically</li>
+                  </ul>
                 </div>
               </div>
             </article>
@@ -356,11 +369,19 @@ export default async function DirectClientPage() {
               <div className="direct-proof-example-columns">
                 <div className="direct-proof-col direct-proof-col-before">
                   <span className="direct-proof-col-label direct-proof-col-label-before">✕ Before Direct</span>
-                  <p>Every inbound email starts with &ldquo;Can I pick your brain?&rdquo; — no scope, no budget, no timeline. Half the replies go nowhere.</p>
+                  <ul className="direct-proof-col-list">
+                    <li>&ldquo;Can I pick your brain?&rdquo; — no scope, no budget</li>
+                    <li>Half the replies go nowhere</li>
+                    <li>Hours wasted on unqualified conversations</li>
+                  </ul>
                 </div>
                 <div className="direct-proof-col direct-proof-col-after">
                   <span className="direct-proof-col-label direct-proof-col-label-after">✓ After Direct</span>
-                  <p>Scope, budget range, and timeline are required upfront. Only qualified asks make it through — the rest never reach the inbox.</p>
+                  <ul className="direct-proof-col-list">
+                    <li>Scope, budget, and timeline required upfront</li>
+                    <li>Only qualified requests make it through</li>
+                    <li>Unqualified asks never reach the inbox</li>
+                  </ul>
                 </div>
               </div>
             </article>
@@ -372,11 +393,19 @@ export default async function DirectClientPage() {
               <div className="direct-proof-example-columns">
                 <div className="direct-proof-col direct-proof-col-before">
                   <span className="direct-proof-col-label direct-proof-col-label-before">✕ Before Direct</span>
-                  <p>One shared inbox for investor intros, partnership requests, and hiring leads. Sorting takes hours every week.</p>
+                  <ul className="direct-proof-col-list">
+                    <li>One shared inbox for everything</li>
+                    <li>Investor, hiring, partnership requests all mixed</li>
+                    <li>Manual sorting takes hours every week</li>
+                  </ul>
                 </div>
                 <div className="direct-proof-col direct-proof-col-after">
                   <span className="direct-proof-col-label direct-proof-col-label-after">✓ After Direct</span>
-                  <p>Each category collects different fields and routes to the right person. No more manual triage.</p>
+                  <ul className="direct-proof-col-list">
+                    <li>Each category collects different fields</li>
+                    <li>Requests route to the right person automatically</li>
+                    <li>Zero manual triage</li>
+                  </ul>
                 </div>
               </div>
             </article>

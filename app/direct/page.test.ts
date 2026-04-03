@@ -42,6 +42,10 @@ describe('DirectClientPage', () => {
     expect(html).toContain('People email you.');
     expect(html).toContain('You decide what gets through.');
     expect(html).toContain('private until you approve');
+    // Testimonial attribution
+    expect(html).toContain('Mia Chen');
+    expect(html).toContain('David Okafor');
+    expect(html).toContain('Sarah Kim');
     expect(html).toContain('Protect my inbox');
     expect(html).toContain('See a live example');
     expect(html).toContain('Every request arrives structured');
