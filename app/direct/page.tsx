@@ -51,6 +51,14 @@ const PROOF_STATS = [
 
 /* Hero endorsement removed in pass 16 — reduces hero density; trust covered by stats + credibility line */
 
+const INDUSTRY_TRUST = [
+  { label: 'Media & Publishing', icon: 'film' },
+  { label: 'Venture Capital', icon: 'briefcase' },
+  { label: 'Content Creation', icon: 'mic' },
+  { label: 'SaaS & Startups', icon: 'code' },
+  { label: 'Consulting', icon: 'users' },
+] as const;
+
 const BENEFITS = [
   { icon: 'lock', title: 'Private until approved', copy: 'Your email, DMs, and private channels stay hidden behind your access layer. Nothing gets through until you say so.', stat: '100%', statLabel: 'of contacts hidden' },
   { icon: 'clipboard', title: 'Structured from the start', copy: 'Budget, brief, category, and timeline — collected upfront so every request arrives ready for a decision.', stat: '3 min', statLabel: 'avg. review time' },
@@ -140,6 +148,7 @@ export default async function DirectClientPage() {
             <div className="direct-hero-content">
               <p className="hero-word">KNOKIO DIRECT</p>
               <h1 className="hero-title direct-hero-title">Stop letting strangers decide<br /><span className="direct-hero-title-highlight">what lands in your inbox.</span></h1>
+              <p className="direct-hero-pain">Spam, cold pitches, and &ldquo;can I pick your brain?&rdquo; messages — drowning the requests that actually matter.</p>
               <p className="direct-hero-subtitle">One link replaces your public email. Knokio Direct is your <strong>access layer</strong> — senders provide budget, scope, and timeline before anything reaches you. <strong>Private until approved.</strong></p>
               <ul className="direct-hero-bullets">
                 {HERO_BULLETS.map((b) => (
@@ -166,7 +175,14 @@ export default async function DirectClientPage() {
                   </div>
                 ))}
               </div>
-              <p className="direct-hero-credibility">Trusted by professionals in <strong>Media</strong>, <strong>VC</strong>, <strong>Content Creation</strong>, <strong>Consulting</strong>, and <strong>SaaS</strong></p>
+              <div className="direct-hero-social-row">
+                <div className="direct-hero-avatars" aria-hidden="true">
+                  {HERO_SOCIAL_PROOF_AVATARS.map((a) => (
+                    <span key={a.initials} className="direct-hero-avatar-dot" style={{ background: a.color }}>{a.initials}</span>
+                  ))}
+                </div>
+                <p className="direct-hero-social-text">Join <strong>2,400+</strong> professionals protecting their inbox</p>
+              </div>
             </div>
             <div className="direct-hero-mockup" aria-label="Direct inbox preview">
               <div className="direct-mockup-chrome direct-mockup-chrome-v2">
@@ -200,7 +216,18 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 1a. Credibility moved inline — see hero-credibility below */}
+        {/* 1a. Industry trust bar — quick credibility scan after hero */}
+        <section className="direct-industry-bar" aria-label="Trusted by professionals">
+          <p className="direct-industry-bar-label">Trusted across industries</p>
+          <div className="direct-industry-bar-items">
+            {INDUSTRY_TRUST.map((item) => (
+              <span key={item.label} className="direct-industry-bar-item">
+                <DirectIcon name={item.icon} size={14} className="direct-industry-bar-icon" />
+                <span>{item.label}</span>
+              </span>
+            ))}
+          </div>
+        </section>
 
         {/* 2. Three benefit cards */}
         <section className="direct-proof-strip" aria-label="Direct key benefits">
@@ -219,7 +246,49 @@ export default async function DirectClientPage() {
           ))}
         </section>
 
-        {/* 3. How it works — moved up so cold visitors understand the mechanism early */}
+        {/* 2a. Who it is for — moved up for early self-identification */}
+        <section className="lane-panel direct-audience-panel direct-section-tinted" aria-label="Who Direct is for">
+          <div className="direct-panel-intro">
+            <p className="lane-kicker">Built for you</p>
+            <h2>If you receive unsolicited inbound, this is your tool</h2>
+          </div>
+          <div className="direct-audience-grid direct-audience-grid-2col">
+            {WHO_FOR_PRIMARY.map((w, i) => (
+              <article key={w.title} className={`direct-audience-card direct-audience-card-expanded${i === 0 ? ' direct-audience-card-featured' : ''}`}>
+                <div className="direct-audience-head">
+                  <span className="direct-audience-icon" style={{ color: w.color }}>
+                    <DirectIcon name={w.icon} size={18} />
+                  </span>
+                  <h3>{w.title}</h3>
+                </div>
+                <p>{w.copy}</p>
+                <div className="direct-audience-transform">
+                  <span className="direct-audience-before"><span className="direct-audience-x" aria-hidden="true">✕</span> {w.before}</span>
+                  <span className="direct-audience-arrow" aria-hidden="true">→</span>
+                  <span className="direct-audience-after"><span className="direct-audience-check" aria-hidden="true">✓</span> {w.after}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+          <details className="direct-audience-more">
+            <summary className="direct-audience-more-toggle">See more use cases</summary>
+            <div className="direct-audience-grid direct-audience-more-grid">
+              {WHO_FOR_MORE.map((w) => (
+                <article key={w.title} className="direct-audience-card direct-audience-card-inline">
+                  <div className="direct-audience-head">
+                    <span className="direct-audience-icon" style={{ color: w.color }}>
+                      <DirectIcon name={w.icon} size={18} />
+                    </span>
+                    <h3>{w.title}</h3>
+                  </div>
+                  <p>{w.copy}</p>
+                </article>
+              ))}
+            </div>
+          </details>
+        </section>
+
+        {/* 3. How it works */}
         <section id="how-it-works" className="lane-panel direct-steps-panel direct-section-dark" aria-label="How Direct works">
           <div className="direct-steps-intro">
             <p className="lane-kicker">Simple by design</p>
@@ -244,7 +313,7 @@ export default async function DirectClientPage() {
           <div className="direct-panel-intro">
             <p className="lane-kicker">The sender&apos;s experience</p>
             <h2>What people see when they reach you</h2>
-            <p className="direct-section-lede">Your access layer collects everything you need — before senders reach your inbox. Here&apos;s what they fill out.</p>
+            <p className="direct-section-lede">Senders see a clean form — not your email. Here&apos;s what they fill out before anything reaches you.</p>
           </div>
           <div className="direct-sender-layout">
             <div className="direct-sender-mockup">
@@ -324,55 +393,15 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 4a. Inline mid-page CTA — lighter than standalone conversion break */}
+        {/* 4a. Inline mid-page CTA — with objection handling + micro-proof */}
         <section className="direct-midpage-cta" aria-label="Mid-page call to action">
           {session ? (
             <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Try it free — set up in 2 minutes</Link>
           ) : (
             <Link className="button primary direct-hero-button" href="/direct/signup">Try it free — set up in 2 minutes</Link>
           )}
-        </section>
-
-        {/* 5. Who it is for */}
-        <section className="lane-panel direct-audience-panel direct-section-tinted" aria-label="Who Direct is for">
-          <div className="direct-panel-intro">
-            <p className="lane-kicker">Built for you</p>
-            <h2>If you receive unsolicited inbound, this is your tool</h2>
-          </div>
-          <div className="direct-audience-grid direct-audience-grid-2col">
-            {WHO_FOR_PRIMARY.map((w, i) => (
-              <article key={w.title} className={`direct-audience-card direct-audience-card-expanded${i === 0 ? ' direct-audience-card-featured' : ''}`}>
-                <div className="direct-audience-head">
-                  <span className="direct-audience-icon" style={{ color: w.color }}>
-                    <DirectIcon name={w.icon} size={18} />
-                  </span>
-                  <h3>{w.title}</h3>
-                </div>
-                <p>{w.copy}</p>
-                <div className="direct-audience-transform">
-                  <span className="direct-audience-before"><span className="direct-audience-x" aria-hidden="true">✕</span> {w.before}</span>
-                  <span className="direct-audience-arrow" aria-hidden="true">→</span>
-                  <span className="direct-audience-after"><span className="direct-audience-check" aria-hidden="true">✓</span> {w.after}</span>
-                </div>
-              </article>
-            ))}
-          </div>
-          <details className="direct-audience-more">
-            <summary className="direct-audience-more-toggle">See more use cases</summary>
-            <div className="direct-audience-grid direct-audience-more-grid">
-              {WHO_FOR_MORE.map((w) => (
-                <article key={w.title} className="direct-audience-card direct-audience-card-inline">
-                  <div className="direct-audience-head">
-                    <span className="direct-audience-icon" style={{ color: w.color }}>
-                      <DirectIcon name={w.icon} size={18} />
-                    </span>
-                    <h3>{w.title}</h3>
-                  </div>
-                  <p>{w.copy}</p>
-                </article>
-              ))}
-            </div>
-          </details>
+          <p className="direct-midpage-objection">Your existing email still works · No contacts lost · Switch back anytime</p>
+          <p className="direct-microproof">Join 2,400+ professionals who protect their inbox with Direct</p>
         </section>
 
         {/* 6. Testimonials — with integrated proof stats */}
@@ -418,6 +447,17 @@ export default async function DirectClientPage() {
               </article>
             ))}
           </div>
+        </section>
+
+        {/* 6a. Post-testimonial CTA — capture momentum after social proof */}
+        <section className="direct-post-testimonial-cta" aria-label="Post-testimonial call to action">
+          <p className="direct-post-testimonial-headline">Ready to see the difference?</p>
+          {session ? (
+            <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Create your access layer — free</Link>
+          ) : (
+            <Link className="button primary direct-hero-button" href="/direct/signup">Create your access layer — free</Link>
+          )}
+          <p className="direct-microproof">Free forever · No credit card · Live in 2 minutes</p>
         </section>
 
         {/* 7. Pricing summary (with integrated security trust) */}

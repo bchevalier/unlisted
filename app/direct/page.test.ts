@@ -42,13 +42,19 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Stop letting strangers decide');
     expect(html).toContain('what lands in your inbox.');
     expect(html).toContain('Private until approved.');
+    // Hero pain line (pass v2-10)
+    expect(html).toContain('Spam, cold pitches');
+    expect(html).toContain('drowning the requests that actually matter');
+    // Objection-handling microcopy (pass v2-10)
+    expect(html).toContain('Your existing email still works');
+    expect(html).toContain('No contacts lost');
     // Hero subtitle references access layer
     expect(html).toContain('access layer');
     expect(html).toContain('One link replaces your public email');
-    // Credibility inline in hero (pass 15 — moved from standalone strip)
-    expect(html).toContain('Trusted by professionals in');
+    // Industry trust bar (pass v2-09 — replaced inline credibility line)
+    expect(html).toContain('Trusted across industries');
     expect(html).toContain('Content Creation');
-    expect(html).toContain('VC');
+    expect(html).toContain('Venture Capital');
     // Testimonial attribution
     expect(html).toContain('Mia Chen');
     expect(html).toContain('David Okafor');
@@ -103,6 +109,13 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Get started');
     expect(html).toContain('Create your access layer');
     expect(html).toContain('Set up in 2 minutes');
+    // Hero social proof row (pass v2-09)
+    expect(html).toContain('2,400+');
+    expect(html).toContain('professionals protecting their inbox');
+    // Micro-proof near CTAs (pass v2-09)
+    expect(html).toContain('protect their inbox with Direct');
+    // Post-testimonial CTA (pass v2-09)
+    expect(html).toContain('Ready to see the difference?');
   });
 
   it('preserves signed-in states', async () => {

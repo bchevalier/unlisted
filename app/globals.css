@@ -10392,3 +10392,414 @@ a:hover {
 }
 
 /* === End Pass v2-04 === */
+
+/* === Pass v2-09: Trust bar, micro-proof, post-testimonial CTA, breathing room, hero readability === */
+
+/* --- 1. Industry trust bar below hero --- */
+.direct-industry-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 24px;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.direct-industry-bar-label {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(15, 23, 42, 0.38);
+}
+
+.direct-industry-bar-items {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.direct-industry-bar-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: rgba(15, 23, 42, 0.52);
+  white-space: nowrap;
+}
+
+.direct-industry-bar-icon {
+  color: rgba(13, 148, 136, 0.55);
+}
+
+/* --- 2. Hero social proof row (avatars + text) --- */
+.direct-hero-social-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.direct-hero-avatars {
+  display: flex;
+}
+
+.direct-hero-avatar-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  margin-right: -6px;
+  border: 2px solid rgba(15, 23, 42, 0.9);
+  position: relative;
+}
+
+.direct-hero-avatar-dot:last-child {
+  margin-right: 0;
+}
+
+.direct-hero-social-text {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(226, 232, 240, 0.55);
+}
+
+.direct-hero-social-text strong {
+  font-weight: 700;
+  color: rgba(226, 232, 240, 0.72);
+}
+
+/* --- 3. Micro-proof (used near mid-page and post-testimonial CTAs) --- */
+.direct-microproof {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(15, 23, 42, 0.42);
+  text-align: center;
+}
+
+/* --- 4. Post-testimonial CTA section --- */
+.direct-post-testimonial-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 24px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(240, 253, 250, 0.3) 0%, rgba(255, 255, 255, 0) 100%);
+  border-top: 1px solid rgba(14, 165, 163, 0.08);
+}
+
+.direct-post-testimonial-headline {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: rgba(15, 23, 42, 0.88);
+  letter-spacing: -0.02em;
+}
+
+/* --- 5. Midpage CTA: column layout to stack micro-proof --- */
+.direct-midpage-cta {
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 0 !important;
+}
+
+/* --- 6. Hero subtitle line-height improvement --- */
+.direct-page .direct-hero-subtitle {
+  line-height: 1.65 !important;
+  font-size: 17.5px !important;
+}
+
+/* --- 7. Middle-third breathing room --- */
+.direct-main-shell > .direct-audience-panel {
+  padding-top: 64px !important;
+  padding-bottom: 64px !important;
+}
+
+.direct-main-shell > .direct-testimonials-elevated {
+  padding-top: 64px !important;
+  padding-bottom: 64px !important;
+}
+
+/* --- 8. Benefit cards: slight visual variety with alternating accent borders --- */
+.direct-proof-card-enhanced:nth-child(2) {
+  border-top: 3px solid rgba(37, 99, 235, 0.2) !important;
+}
+
+.direct-proof-card-enhanced:nth-child(3) {
+  border-top: 3px solid rgba(217, 119, 6, 0.2) !important;
+}
+
+.direct-proof-card-enhanced:first-child {
+  border-top: 3px solid rgba(14, 165, 163, 0.3) !important;
+}
+
+/* --- 9. Testimonial section: subtle accent background for visual break --- */
+.direct-testimonials-elevated {
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.6) 0%, rgba(240, 253, 250, 0.15) 100%) !important;
+}
+
+/* --- 10. How-it-works section lede: fix color for light sections --- */
+.direct-section-dark .direct-section-lede {
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+
+.direct-sender-panel .direct-section-lede,
+.direct-notform-panel .direct-section-lede {
+  color: rgba(15, 23, 42, 0.55) !important;
+}
+
+/* --- 11. Mobile adjustments for pass v2-09 --- */
+@media (max-width: 860px) {
+  .direct-industry-bar-items {
+    gap: 18px;
+  }
+  
+  .direct-industry-bar-item {
+    font-size: 12.5px;
+  }
+  
+  .direct-hero-social-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .direct-hero-avatar-dot {
+    width: 24px;
+    height: 24px;
+    font-size: 8px;
+  }
+  
+  .direct-post-testimonial-headline {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 640px) {
+  .direct-industry-bar {
+    padding: 20px 16px;
+    gap: 10px;
+  }
+  
+  .direct-industry-bar-items {
+    gap: 14px;
+  }
+  
+  .direct-industry-bar-item {
+    font-size: 12px;
+  }
+  
+  .direct-hero-social-text {
+    font-size: 12px;
+  }
+  
+  .direct-post-testimonial-cta {
+    padding: 36px 16px;
+  }
+  
+  .direct-post-testimonial-headline {
+    font-size: 17px;
+  }
+}
+
+/* --- 12. Industry trust bar: stronger visual weight --- */
+.direct-industry-bar {
+  padding: 32px 24px !important;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.6) !important;
+  background: rgba(248, 250, 252, 0.5);
+}
+
+.direct-industry-bar-label {
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.1em !important;
+  color: rgba(15, 23, 42, 0.45) !important;
+}
+
+.direct-industry-bar-items {
+  gap: 32px !important;
+}
+
+.direct-industry-bar-item {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: rgba(15, 23, 42, 0.58) !important;
+  gap: 8px !important;
+}
+
+.direct-industry-bar-icon {
+  color: rgba(13, 148, 136, 0.65) !important;
+}
+
+/* --- 13. Micro-proof: more prominent --- */
+.direct-microproof {
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: rgba(15, 23, 42, 0.48) !important;
+  margin-top: 10px !important;
+}
+
+/* --- 14. Hero social proof row: more visual weight --- */
+.direct-hero-social-row {
+  gap: 14px !important;
+  margin-top: 6px !important;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  width: fit-content;
+}
+
+.direct-hero-avatar-dot {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 10px !important;
+  margin-right: -8px !important;
+  border: 2.5px solid rgba(15, 23, 42, 0.85) !important;
+}
+
+.direct-hero-social-text {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: rgba(226, 232, 240, 0.62) !important;
+}
+
+.direct-hero-social-text strong {
+  color: rgba(83, 240, 226, 0.85) !important;
+  font-weight: 800 !important;
+}
+
+/* --- 15. Post-testimonial CTA: stronger background treatment --- */
+.direct-post-testimonial-cta {
+  padding: 52px 24px !important;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(14, 165, 163, 0.06) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(240, 253, 250, 0.4) 0%, rgba(255, 255, 255, 0) 100%) !important;
+  border-top: 1px solid rgba(14, 165, 163, 0.1) !important;
+  border-bottom: 1px solid rgba(14, 165, 163, 0.06);
+}
+
+.direct-post-testimonial-headline {
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em !important;
+}
+
+/* --- 16. Benefit card top borders: more visible --- */
+.direct-proof-card-enhanced:first-child {
+  border-top: 3.5px solid rgba(14, 165, 163, 0.4) !important;
+}
+
+.direct-proof-card-enhanced:nth-child(2) {
+  border-top: 3.5px solid rgba(37, 99, 235, 0.25) !important;
+}
+
+.direct-proof-card-enhanced:nth-child(3) {
+  border-top: 3.5px solid rgba(217, 119, 6, 0.25) !important;
+}
+
+/* --- 17. Mobile adjustments for strengthened elements --- */
+@media (max-width: 860px) {
+  .direct-hero-social-row {
+    padding: 8px 12px !important;
+  }
+  
+  .direct-hero-avatar-dot {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 8.5px !important;
+  }
+  
+  .direct-post-testimonial-headline {
+    font-size: 20px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .direct-industry-bar-items {
+    gap: 16px !important;
+  }
+  
+  .direct-industry-bar-item {
+    font-size: 12.5px !important;
+  }
+  
+  .direct-hero-social-row {
+    flex-direction: column !important;
+    gap: 6px !important;
+    align-items: flex-start !important;
+  }
+}
+
+/* === End Pass v2-09 === */
+
+/* === Pass v2-10: Section reorder, hero pain line, objection handling, visual polish === */
+
+/* --- 1. Hero pain line: visceral emotional hook above subtitle --- */
+.direct-hero-pain {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba(252, 165, 165, 0.88);
+  max-width: 520px;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.005em;
+}
+
+/* --- 2. Objection-handling microcopy near mid-page CTA --- */
+.direct-midpage-objection {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: rgba(15, 23, 42, 0.52);
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+/* --- 3. Audience section uplift (moved up, needs stronger visual pull) --- */
+.direct-audience-panel .direct-panel-intro h2 {
+  font-size: 1.65rem !important;
+  letter-spacing: -0.025em !important;
+}
+
+/* --- 4. Tighter proof strip → audience section transition --- */
+.direct-proof-strip + .direct-audience-panel {
+  margin-top: -8px !important;
+}
+
+/* --- 5. Post-testimonial CTA: add objection line --- */
+.direct-post-testimonial-cta .direct-microproof {
+  margin-top: 4px !important;
+}
+
+/* --- 6. Mobile adjustments --- */
+@media (max-width: 860px) {
+  .direct-hero-pain {
+    font-size: 15px;
+    max-width: 100%;
+  }
+  .direct-midpage-objection {
+    font-size: 12.5px;
+  }
+}
+
+@media (max-width: 640px) {
+  .direct-hero-pain {
+    font-size: 14px;
+  }
+}
+
+/* === End Pass v2-10 === */
