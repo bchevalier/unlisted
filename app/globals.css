@@ -6057,3 +6057,137 @@ a:hover {
 }
 
 /* === End Pass 2/16 iter-02 === */
+
+/* === Pass 5/16: Hero highlight, CTA prominence, sticky topbar, mockup legibility, page tightening === */
+
+/* --- 1. Hero headline gradient highlight --- */
+.direct-hero-title-highlight {
+  background: linear-gradient(135deg, rgba(83, 240, 226, 0.95) 0%, rgba(77, 255, 191, 0.95) 50%, rgba(255, 255, 255, 0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- 2. Sticky topbar with prominent CTA --- */
+.direct-topbar-sticky {
+  position: sticky !important;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition: box-shadow 0.2s ease;
+}
+
+.topbar-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0d9488 0%, #0ea5a3 100%);
+  color: #ffffff !important;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 4px 12px rgba(14, 165, 163, 0.25);
+  transition: box-shadow 0.15s ease, transform 0.12s ease;
+  text-decoration: none;
+}
+
+.topbar-cta-primary:hover {
+  box-shadow: 0 6px 18px rgba(14, 165, 163, 0.35);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+/* --- 3. Primary CTA buttons: teal gradient for warmth and prominence --- */
+.direct-page .button.primary {
+  background: linear-gradient(135deg, #0d9488 0%, #0ea5a3 50%, #14b8a6 100%) !important;
+  border: 1px solid rgba(14, 165, 163, 0.3) !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 10px 28px rgba(14, 165, 163, 0.25),
+    0 0 0 1px rgba(14, 165, 163, 0.1) !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  letter-spacing: 0.01em;
+}
+
+.direct-page .button.primary:hover {
+  box-shadow:
+    0 14px 36px rgba(14, 165, 163, 0.35),
+    0 0 0 4px rgba(83, 240, 226, 0.12),
+    0 0 0 8px rgba(83, 240, 226, 0.06) !important;
+  transform: translateY(-1px);
+}
+
+/* --- 4. Mockup: bigger text for legibility --- */
+.direct-mockup-header-v2 .direct-mockup-heading {
+  font-size: 16px !important;
+}
+
+.direct-mockup-row-v2 .direct-mockup-from {
+  font-size: 14px !important;
+}
+
+.direct-mockup-row-v2 .direct-mockup-detail {
+  font-size: 13px !important;
+}
+
+.direct-mockup-row-v2 .direct-mockup-status {
+  font-size: 11px !important;
+  padding: 3px 10px !important;
+}
+
+.direct-mockup-body-v2 .direct-mockup-note {
+  font-size: 12px !important;
+}
+
+.direct-mockup-row-v2 {
+  padding: 11px 14px !important;
+  gap: 12px !important;
+}
+
+/* --- 5. Hero layout: bigger gap for mockup breathing room --- */
+.direct-hero-layout {
+  gap: 40px !important;
+  padding: 88px 36px 72px !important;
+}
+
+/* --- 6. FAQ accordion: single column for readability --- */
+.direct-faq-accordion {
+  grid-template-columns: 1fr !important;
+  max-width: 680px !important;
+  gap: 0 !important;
+}
+
+/* --- 7. Final CTA: larger, more prominent heading --- */
+.direct-final-cta.direct-section-dark h2 {
+  font-size: 2rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* --- 8. Section H2s: bump for visual hierarchy --- */
+.direct-panel-intro h2,
+.direct-faq-intro h2,
+.direct-steps-intro h2 {
+  font-size: 1.75rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.025em !important;
+}
+
+/* --- 9. Hero panel: more min-height for breathing room --- */
+.direct-hero-panel {
+  min-height: 580px !important;
+}
+
+/* --- 10. Audience grid: 2 columns for wider cards --- */
+.direct-audience-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+/* === End Pass 5/16 === */

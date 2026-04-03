@@ -19,7 +19,6 @@ const HERO_INBOX_PREVIEW = [
   { status: 'filtered', from: 'Random cold pitch', category: 'Spam', detail: 'Blocked — no budget, no brief', time: '4h ago' },
   { status: 'accepted', from: 'Verge Editorial', category: 'Media', detail: 'Interview request · Timeline: 2 weeks', time: '1d ago' },
   { status: 'pending', from: 'Series A Fund', category: 'Investor', detail: 'Intro request · $2M seed follow-on', time: '1d ago' },
-  { status: 'filtered', from: 'Hey quick question', category: 'Vague', detail: 'Blocked — missing scope and intent', time: '2d ago' },
 ] as const;
 
 const HERO_BULLETS = [
@@ -84,7 +83,7 @@ export default async function DirectClientPage() {
 
   return (
     <main className="lane-page lane-page-direct direct-page">
-      <header className="home-topbar direct-topbar">
+      <header className="home-topbar direct-topbar direct-topbar-sticky">
         <Link href="/" className="home-topbar-brand direct-topbar-brand">
           <Image className="home-topbar-logo" src="/knokio-logo-small.jpg" alt="" aria-hidden="true" width={22} height={22} priority />
           <span className="home-topbar-title">Knokio</span>
@@ -100,7 +99,7 @@ export default async function DirectClientPage() {
           ) : (
             <>
               <Link className="topbar-link" href="/direct/login">Log in</Link>
-              <Link className="topbar-button" href="/direct/signup">Create account</Link>
+              <Link className="topbar-cta-primary" href="/direct/signup">Get started — free</Link>
             </>
           )}
         </nav>
@@ -115,7 +114,7 @@ export default async function DirectClientPage() {
           <div className="direct-hero-layout">
             <div className="direct-hero-content">
               <p className="hero-word">KNOKIO DIRECT</p>
-              <h1 className="hero-title direct-hero-title">People email you.<br />You decide what gets through.</h1>
+              <h1 className="hero-title direct-hero-title">People email you.<br /><span className="direct-hero-title-highlight">You decide what gets through.</span></h1>
               <p className="direct-hero-subtitle">Direct is your access layer — one page that filters noise, structures every request with budget and scope, and keeps your real inbox <strong>private until you approve</strong>.</p>
               <ul className="direct-hero-bullets">
                 {HERO_BULLETS.map((b) => (
@@ -160,7 +159,7 @@ export default async function DirectClientPage() {
                       </div>
                     </div>
                   ))}
-                  <p className="direct-mockup-note">5 requests · 2 filtered automatically · 0 require reply</p>
+                  <p className="direct-mockup-note">4 requests · 1 filtered automatically · 0 require reply</p>
                 </div>
               </div>
             </div>
@@ -381,38 +380,6 @@ export default async function DirectClientPage() {
                 </div>
               </div>
             </article>
-          </div>
-        </section>
-
-        {/* 6b. Demo entry point */}
-        <section className="lane-panel direct-demo-entry direct-section-tinted" aria-label="See Direct in action">
-          <div className="direct-panel-intro">
-            <p className="lane-kicker">Try it yourself</p>
-            <h2>Explore a working Direct inbox — no signup needed</h2>
-            <p>Walk through real request examples: accepted, filtered, and auto-replied. See exactly what you&apos;ll get.</p>
-          </div>
-          <div className="direct-demo-cards">
-            <Link className="direct-demo-card direct-demo-card-inline" href="/direct/inbox?slug=john&fixture=demo">
-              <div className="direct-demo-card-head">
-                <DirectIcon name="inbox" size={18} className="direct-demo-card-icon" />
-                <span className="direct-demo-card-title">Demo inbox</span>
-              </div>
-              <span className="direct-demo-card-desc">See requests arrive, get filtered, and get resolved</span>
-            </Link>
-            <Link className="direct-demo-card direct-demo-card-inline" href="/u/john">
-              <div className="direct-demo-card-head">
-                <DirectIcon name="link" size={18} className="direct-demo-card-icon" />
-                <span className="direct-demo-card-title">Public Direct page</span>
-              </div>
-              <span className="direct-demo-card-desc">What visitors see when they knock on your Direct page</span>
-            </Link>
-            <Link className="direct-demo-card direct-demo-card-inline" href="/direct/settings?slug=john&fixture=demo">
-              <div className="direct-demo-card-head">
-                <DirectIcon name="edit" size={18} className="direct-demo-card-icon" />
-                <span className="direct-demo-card-title">Filtering rules</span>
-              </div>
-              <span className="direct-demo-card-desc">How you control what reaches you and what doesn&apos;t</span>
-            </Link>
           </div>
         </section>
 

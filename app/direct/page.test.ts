@@ -61,7 +61,6 @@ describe('DirectClientPage', () => {
     expect(html).toContain('KNOKIO DIRECT');
     expect(html).toContain('How it works');
     expect(html).toContain('Before &amp; after');
-    expect(html).toContain('Try it yourself');
     expect(html).toContain('Simple pricing');
     expect(html).toContain('FAQ');
     // Trust strip
