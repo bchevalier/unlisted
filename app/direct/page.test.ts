@@ -56,6 +56,17 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Small businesses');
     expect(html).toContain('Public figures');
     expect(html).toContain('See more use cases');
+    // Cost of inaction section
+    expect(html).toContain('The cost of doing nothing');
+    expect(html).toContain('147');
+    expect(html).toContain('emails per day');
+    // Trust architecture section
+    expect(html).toContain('Privacy by design');
+    expect(html).toContain('Encrypted everywhere');
+    expect(html).toContain('Zero tracking, zero ads');
+    expect(html).toContain('You own your data');
+    // Inline before/after on audience cards
+    expect(html).toContain('qualified pitches with budget attached');
     // Hero mockup elements
     expect(html).toContain('knokio.io/u/you');
     expect(html).toContain('Nike Brand Team');
@@ -65,7 +76,6 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Open source maintainers');
     expect(html).toContain('KNOKIO DIRECT');
     expect(html).toContain('How it works');
-    expect(html).toContain('Before &amp;');
     expect(html).toContain('Simple pricing');
     expect(html).toContain('FAQ');
     // Trust strip

@@ -58,11 +58,17 @@ const TESTIMONIALS = [
   { quote: 'Investor intros, hiring leads, and partnership requests each route into separate categories automatically. We went from 3 hours of weekly triage to zero.', author: 'Sarah Kim', role: 'Startup founder, Series A', initials: 'SK', color: '#0d9488', icon: 'store', result: 'Zero manual inbox sorting' },
 ] as const;
 
+const COST_OF_INACTION = [
+  { stat: '147', label: 'emails per day', copy: 'The average professional receives 147 emails daily. Most are noise.' },
+  { stat: '28%', label: 'of the workday', copy: 'Workers spend 28% of their day managing email — that\'s 11 hours a week.' },
+  { stat: '$1,250', label: 'lost per week', copy: 'Unstructured inbound costs professionals $1,250/week in lost productivity.' },
+] as const;
+
 const WHO_FOR_PRIMARY = [
-  { icon: 'film', color: '#e11a8c', title: 'Creators and influencers', copy: 'Brand deals, collabs, and sponsorship requests — structured with budget and brief before they reach you.' },
-  { icon: 'briefcase', color: '#2563eb', title: 'Advisors and consultants', copy: 'Collect scope, budget, and timeline before advisory or consulting requests earn your attention.' },
-  { icon: 'store', color: '#0d9488', title: 'Small businesses and online services', copy: 'Separate sales from operations, route customer requests from support, and auto-reply when info is missing.' },
-  { icon: 'building', color: '#d97706', title: 'Public figures and founders', copy: 'Route investor intros, media requests, partnerships, and hiring leads into separate categories automatically.' },
+  { icon: 'film', color: '#e11a8c', title: 'Creators and influencers', copy: 'Brand deals, collabs, and sponsorship requests — structured with budget and brief before they reach you.', before: '40+ random DMs a week', after: '5 qualified pitches with budget attached' },
+  { icon: 'briefcase', color: '#2563eb', title: 'Advisors and consultants', copy: 'Collect scope, budget, and timeline before advisory or consulting requests earn your attention.', before: 'Vague "pick your brain" requests', after: 'Scoped inquiries with budget upfront' },
+  { icon: 'store', color: '#0d9488', title: 'Small businesses and online services', copy: 'Separate sales from operations, route customer requests from support, and auto-reply when info is missing.', before: '3 hours/week sorting inbound manually', after: 'Auto-routed by category, zero triage' },
+  { icon: 'building', color: '#d97706', title: 'Public figures and founders', copy: 'Route investor intros, media requests, partnerships, and hiring leads into separate categories automatically.', before: 'Everything mixed in one inbox', after: 'Investors, press, and hiring — auto-separated' },
 ] as const;
 
 const WHO_FOR_MORE = [
@@ -73,6 +79,12 @@ const WHO_FOR_MORE = [
   { icon: 'activity', color: '#0891b2', title: 'Healthcare and legal practices', copy: 'New patient or client intake, referrals, and existing client requests — structured before anyone reviews.' },
   { icon: 'music', color: '#c026d3', title: 'Artists and musicians', copy: 'Licensing requests, booking inquiries, fan messages, and press — separated before they reach you.' },
   { icon: 'code', color: '#64748b', title: 'Open source maintainers', copy: 'Separate sponsorship inquiries, consulting requests, and hiring outreach from community noise.' },
+] as const;
+
+const TRUST_ARCHITECTURE = [
+  { icon: 'lock', title: 'Encrypted everywhere', copy: 'All data encrypted in transit (TLS 1.3) and at rest (AES-256). Your email address is never stored in plaintext alongside sender data.' },
+  { icon: 'eye-off', title: 'Zero tracking, zero ads', copy: 'No analytics trackers, no ad pixels, no data brokers. We make money from subscriptions, not your data.' },
+  { icon: 'shield', title: 'You own your data', copy: 'Export or delete everything with one click. When you leave, your data leaves with you. GDPR and CCPA compliant.' },
 ] as const;
 
 const FAQ = [
@@ -228,6 +240,23 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
+        {/* 3a-bis. Cost of inaction — urgency/emotional escalation */}
+        <section className="lane-panel direct-cost-panel" aria-label="The cost of doing nothing">
+          <div className="direct-panel-intro">
+            <p className="lane-kicker">The cost of doing nothing</p>
+            <h2>Every week without an access layer costs you time, money, and focus.</h2>
+          </div>
+          <div className="direct-cost-grid">
+            {COST_OF_INACTION.map((c) => (
+              <article key={c.stat} className="direct-cost-card">
+                <strong className="direct-cost-stat">{c.stat}</strong>
+                <span className="direct-cost-label">{c.label}</span>
+                <p>{c.copy}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         {/* 3b. Not a contact form — comparison (moved earlier for categorization) */}
         <section className="lane-panel direct-notform-panel direct-notform-panel-wide" aria-label="Not just a contact form">
           <div className="direct-panel-intro">
@@ -308,15 +337,15 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 5. Who it is for */}
+        {/* 5. Who it is for — merged with before/after inline */}
         <section className="lane-panel direct-audience-panel direct-section-tinted" aria-label="Who Direct is for">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Who Direct is for</p>
             <h2>Built for anyone who&apos;s publicly reachable</h2>
           </div>
-          <div className="direct-audience-grid">
+          <div className="direct-audience-grid direct-audience-grid-2col">
             {WHO_FOR_PRIMARY.map((w) => (
-              <article key={w.title} className="direct-audience-card direct-audience-card-inline">
+              <article key={w.title} className="direct-audience-card direct-audience-card-expanded">
                 <div className="direct-audience-head">
                   <span className="direct-audience-icon" style={{ color: w.color }}>
                     <DirectIcon name={w.icon} size={18} />
@@ -324,6 +353,11 @@ export default async function DirectClientPage() {
                   <h3>{w.title}</h3>
                 </div>
                 <p>{w.copy}</p>
+                <div className="direct-audience-transform">
+                  <span className="direct-audience-before"><span className="direct-audience-x" aria-hidden="true">✕</span> {w.before}</span>
+                  <span className="direct-audience-arrow" aria-hidden="true">→</span>
+                  <span className="direct-audience-after"><span className="direct-audience-check" aria-hidden="true">✓</span> {w.after}</span>
+                </div>
               </article>
             ))}
           </div>
@@ -345,62 +379,21 @@ export default async function DirectClientPage() {
           </details>
         </section>
 
-        {/* 6. Example use cases — dramatic before/after split */}
-        <section className="lane-panel direct-proof-panel direct-proof-panel-large direct-section-dark" aria-label="Example use cases">
+        {/* 6b. Trust architecture — "why trust Knokio with privacy" */}
+        <section className="lane-panel direct-trust-arch-panel direct-section-dark" aria-label="Why trust Knokio">
           <div className="direct-panel-intro">
-            <p className="lane-kicker">Before &amp; after</p>
-            <h2>Same inbox. Completely different signal.</h2>
+            <p className="lane-kicker">Privacy by design</p>
+            <h2>Your data is yours. Full stop.</h2>
+            <p className="direct-section-lede">Knokio is a privacy product — so we built it like one. No tracking, no ads, no data deals. Here&apos;s how we protect you.</p>
           </div>
-          <div className="direct-proof-examples-large">
-            <article className="direct-proof-example-large direct-proof-example-dramatic">
-              <div className="direct-proof-example-header">
-                <DirectIcon name="film" size={24} className="direct-proof-example-icon-large" />
-                <p className="direct-proof-example-headline-large">Creator with 80K followers</p>
-              </div>
-              <div className="direct-proof-example-columns">
-                <div className="direct-proof-col direct-proof-col-before">
-                  <span className="direct-proof-col-label direct-proof-col-label-before">✕ Before Direct</span>
-                  <ul className="direct-proof-col-list">
-                    <li>Public email in bio — exposed to everyone</li>
-                    <li>40+ messages/week, mostly spam and vague DMs</li>
-                    <li>No budget or brief info on any pitch</li>
-                  </ul>
-                </div>
-                <div className="direct-proof-col direct-proof-col-after">
-                  <span className="direct-proof-col-label direct-proof-col-label-after">✓ After Direct</span>
-                  <ul className="direct-proof-col-list">
-                    <li>One Direct page in bio — email stays hidden</li>
-                    <li>Brand deals arrive with budget and brief attached</li>
-                    <li>Spam and low-effort pitches filtered automatically</li>
-                  </ul>
-                </div>
-              </div>
-            </article>
-            <article className="direct-proof-example-large direct-proof-example-dramatic">
-              <div className="direct-proof-example-header">
-                <DirectIcon name="briefcase" size={24} className="direct-proof-example-icon-large" />
-                <p className="direct-proof-example-headline-large">Independent advisor</p>
-              </div>
-              <div className="direct-proof-example-columns">
-                <div className="direct-proof-col direct-proof-col-before">
-                  <span className="direct-proof-col-label direct-proof-col-label-before">✕ Before Direct</span>
-                  <ul className="direct-proof-col-list">
-                    <li>&ldquo;Can I pick your brain?&rdquo; — no scope, no budget</li>
-                    <li>Half the replies go nowhere</li>
-                    <li>Hours wasted on unqualified conversations</li>
-                  </ul>
-                </div>
-                <div className="direct-proof-col direct-proof-col-after">
-                  <span className="direct-proof-col-label direct-proof-col-label-after">✓ After Direct</span>
-                  <ul className="direct-proof-col-list">
-                    <li>Scope, budget, and timeline required upfront</li>
-                    <li>Only qualified requests make it through</li>
-                    <li>Unqualified asks never reach the inbox</li>
-                  </ul>
-                </div>
-              </div>
-            </article>
-
+          <div className="direct-trust-arch-grid">
+            {TRUST_ARCHITECTURE.map((t) => (
+              <article key={t.title} className="direct-trust-arch-card">
+                <DirectIcon name={t.icon} size={20} className="direct-trust-arch-icon" />
+                <h3>{t.title}</h3>
+                <p>{t.copy}</p>
+              </article>
+            ))}
           </div>
         </section>
 

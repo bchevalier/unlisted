@@ -6717,3 +6717,189 @@ a:hover {
 }
 
 /* === End Pass 9/16 === */
+
+/* === Pass 2/16 (iter-02): Cost section, merged audience+before/after, trust architecture === */
+
+/* --- Cost of inaction section --- */
+.direct-cost-panel {
+  display: grid;
+  gap: 20px;
+  background:
+    radial-gradient(circle at 88% 20%, rgba(239, 68, 68, 0.06) 0%, transparent 32%),
+    linear-gradient(160deg, rgba(255, 253, 250, 0.96) 0%, rgba(255, 255, 255, 0.92) 100%) !important;
+  border-color: rgba(239, 68, 68, 0.12) !important;
+}
+
+.direct-cost-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.direct-cost-card {
+  display: grid;
+  gap: 4px;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(239, 68, 68, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.direct-cost-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(31, 42, 68, 0.74);
+}
+
+.direct-cost-stat {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: rgba(185, 28, 28, 0.82);
+  line-height: 1.1;
+}
+
+.direct-cost-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(31, 42, 68, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* --- Audience grid: 2-col for primary cards with transform rows --- */
+.direct-audience-grid-2col {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.direct-audience-card-expanded {
+  display: grid;
+  gap: 10px;
+  padding: 20px !important;
+}
+
+.direct-audience-transform {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.03);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.direct-audience-before {
+  color: rgba(185, 28, 28, 0.78);
+  font-weight: 500;
+  flex: 1;
+}
+
+.direct-audience-x {
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.direct-audience-arrow {
+  flex-shrink: 0;
+  color: rgba(15, 23, 42, 0.3);
+  font-size: 16px;
+}
+
+.direct-audience-after {
+  color: rgba(21, 128, 61, 0.82);
+  font-weight: 600;
+  flex: 1;
+}
+
+.direct-audience-check {
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+/* --- Trust architecture section --- */
+.direct-trust-arch-panel {
+  display: grid;
+  gap: 20px;
+}
+
+.direct-trust-arch-panel.direct-section-dark {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(83, 240, 226, 0.18) 0%, transparent 38%),
+    radial-gradient(circle at 92% 86%, rgba(83, 240, 226, 0.1) 0%, transparent 40%),
+    linear-gradient(160deg, #0f1629 0%, #1a2340 100%) !important;
+  border-color: rgba(83, 240, 226, 0.18) !important;
+  color: rgba(226, 232, 240, 0.94);
+}
+
+.direct-trust-arch-panel.direct-section-dark .lane-kicker {
+  color: rgba(83, 240, 226, 0.78);
+}
+
+.direct-trust-arch-panel.direct-section-dark h2 {
+  color: #f1f5f9;
+}
+
+.direct-trust-arch-panel.direct-section-dark .direct-section-lede {
+  color: rgba(203, 213, 225, 0.86);
+}
+
+.direct-trust-arch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.direct-trust-arch-card {
+  display: grid;
+  gap: 8px;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.direct-trust-arch-card h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(241, 245, 249, 0.94);
+}
+
+.direct-trust-arch-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(203, 213, 225, 0.84);
+}
+
+.direct-trust-arch-icon {
+  color: rgba(83, 240, 226, 0.72);
+}
+
+/* --- Mobile responsiveness for new sections --- */
+@media (max-width: 860px) {
+  .direct-cost-grid {
+    grid-template-columns: 1fr;
+  }
+  .direct-audience-grid-2col {
+    grid-template-columns: 1fr !important;
+  }
+  .direct-audience-transform {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .direct-audience-arrow {
+    transform: rotate(90deg);
+    align-self: center;
+  }
+  .direct-trust-arch-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === End Pass 2/16 (iter-02) === */
