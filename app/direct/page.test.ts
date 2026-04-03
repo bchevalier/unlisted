@@ -89,7 +89,7 @@ describe('DirectClientPage', () => {
     // Privacy by design — integrated into pricing trust row
     expect(html).toContain('Privacy by design');
     // Inline before/after on audience cards
-    expect(html).toContain('qualified pitches with budget attached');
+    expect(html).toContain('qualified pitches with budget + brief attached');
     // Hero mockup elements
     expect(html).toContain('knokio.io/u/you');
     expect(html).toContain('Nike Brand Team');
@@ -110,7 +110,7 @@ describe('DirectClientPage', () => {
     // CTAs — fewer but varied (pass v2-15 removed inline + post-testimonial CTAs)
     expect(html).toContain('Protect my inbox');
     expect(html).toContain('Get started');
-    expect(html).toContain('Create your access layer');
+    expect(html).toContain('Build your access layer');
     expect(html).toContain('Set up in 2 minutes');
     // Hero social proof row (pass v2-09)
     expect(html).toContain('2,400+');

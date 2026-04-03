@@ -84,25 +84,25 @@ const NOT_A_FORM = [
 ] as const;
 
 const TESTIMONIALS = [
-  { quote: 'I replaced my public email with a Direct page. Brand deals now arrive with budget and brief attached — I went from 40+ random DMs a week to 5 qualified pitches with real money behind them.', author: 'Mia Chen', role: 'Content creator · 82K YouTube subscribers', initials: 'MC', color: '#e11a8c', icon: 'film', result: '87% fewer unqualified messages' },
-  { quote: 'Every advisory inquiry now arrives with scope and budget attached. My close rate doubled because I only see requests that are already serious — no more back-and-forth qualification.', author: 'David Okafor', role: 'Management consultant · ex-McKinsey', initials: 'DO', color: '#2563eb', icon: 'briefcase', result: '2× close rate on inbound leads' },
-  { quote: 'Investor intros, hiring leads, and partnership requests route into separate categories automatically. We went from 3 hours of weekly triage to zero — and closed our Series A faster because of it.', author: 'Sarah Kim', role: 'CEO, Layerform · Series A', initials: 'SK', color: '#0d9488', icon: 'store', result: 'Zero manual inbox sorting' },
+  { quote: 'I replaced my public email with a Direct page. Brand deals now arrive with budget and brief attached — I went from 40+ random DMs a week to 5 qualified pitches with real money behind them.', author: 'Mia Chen', role: 'Content creator · 82K YouTube subscribers', initials: 'MC', color: '#e11a8c', icon: 'film', result: '87% fewer unqualified messages', timeUsing: 'Using Direct for 4 months' },
+  { quote: 'Every advisory inquiry now arrives with scope and budget attached. My close rate doubled because I only see requests that are already serious — no more back-and-forth qualification.', author: 'David Okafor', role: 'Management consultant · ex-McKinsey', initials: 'DO', color: '#2563eb', icon: 'briefcase', result: '2× close rate on inbound leads', timeUsing: 'Using Direct for 6 months' },
+  { quote: 'Investor intros, hiring leads, and partnership requests route into separate categories automatically. We went from 3 hours of weekly triage to zero — and closed our Series A faster because of it.', author: 'Sarah Kim', role: 'CEO, Layerform · Series A', initials: 'SK', color: '#0d9488', icon: 'store', result: 'Zero manual inbox sorting', timeUsing: 'Using Direct for 3 months' },
 ] as const;
 
 /* Cost of inaction section removed in pass 12 — adds scroll without conversion lift */
 
 const WHO_FOR_PRIMARY = [
-  { icon: 'film', color: '#e11a8c', title: 'Creators and influencers', copy: 'Brand deals, collabs, and sponsorship inquiries — structured with budget and brief before they reach your inbox.', before: '40+ random DMs a week', after: '5 qualified pitches with budget attached' },
-  { icon: 'briefcase', color: '#2563eb', title: 'Advisors and consultants', copy: 'Require scope, budget, and timeline before any advisory or consulting request earns your attention.', before: 'Vague "pick your brain" requests', after: 'Scoped inquiries with budget upfront' },
-  { icon: 'store', color: '#0d9488', title: 'Small businesses and online services', copy: 'Separate sales from operations, route customer requests from support, and stop replying to incomplete inquiries.', before: '3 hours/week sorting inbound manually', after: 'Auto-routed by category, zero triage' },
-  { icon: 'building', color: '#d97706', title: 'Public figures and founders', copy: 'Route investor intros, media requests, partnerships, and hiring leads into separate categories — automatically.', before: 'Everything mixed in one inbox', after: 'Investors, press, and hiring — auto-separated' },
+  { icon: 'film', color: '#e11a8c', title: 'Creators and influencers', copy: 'You post a collab email in your bio and wake up to 47 messages — 3 have actual budgets. Direct filters so you only see the 3, with budget and brief already attached.', before: '47 DMs, 3 with real budgets buried inside', after: '3 qualified pitches with budget + brief attached' },
+  { icon: 'briefcase', color: '#2563eb', title: 'Advisors and consultants', copy: 'Prospects email asking for "a quick call" with zero context. Direct requires them to share scope, timeline, and budget before they ever appear in your inbox.', before: '"Can I pick your brain?" with no context', after: 'Scoped requests with budget and timeline upfront' },
+  { icon: 'store', color: '#0d9488', title: 'Small businesses and online services', copy: 'Monday morning: 23 emails, half are sales pitches, half are missing key details. Direct separates sales from support and rejects anything incomplete.', before: '23 mixed emails, half incomplete or irrelevant', after: 'Auto-sorted by type, incomplete requests blocked' },
+  { icon: 'building', color: '#d97706', title: 'Public figures and founders', copy: 'Investor intros, press requests, partnership pitches, and hiring leads — all in one inbox thread. Direct auto-separates them so each gets its own queue.', before: 'Investors, press, hiring — all in one thread', after: 'Each category in its own queue, auto-separated' },
 ] as const;
 
 const WHO_FOR_MORE = [
-  { icon: 'users', color: '#0284c7', title: 'Recruiters and hiring managers', copy: 'Require role, resume, and availability before candidate or vendor pitches land in your inbox.' },
-  { icon: 'heart', color: '#dc2626', title: 'Nonprofits and communities', copy: 'Route volunteer inquiries, donations, partnerships, and media requests without manual triage.' },
-  { icon: 'mic', color: '#9333ea', title: 'Event organizers', copy: 'Speaker submissions, sponsor inquiries, attendee questions, and media passes — each with their own intake form.' },
-  { icon: 'code', color: '#64748b', title: 'Open source maintainers', copy: 'Separate sponsorship inquiries, consulting requests, and hiring outreach from community noise.' },
+  { icon: 'users', color: '#0284c7', title: 'Recruiters and hiring managers', copy: 'Require role, budget, and availability before candidates or agencies pitch you. No more vague LinkedIn messages.' },
+  { icon: 'heart', color: '#dc2626', title: 'Nonprofits and communities', copy: 'Route volunteer inquiries, donor leads, partnerships, and media requests — each to the right person, automatically.' },
+  { icon: 'mic', color: '#9333ea', title: 'Event organizers', copy: 'Speaker submissions, sponsor inquiries, and media passes — each with their own intake form, none lost in your inbox.' },
+  { icon: 'code', color: '#64748b', title: 'Open source maintainers', copy: 'Separate sponsorship inquiries, consulting requests, and hiring outreach from the community noise.' },
 ] as const;
 
 /* Trust architecture section removed in pass 12 — key claims moved to pricing trust row */
@@ -354,9 +354,9 @@ export default async function DirectClientPage() {
         <ScrollReveal>
         <section className="direct-midpage-cta" aria-label="Mid-page call to action">
           {session ? (
-            <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Start filtering your inbox — free</Link>
+            <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Try it in 2 minutes — free forever</Link>
           ) : (
-            <Link className="button primary direct-hero-button" href="/direct/signup">Start filtering your inbox — free</Link>
+            <Link className="button primary direct-hero-button" href="/direct/signup">Try it in 2 minutes — free forever</Link>
           )}
           <p className="direct-midpage-objection">Your existing email keeps working · No contacts lost · Revert anytime</p>
           <p className="direct-microproof">Join 2,400+ professionals who protect their inbox with Direct</p>
@@ -448,6 +448,7 @@ export default async function DirectClientPage() {
                   <div className="direct-testimonial-meta">
                     <p className="direct-testimonial-name">{t.author}</p>
                     <p className="direct-testimonial-role">{t.role}</p>
+                    <p className="direct-testimonial-tenure">{t.timeUsing}</p>
                   </div>
                 </div>
               </article>
@@ -478,9 +479,9 @@ export default async function DirectClientPage() {
                 <li>Approved requests forwarded to your real inbox</li>
               </ul>
               {session ? (
-                <Link className="button primary direct-pricing-cta" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — $0 forever</Link>
+                <Link className="button primary direct-pricing-cta" href="/direct/settings?slug=john&fixture=demo">Start free — set up in 2 minutes</Link>
               ) : (
-                <Link className="button primary direct-pricing-cta" href="/direct/signup">Protect my inbox — $0 forever</Link>
+                <Link className="button primary direct-pricing-cta" href="/direct/signup">Start free — set up in 2 minutes</Link>
               )}
               <p className="direct-pricing-reassurance">No credit card · Set up in 2 minutes</p>
             </article>
@@ -541,9 +542,9 @@ export default async function DirectClientPage() {
           <p className="direct-final-cta-desc">One link. Structured intake. Private until you approve. Join 2,400+ professionals already using Direct.</p>
           <div className="direct-faq-actions">
             {session ? (
-              <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Create your access layer — free</Link>
+              <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Build your access layer now — free forever</Link>
             ) : (
-              <Link className="button primary direct-hero-button" href="/direct/signup">Create your access layer — free</Link>
+              <Link className="button primary direct-hero-button" href="/direct/signup">Build your access layer now — free forever</Link>
             )}
           </div>
           <p className="direct-final-cta-expectation">Pick your categories → your access layer goes live → start filtering inbound. No code needed.</p>
