@@ -8252,4 +8252,390 @@ a:hover {
   }
 }
 
-/* === End Pass 9/16 === */
+/* === End Pass 9/16 (final instance) === */
+
+/* === Pass 10/16: Visual reset mid-page, comparison emphasis, hero mockup, section rhythm === */
+
+/* --- 1. Cost-of-inaction section: dark background for dramatic visual reset --- */
+.direct-cost-panel,
+.lane-panel.direct-cost-panel {
+  background:
+    radial-gradient(circle at 88% 20%, rgba(239, 68, 68, 0.18) 0%, transparent 38%),
+    radial-gradient(circle at 12% 80%, rgba(251, 191, 36, 0.08) 0%, transparent 36%),
+    linear-gradient(160deg, #1a1020 0%, #1e1428 50%, #150d1e 100%) !important;
+  border: 1px solid rgba(239, 68, 68, 0.18) !important;
+  box-shadow:
+    0 0 0 1px rgba(239, 68, 68, 0.06),
+    0 20px 50px rgba(0, 0, 0, 0.25) !important;
+  color: rgba(226, 232, 240, 0.92);
+}
+
+.direct-cost-panel .lane-kicker {
+  color: rgba(252, 165, 165, 0.85) !important;
+}
+
+.direct-cost-panel .direct-panel-intro h2 {
+  color: #fef2f2 !important;
+  font-size: 1.65rem !important;
+}
+
+.direct-cost-card {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-left: 3px solid rgba(239, 68, 68, 0.45) !important;
+}
+
+.direct-cost-card p {
+  color: rgba(203, 213, 225, 0.82) !important;
+}
+
+.direct-cost-stat {
+  color: rgba(252, 165, 165, 0.95) !important;
+  text-shadow: 0 0 24px rgba(239, 68, 68, 0.2);
+}
+
+.direct-cost-label {
+  color: rgba(203, 213, 225, 0.65) !important;
+}
+
+.direct-cost-source {
+  color: rgba(148, 163, 184, 0.42) !important;
+}
+
+.direct-cost-card:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-left-color: rgba(239, 68, 68, 0.7) !important;
+}
+
+/* --- 2. Comparison section: elevated as key persuasion beat --- */
+.direct-notform-panel,
+.direct-notform-panel-wide {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(14, 165, 163, 0.06) 0%, transparent 40%),
+    linear-gradient(160deg, #fafcfd 0%, #f8fafb 100%) !important;
+  border: 2px solid rgba(15, 23, 42, 0.06) !important;
+  box-shadow:
+    0 1px 0 rgba(15, 23, 42, 0.04),
+    0 20px 50px rgba(15, 23, 42, 0.06) !important;
+  padding: 52px 40px !important;
+}
+
+.direct-notform-panel .direct-panel-intro h2,
+.direct-notform-panel-wide .direct-panel-intro h2 {
+  font-size: 1.85rem !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.03em !important;
+  max-width: 680px !important;
+}
+
+/* Contact form card: subtle red tint */
+.direct-notform-card-form {
+  background: linear-gradient(160deg, rgba(254, 242, 242, 0.7) 0%, rgba(255, 255, 255, 0.9) 100%) !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.15) !important;
+  box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.04) !important;
+}
+
+/* Direct card: stronger teal emphasis */
+.direct-notform-card-direct {
+  background: linear-gradient(160deg, rgba(240, 253, 250, 0.7) 0%, rgba(255, 255, 255, 0.96) 100%) !important;
+  border: 2px solid rgba(14, 165, 163, 0.28) !important;
+  box-shadow:
+    0 0 0 2px rgba(14, 165, 163, 0.08),
+    0 16px 40px rgba(14, 165, 163, 0.1) !important;
+}
+
+/* VS divider between comparison cards */
+.direct-notform-grid {
+  position: relative;
+}
+
+.direct-notform-grid::after {
+  content: 'VS';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: rgba(15, 23, 42, 0.25);
+  background: #fafcfd;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  z-index: 2;
+}
+
+/* --- 3. Hero mockup: larger, more prominent --- */
+.direct-hero-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 28px !important;
+  align-items: center !important;
+}
+
+.direct-mockup-chrome,
+.direct-mockup-chrome-v2 {
+  max-width: 520px !important;
+  box-shadow:
+    0 32px 72px rgba(15, 23, 42, 0.16),
+    0 8px 20px rgba(15, 23, 42, 0.06),
+    0 0 0 1px rgba(15, 23, 42, 0.06) !important;
+  border-radius: 20px !important;
+}
+
+.direct-hero-mockup {
+  opacity: 1 !important;
+}
+
+.direct-mockup-bar {
+  padding: 12px 16px !important;
+}
+
+.direct-mockup-from {
+  font-size: 14px !important;
+}
+
+.direct-mockup-detail {
+  font-size: 13px !important;
+}
+
+.direct-mockup-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.direct-mockup-time {
+  font-size: 11px;
+  color: rgba(31, 42, 68, 0.45);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.direct-mockup-header-v2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.direct-mockup-badge {
+  display: inline-flex;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(239, 68, 68, 0.08);
+  color: rgba(185, 28, 28, 0.78);
+  letter-spacing: 0.04em;
+}
+
+/* --- 4. Testimonials: subtle warm tint for visual variety --- */
+.direct-testimonials-panel,
+.direct-testimonials-elevated {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 208, 138, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(83, 240, 226, 0.05) 0%, transparent 40%),
+    linear-gradient(160deg, #fefcf9 0%, #fefdfb 50%, #ffffff 100%) !important;
+  border-color: rgba(217, 119, 6, 0.08) !important;
+}
+
+/* --- 5. Audience section: slightly deeper tint --- */
+.direct-audience-panel.direct-section-tinted {
+  background: linear-gradient(160deg, #eef2f7 0%, #f0f4f8 100%) !important;
+}
+
+/* --- 6. Final CTA: bigger, more emotional --- */
+.direct-final-cta.direct-section-dark {
+  padding: 64px 40px !important;
+  min-height: 280px;
+  display: grid !important;
+  gap: 20px !important;
+  align-content: center;
+  justify-items: center;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(83, 240, 226, 0.12) 0%, transparent 50%),
+    linear-gradient(160deg, #0f1629 0%, #1a2340 60%, #0f1629 100%) !important;
+}
+
+.direct-final-cta.direct-section-dark h2 {
+  font-size: 2.4rem !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.04em !important;
+  max-width: 680px;
+}
+
+.direct-final-cta.direct-section-dark p {
+  font-size: 16.5px !important;
+  max-width: 560px !important;
+  color: rgba(203, 213, 225, 0.85) !important;
+  line-height: 1.55 !important;
+}
+
+.direct-final-cta-expectation {
+  font-size: 13.5px !important;
+  color: rgba(148, 163, 184, 0.55) !important;
+  max-width: 480px !important;
+  text-align: center;
+}
+
+/* --- 7. Pricing badge repositioned --- */
+.direct-pricing-card-highlighted {
+  position: relative;
+  overflow: visible;
+}
+
+.direct-pricing-badge {
+  position: absolute !important;
+  top: -10px !important;
+  left: 24px !important;
+  z-index: 2;
+}
+
+/* --- 8. Trust strip pills: larger for scannability --- */
+.direct-trust-strip {
+  gap: 10px !important;
+  padding: 22px 28px !important;
+}
+
+.direct-trust-pill {
+  font-size: 13.5px !important;
+  padding: 10px 18px !important;
+  font-weight: 600 !important;
+}
+
+/* --- 9. Social proof strip: highlight bar feel --- */
+.direct-social-proof-strip {
+  background: linear-gradient(160deg, rgba(240, 253, 250, 0.7) 0%, rgba(255, 255, 255, 0.95) 100%) !important;
+  border: 1.5px solid rgba(14, 165, 163, 0.16) !important;
+  box-shadow:
+    0 0 0 1px rgba(14, 165, 163, 0.04),
+    0 10px 28px rgba(14, 165, 163, 0.06) !important;
+  padding: 32px 40px !important;
+  border-radius: 20px !important;
+}
+
+/* --- 10. Mobile responsive for pass 10 changes --- */
+@media (max-width: 860px) {
+  .direct-notform-panel,
+  .direct-notform-panel-wide {
+    padding: 36px 24px !important;
+  }
+  
+  .direct-notform-grid::after {
+    display: none;
+  }
+  
+  .direct-final-cta.direct-section-dark {
+    padding: 48px 24px !important;
+  }
+  
+  .direct-final-cta.direct-section-dark h2 {
+    font-size: 1.8rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .direct-cost-panel .direct-panel-intro h2 {
+    font-size: 1.35rem !important;
+  }
+  
+  .direct-notform-panel .direct-panel-intro h2 {
+    font-size: 1.4rem !important;
+  }
+}
+
+/* --- 11. Hero mockup: dramatically larger, simplified feel --- */
+.direct-hero-layout {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr) !important;
+  padding: 88px 32px 72px !important;
+}
+
+.direct-mockup-chrome,
+.direct-mockup-chrome-v2 {
+  max-width: 560px !important;
+  width: 100% !important;
+}
+
+/* Mockup rows: slightly more spacious for scanability */
+.direct-mockup-row,
+.direct-mockup-row-v2 {
+  padding: 14px 16px !important;
+}
+
+.direct-mockup-heading {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+}
+
+/* --- 12. Hero social proof: more prominent below CTAs --- */
+.direct-hero-social-proof {
+  margin-top: 20px !important;
+  padding: 10px 20px !important;
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  gap: 10px !important;
+}
+
+.direct-hero-social-line {
+  font-size: 14px !important;
+  color: rgba(15, 23, 42, 0.72) !important;
+  font-weight: 600 !important;
+}
+
+/* --- 13. Comparison: add accent bar + bigger visual weight --- */
+.direct-notform-panel,
+.direct-notform-panel-wide {
+  padding: 56px 44px !important;
+  border-radius: 24px !important;
+}
+
+.direct-notform-card-direct {
+  border-left: 4px solid rgba(14, 165, 163, 0.5) !important;
+}
+
+.direct-notform-card-form {
+  border-left: 4px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Comparison card titles: bigger */
+.direct-notform-card h3 {
+  font-size: 1.2rem !important;
+}
+
+/* --- 14. Final CTA: supersize with testimonial reinforcement --- */
+.direct-final-cta.direct-section-dark {
+  padding: 80px 44px !important;
+  min-height: 340px;
+  border-radius: 24px !important;
+}
+
+.direct-final-cta.direct-section-dark h2 {
+  font-size: 2.6rem !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.045em !important;
+}
+
+.direct-final-cta .button.primary {
+  font-size: 18px !important;
+  padding: 18px 36px !important;
+  min-width: 260px !important;
+}
+
+/* --- 15. Pricing trust section: better visual separation from pricing cards --- */
+.direct-pricing-trust {
+  margin-top: 28px !important;
+  padding: 20px 0 0 !important;
+  border-top: 1px solid rgba(15, 23, 42, 0.06) !important;
+}
+
+.direct-pricing-trust-claims {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 12px 20px !important;
+}
+
+/* === End Pass 10/16 === */
