@@ -37,20 +37,20 @@ const HERO_SOCIAL_PROOF_AVATARS = [
 ] as const;
 
 const BENEFITS = [
-  { icon: 'lock', title: 'Private until approved', copy: 'Your email, DMs, and private channels stay hidden behind your access layer. Nothing gets through until you say so.', stat: '100%', statLabel: 'of emails hidden' },
-  { icon: 'clipboard', title: 'Every request arrives structured', copy: 'Budget, brief, category, and timeline — collected upfront so you never waste time on incomplete asks.', stat: '3 min', statLabel: 'avg. review time' },
-  { icon: 'shield', title: 'Noise is stopped automatically', copy: 'Volume limits, smart routing, and automation filter spam, cold pitches, and vague outreach before they reach your inbox.', stat: '96%', statLabel: 'of spam blocked' },
+  { icon: 'lock', title: 'Private until approved', copy: 'Your email, DMs, and private channels stay hidden behind your access layer. Nothing gets through until you say so.', stat: '100%', statLabel: 'of contacts hidden' },
+  { icon: 'clipboard', title: 'Structured from the start', copy: 'Budget, brief, category, and timeline — collected upfront so every request arrives ready for a decision.', stat: '3 min', statLabel: 'avg. review time' },
+  { icon: 'shield', title: 'Noise never reaches you', copy: 'Volume limits, smart routing, and automation filter spam, cold pitches, and vague outreach before they hit your inbox.', stat: '96%', statLabel: 'of noise blocked' },
 ] as const;
 
 const HOW_IT_WORKS = [
-  { step: '01', title: 'Share one link instead of your email', copy: 'Put your Direct page in your bio, website, or email signature. Your real address stays hidden — senders never see it.' },
-  { step: '02', title: 'Senders submit what you require', copy: 'You define the fields: budget, scope, timeline, category. Senders fill them in before anything reaches your inbox.' },
-  { step: '03', title: 'You only see qualified requests', copy: 'Incomplete asks, spam, and cold pitches are filtered automatically. What arrives is structured, complete, and ready for a decision.' },
+  { step: '01', title: 'Share one link — your access layer', copy: 'Put your Direct page in your bio, website, or signature. Your real email stays hidden. Senders reach your access layer, not you directly.' },
+  { step: '02', title: 'Senders provide what you require', copy: 'Budget, scope, timeline, category — defined by you, filled in by them. Nothing incomplete reaches your inbox.' },
+  { step: '03', title: 'Only qualified requests get through', copy: 'Spam, cold pitches, and vague asks are filtered automatically. What arrives is structured, complete, and private until you approve.' },
 ] as const;
 
 const NOT_A_FORM = [
-  { icon: 'zap', title: 'Contact form', issue: 'Drops messages into your inbox with no filtering, no structure, no control. Every sender gets equal access to your attention — and your email is exposed.', highlights: ['No filtering', 'No structure', 'No privacy', 'Email exposed'], negative: true },
-  { icon: 'shield', title: 'Knokio Direct', issue: 'An access layer between you and the outside world. Filters noise, structures every request with budget and scope, enforces volume limits, and keeps your real email hidden.', highlights: ['Smart filtering', 'Structured intake', 'Private until approved', 'Access layer'], negative: false },
+  { icon: 'zap', title: 'Contact form', issue: 'Drops messages into your inbox with no filtering, no structure, no control. Every sender gets equal access to your attention — and your real email is exposed.', highlights: ['No filtering', 'No structure', 'No privacy', 'Email exposed'], negative: true },
+  { icon: 'shield', title: 'Knokio Direct', issue: 'An access layer between you and the outside world. Every request is structured with budget and scope. Volume limits enforce control. Private until you approve.', highlights: ['Access layer', 'Structured intake', 'Volume controls', 'Private until approved'], negative: false },
 ] as const;
 
 const TESTIMONIALS = [
@@ -138,7 +138,7 @@ export default async function DirectClientPage() {
             <div className="direct-hero-content">
               <p className="hero-word">KNOKIO DIRECT</p>
               <h1 className="hero-title direct-hero-title">Stop letting strangers decide<br /><span className="direct-hero-title-highlight">what lands in your inbox.</span></h1>
-              <p className="direct-hero-subtitle">Replace your public email with one link. Senders provide budget, scope, and timeline upfront. Spam never reaches you — <strong>private until you approve</strong>.</p>
+              <p className="direct-hero-subtitle">Direct is your <strong>access layer</strong> — it sits between you and the outside world. One link replaces your public email. Senders provide budget, scope, and timeline before anything reaches you. <strong>Private until you approve.</strong></p>
               <ul className="direct-hero-bullets">
                 {HERO_BULLETS.map((b) => (
                   <li key={b.text}>
@@ -162,7 +162,7 @@ export default async function DirectClientPage() {
                     <span key={a.initials} className="direct-hero-avatar-dot" style={{ background: a.color }}>{a.initials}</span>
                   ))}
                 </div>
-                <p className="direct-hero-social-line">Trusted by <strong>2,400+</strong> creators, advisors, and founders · growing every week</p>
+                <p className="direct-hero-social-line">Trusted by <strong>2,400+</strong> creators, advisors, and founders</p>
               </div>
             </div>
             <div className="direct-hero-mockup" aria-label="Direct inbox preview">
@@ -183,14 +183,14 @@ export default async function DirectClientPage() {
                       <span className={`direct-mockup-status direct-mockup-status-${item.status}`}>{item.status}</span>
                       <div className="direct-mockup-row-content">
                         <div className="direct-mockup-row-top">
-                          <span className="direct-mockup-from">{item.from}</span>
+                          <span className="direct-mockup-from">{item.from}<span className="direct-mockup-category">{item.category}</span></span>
                           <span className="direct-mockup-time">{item.time}</span>
                         </div>
                         <span className="direct-mockup-detail">{item.detail}</span>
                       </div>
                     </div>
                   ))}
-                  <p className="direct-mockup-note">4 requests · 1 filtered automatically · 0 require reply</p>
+                  <p className="direct-mockup-note">Spam filtered · Qualified requests only</p>
                 </div>
               </div>
             </div>
@@ -214,8 +214,6 @@ export default async function DirectClientPage() {
           ))}
         </section>
 
-        {/* 2a. Removed access layer diagram — redundant with how-it-works */}
-
         {/* 2b. Trust signals strip */}
         <div className="direct-trust-strip" aria-label="Trust signals">
           {TRUST_SIGNALS.map((signal) => (
@@ -223,7 +221,49 @@ export default async function DirectClientPage() {
           ))}
         </div>
 
-        {/* 3. How it works — 3-step strip */}
+        {/* 3. Not a contact form — comparison (moved up as key differentiator) */}
+        <section className="lane-panel direct-notform-panel direct-notform-panel-wide" aria-label="Not just a contact form">
+          <div className="direct-panel-intro">
+            <p className="lane-kicker">Not a contact form</p>
+            <h2 className="direct-heading-marquee">A contact form exposes your email and treats every sender equally.<br />An access layer filters first, then lets you decide.</h2>
+          </div>
+          <div className="direct-notform-grid">
+            {NOT_A_FORM.map((item) => (
+              <article key={item.title} className={`direct-notform-card ${item.icon === 'shield' ? 'direct-notform-card-direct' : 'direct-notform-card-form'}`}>
+                <div className="direct-notform-head">
+                  <DirectIcon name={item.icon} size={18} className="direct-notform-icon" />
+                  <h3>{item.title}</h3>
+                </div>
+                <p>{item.issue}</p>
+                <div className="direct-notform-highlights">
+                  {item.highlights.map((h) => (
+                    <span key={h} className="direct-notform-highlight">{h}</span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* 3a. Social proof — outcome metrics strip */}
+        <div className="direct-social-proof-strip" aria-label="Social proof">
+          <div className="direct-social-proof-stat">
+            <strong>96%</strong>
+            <span>of spam stopped before inbox</span>
+          </div>
+          <span className="direct-social-proof-divider" aria-hidden="true" />
+          <div className="direct-social-proof-stat">
+            <strong>6 hrs</strong>
+            <span>saved per week on inbox triage</span>
+          </div>
+          <span className="direct-social-proof-divider" aria-hidden="true" />
+          <div className="direct-social-proof-stat">
+            <strong>2×</strong>
+            <span>close rate on qualified leads</span>
+          </div>
+        </div>
+
+        {/* 4. How it works — 3-step strip */}
         <section className="lane-panel direct-steps-panel direct-section-dark" aria-label="How Direct works">
           <div className="direct-steps-intro">
             <p className="lane-kicker">How it works</p>
@@ -243,7 +283,7 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 4. Who it is for — moved up for fast self-identification */}
+        {/* 5. Who it is for */}
         <section className="lane-panel direct-audience-panel direct-section-tinted" aria-label="Who Direct is for">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Who Direct is for</p>
@@ -285,71 +325,11 @@ export default async function DirectClientPage() {
           </details>
         </section>
 
-        {/* 4a. Social proof — outcome metrics strip */}
-        <div className="direct-social-proof-strip" aria-label="Social proof">
-          <div className="direct-social-proof-stat">
-            <strong>96%</strong>
-            <span>of spam stopped before inbox</span>
-          </div>
-          <span className="direct-social-proof-divider" aria-hidden="true" />
-          <div className="direct-social-proof-stat">
-            <strong>6 hrs</strong>
-            <span>saved per week on inbox triage</span>
-          </div>
-          <span className="direct-social-proof-divider" aria-hidden="true" />
-          <div className="direct-social-proof-stat">
-            <strong>2×</strong>
-            <span>close rate on qualified leads</span>
-          </div>
-        </div>
-
-        {/* 5. Not a contact form — comparison */}
-        <section className="lane-panel direct-notform-panel direct-notform-panel-wide" aria-label="Not just a contact form">
-          <div className="direct-panel-intro">
-            <p className="lane-kicker">Not a contact form</p>
-            <h2 className="direct-heading-marquee">A contact form exposes your email and treats every sender equally.<br />Direct filters first, then lets you decide.</h2>
-          </div>
-          <div className="direct-notform-grid">
-            {NOT_A_FORM.map((item) => (
-              <article key={item.title} className={`direct-notform-card ${item.icon === 'shield' ? 'direct-notform-card-direct' : 'direct-notform-card-form'}`}>
-                <div className="direct-notform-head">
-                  <DirectIcon name={item.icon} size={18} className="direct-notform-icon" />
-                  <h3>{item.title}</h3>
-                </div>
-                <p>{item.issue}</p>
-                <div className="direct-notform-highlights">
-                  {item.highlights.map((h) => (
-                    <span key={h} className="direct-notform-highlight">{h}</span>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* 5a. Cost of inaction — urgency */}
-        <section className="lane-panel direct-cost-panel" aria-label="The cost of doing nothing">
-          <div className="direct-panel-intro">
-            <p className="lane-kicker">The cost of doing nothing</p>
-            <h2>Every week without an access layer costs you time, money, and focus.</h2>
-          </div>
-          <div className="direct-cost-grid">
-            {COST_OF_INACTION.map((c) => (
-              <article key={c.stat} className="direct-cost-card">
-                <strong className="direct-cost-stat">{c.stat}</strong>
-                <span className="direct-cost-label">{c.label}</span>
-                <p>{c.copy}</p>
-                <span className="direct-cost-source">{c.source}</span>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* 5b. Testimonials — elevated typography */}
+        {/* 6. Testimonials — elevated typography */}
         <section className="lane-panel direct-testimonials-panel direct-testimonials-elevated" aria-label="What users say">
           <div className="direct-panel-intro">
             <p className="lane-kicker">What users say</p>
-            <h2>Here&apos;s what users report after switching.</h2>
+            <h2>Results after switching to Direct</h2>
           </div>
           <div className="direct-testimonials-grid">
             {TESTIMONIALS.map((t, i) => (
@@ -368,37 +348,21 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 5c. Mid-page CTA — conversion bridge */}
-        <section className="direct-mid-page-cta" aria-label="Get started">
-          <div className="direct-mid-page-cta-inner">
-            <p className="direct-mid-page-cta-headline">Ready to take back your inbox?</p>
-            <p className="direct-mid-page-cta-sub">Join 2,400+ professionals who replaced their public email with a Direct page.</p>
-            <div className="direct-mid-page-cta-actions">
-              {session ? (
-                <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Create my Direct page — free</Link>
-              ) : (
-                <Link className="button primary direct-hero-button" href="/direct/signup">Create my Direct page — free</Link>
-              )}
-            </div>
-            <p className="direct-mid-page-cta-expectation">You&apos;ll have your page live in under 2 minutes — no code, no credit card.</p>
-          </div>
-        </section>
-
-        {/* 5d. Post-audience CTA — second conversion bridge */}
+        {/* 6a. Post-testimonial CTA — single conversion bridge */}
         <section className="direct-post-audience-cta" aria-label="Start protecting your inbox">
-          <p className="direct-post-audience-headline">See it in action, or start building yours.</p>
+          <p className="direct-post-audience-headline">Ready to take back your inbox?</p>
           <div className="direct-post-audience-actions">
             {session ? (
-              <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Start filtering in 2 minutes</Link>
+              <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Start protecting my inbox</Link>
             ) : (
-              <Link className="button primary direct-hero-button" href="/direct/signup">Start filtering in 2 minutes</Link>
+              <Link className="button primary direct-hero-button" href="/direct/signup">Start protecting my inbox</Link>
             )}
-            <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">See a live example</Link>
+            <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">See how it works</Link>
           </div>
           <p className="direct-post-audience-note">No credit card · No code · Live in 2 minutes</p>
         </section>
 
-        {/* 6b. Trust architecture — "why trust Knokio with privacy" */}
+        {/* 7. Trust architecture — "why trust Knokio with privacy" */}
         <section className="lane-panel direct-trust-arch-panel direct-section-dark" aria-label="Why trust Knokio">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Privacy by design</p>
@@ -416,7 +380,7 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 7. Pricing summary (with integrated security trust) */}
+        {/* 8. Pricing summary (with integrated security trust) */}
         <section className="lane-panel direct-pricing-panel direct-section-tinted" aria-label="Direct pricing overview">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Simple pricing</p>
@@ -429,16 +393,16 @@ export default async function DirectClientPage() {
               <p className="direct-pricing-price">$0<span className="direct-pricing-period"> / forever</span></p>
               <p className="direct-pricing-desc">Everything you need to protect your inbox and filter inbound.</p>
               <ul className="direct-pricing-list">
-                <li>Public Direct page (your access layer)</li>
-                <li>Structured request forms with custom fields</li>
+                <li>Your public access layer — one link, always reachable</li>
+                <li>Structured intake with custom fields per category</li>
                 <li>Smart filtering and volume controls</li>
-                <li>Private until you approve</li>
-                <li>Email forwarding to your real inbox</li>
+                <li>Private until approved — your email never exposed</li>
+                <li>Forwarding to your real inbox when you say so</li>
               </ul>
               {session ? (
-                <Link className="button primary direct-pricing-cta" href="/direct/settings?slug=john&fixture=demo">Get started — free forever</Link>
+                <Link className="button primary direct-pricing-cta" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — free</Link>
               ) : (
-                <Link className="button primary direct-pricing-cta" href="/direct/signup">Get started — free forever</Link>
+                <Link className="button primary direct-pricing-cta" href="/direct/signup">Protect my inbox — free</Link>
               )}
               <p className="direct-pricing-reassurance">No credit card · Set up in 2 minutes</p>
             </article>
@@ -469,7 +433,7 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 8. FAQ — accordion */}
+        {/* 9. FAQ — accordion */}
         <section className="lane-panel direct-faq-panel" aria-label="FAQ">
           <div className="direct-faq-intro">
             <p className="lane-kicker">FAQ</p>
@@ -485,20 +449,20 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 9. Final CTA */}
+        {/* 10. Final CTA */}
         <section className="lane-panel direct-final-cta direct-section-dark" aria-label="Final call to action">
           <p className="lane-kicker">Start now</p>
           <h2>Your inbox, your rules.<br />Set up in two minutes.</h2>
-          <p>One page replaces your public email. Structured requests. Automatic filtering.<br />Private until you approve — free forever.</p>
+          <p>One link. Your access layer. Structured requests, automatic filtering, and total control.<br />Private until you approve — free forever.</p>
           <div className="direct-faq-actions">
             {session ? (
-              <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Set up my access layer — free</Link>
+              <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Create my access layer — free</Link>
             ) : (
-              <Link className="button primary direct-hero-button" href="/direct/signup">Set up my access layer — free</Link>
+              <Link className="button primary direct-hero-button" href="/direct/signup">Create my access layer — free</Link>
             )}
             <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">See a live example</Link>
           </div>
-          <p className="direct-final-cta-expectation">Click → pick categories → your access layer is live. No code needed.</p>
+          <p className="direct-final-cta-expectation">Click → pick your categories → your access layer goes live. No code needed.</p>
         </section>
       </div>
     </main>

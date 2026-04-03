@@ -7319,3 +7319,403 @@ a:hover {
 }
 
 /* === End Pass 5/16 (cron direct-v2-05) === */
+
+/* === Pass 7/16 (cron direct-v2-07): Visual hierarchy, section transitions, polish === */
+
+/* --- 1. Section transitions: gradient dividers between sections --- */
+.direct-main-shell > *:not(:first-child)::before {
+  content: '';
+  display: block;
+  height: 1px;
+  margin: -18px 10% 28px;
+  background: linear-gradient(90deg, transparent 0%, rgba(14, 165, 163, 0.12) 30%, rgba(14, 165, 163, 0.12) 70%, transparent 100%);
+  border-radius: 2px;
+}
+
+/* Disable gradient line before dark sections (they have enough contrast) */
+.direct-main-shell > .direct-section-dark::before,
+.direct-main-shell > .direct-trust-strip::before,
+.direct-main-shell > .direct-social-proof-strip::before,
+.direct-main-shell > .direct-post-audience-cta::before {
+  display: none !important;
+}
+
+/* --- 2. Benefit cards: left accent border for visual weight --- */
+.direct-proof-card {
+  border-left: 3px solid rgba(14, 165, 163, 0.45) !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.direct-proof-card:hover {
+  border-left-color: rgba(14, 165, 163, 0.7) !important;
+  box-shadow: 0 10px 28px rgba(14, 165, 163, 0.1) !important;
+  transform: translateY(-2px);
+}
+
+/* --- 3. Benefit stat number: teal + larger for scannability --- */
+.direct-proof-stat strong {
+  font-size: 26px !important;
+  color: rgba(13, 148, 136, 0.95) !important;
+  letter-spacing: -0.03em !important;
+}
+
+/* --- 4. Section H2s: dramatic sizing hierarchy --- */
+.direct-panel-intro h2,
+.direct-steps-intro h2 {
+  font-size: 1.85rem !important;
+  line-height: 1.16 !important;
+  letter-spacing: -0.03em !important;
+  font-weight: 800 !important;
+}
+
+.direct-faq-intro h2 {
+  font-size: 1.6rem !important;
+  line-height: 1.2 !important;
+}
+
+/* --- 5. "Not a contact form" heading: bigger marquee --- */
+.direct-heading-marquee {
+  font-size: 1.75rem !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.025em !important;
+  font-weight: 800 !important;
+}
+
+/* --- 6. Social proof stat strip: teal accent numbers --- */
+.direct-social-proof-stat strong {
+  color: rgba(13, 148, 136, 0.95) !important;
+  font-size: 38px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.04em !important;
+}
+
+.direct-social-proof-stat span {
+  color: rgba(31, 42, 68, 0.72) !important;
+  font-size: 13.5px !important;
+  max-width: 150px !important;
+}
+
+.direct-social-proof-divider {
+  background: linear-gradient(180deg, transparent 0%, rgba(14, 165, 163, 0.3) 50%, transparent 100%) !important;
+  height: 48px !important;
+  width: 2px !important;
+}
+
+/* --- 7. Featured testimonial: more pronounced emphasis --- */
+.direct-testimonial-card-featured {
+  border-color: rgba(13, 148, 136, 0.3) !important;
+  background: linear-gradient(160deg, rgba(240, 253, 250, 0.5) 0%, rgba(255, 255, 255, 0.98) 100%) !important;
+  box-shadow:
+    0 0 0 1px rgba(14, 165, 163, 0.1),
+    0 12px 32px rgba(14, 165, 163, 0.08) !important;
+  border-left-width: 4px !important;
+  border-left-color: rgba(14, 165, 163, 0.5) !important;
+}
+
+.direct-testimonial-card-featured .direct-testimonial-quote {
+  font-size: 16.5px !important;
+  line-height: 1.58 !important;
+  color: rgba(15, 23, 42, 0.9) !important;
+}
+
+/* --- 8. Testimonial cards: hover lift --- */
+.direct-testimonial-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.direct-testimonial-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* --- 9. Audience cards: hover state + stronger transform row --- */
+.direct-audience-card {
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.direct-audience-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+
+.direct-audience-transform {
+  background: rgba(15, 23, 42, 0.04) !important;
+  border-radius: 12px !important;
+  padding: 12px 14px !important;
+  border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+/* --- 10. Step cards: hover and icon refinement --- */
+.direct-step-card {
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.direct-section-dark .direct-step-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(83, 240, 226, 0.2) !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* --- 11. Step numbers: connector line illusion --- */
+.direct-steps-grid {
+  position: relative;
+}
+
+/* --- 12. Cost cards: red accent left border --- */
+.direct-cost-card {
+  border-left: 3px solid rgba(239, 68, 68, 0.35) !important;
+  transition: border-color 0.15s ease;
+}
+
+.direct-cost-card:hover {
+  border-left-color: rgba(239, 68, 68, 0.6) !important;
+}
+
+/* --- 13. Pricing: more dramatic price display --- */
+.direct-pricing-price {
+  font-size: 2.2rem !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.03em !important;
+}
+
+.direct-pricing-card-paid .direct-pricing-price {
+  font-size: 1.8rem !important;
+}
+
+.direct-pricing-period {
+  font-size: 0.45em !important;
+  font-weight: 500 !important;
+  vertical-align: baseline;
+}
+
+/* --- 14. Pricing cards: hover lift --- */
+.direct-pricing-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.direct-pricing-card:hover {
+  transform: translateY(-3px);
+}
+
+.direct-pricing-card-highlighted:hover {
+  box-shadow:
+    0 0 0 1px rgba(14, 165, 163, 0.15),
+    0 18px 40px rgba(14, 165, 163, 0.14) !important;
+}
+
+/* --- 15. Trust architecture cards: teal icon glow on dark bg --- */
+.direct-trust-arch-icon {
+  color: rgba(83, 240, 226, 0.85) !important;
+  filter: drop-shadow(0 0 6px rgba(83, 240, 226, 0.3));
+}
+
+.direct-trust-arch-card {
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.direct-trust-arch-card:hover {
+  border-color: rgba(83, 240, 226, 0.18) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+
+/* --- 16. FAQ: teal accent on open items --- */
+.direct-faq-item[open] {
+  background: rgba(14, 165, 163, 0.02);
+  border-radius: 8px;
+  margin: -1px -8px;
+  padding: 0 8px;
+}
+
+/* --- 17. CTA buttons: subtle pulse animation on hero primary --- */
+@keyframes cta-subtle-glow {
+  0%, 100% { box-shadow: 0 10px 28px rgba(14, 165, 163, 0.25), 0 0 0 1px rgba(14, 165, 163, 0.1); }
+  50% { box-shadow: 0 10px 32px rgba(14, 165, 163, 0.35), 0 0 0 3px rgba(83, 240, 226, 0.08); }
+}
+
+.direct-hero-actions .button.primary {
+  animation: cta-subtle-glow 3s ease-in-out infinite !important;
+}
+
+.direct-hero-actions .button.primary:hover {
+  animation: none !important;
+}
+
+/* --- 18. Hero social proof: stronger visual weight --- */
+.direct-hero-social-proof {
+  padding: 10px 18px !important;
+  background: rgba(83, 240, 226, 0.1) !important;
+  border: 1px solid rgba(83, 240, 226, 0.2) !important;
+  border-radius: 999px !important;
+}
+
+.direct-hero-social-line {
+  font-size: 14.5px !important;
+  color: rgba(226, 232, 240, 0.85) !important;
+}
+
+.direct-hero-social-line strong {
+  color: rgba(83, 240, 226, 0.95) !important;
+  font-weight: 700 !important;
+}
+
+.direct-hero-avatar-dot {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 10.5px !important;
+  border: 2px solid rgba(15, 23, 42, 0.95) !important;
+  box-shadow: 0 0 0 1px rgba(83, 240, 226, 0.15);
+}
+
+/* --- 19. "Not a form" comparison: stronger visual contrast --- */
+.direct-notform-card-direct {
+  box-shadow:
+    0 0 0 2px rgba(14, 165, 163, 0.12),
+    0 16px 36px rgba(14, 165, 163, 0.1) !important;
+}
+
+.direct-notform-card-form {
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.04) !important;
+}
+
+/* --- 20. Post-audience CTA: stronger bridge --- */
+.direct-post-audience-cta {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(83, 240, 226, 0.14) 0%, transparent 50%),
+    linear-gradient(160deg, rgba(240, 253, 250, 0.7) 0%, rgba(255, 255, 255, 0.95) 100%) !important;
+  border: 2px solid rgba(14, 165, 163, 0.22) !important;
+}
+
+.direct-post-audience-headline {
+  font-size: 1.4rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* --- 21. Final CTA: gradient text on headline --- */
+.direct-final-cta.direct-section-dark h2 {
+  font-size: 2.2rem !important;
+  line-height: 1.16 !important;
+  letter-spacing: -0.03em !important;
+  background: linear-gradient(135deg, #ffffff 0%, rgba(83, 240, 226, 0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- 22. Cost section: stat numbers in red for urgency --- */
+.direct-cost-stat {
+  color: rgba(220, 38, 38, 0.88) !important;
+  font-size: 40px !important;
+}
+
+/* --- 23. Hero: tighten word mark spacing --- */
+.direct-hero-content .hero-word {
+  font-size: 12px !important;
+  letter-spacing: 0.16em !important;
+  font-weight: 800 !important;
+}
+
+/* --- 24. Mockup: category tags on rows for visual richness --- */
+.direct-mockup-row-v2 .direct-mockup-category {
+  display: inline-flex;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(148, 163, 184, 0.6);
+  margin-left: 4px;
+}
+
+/* --- 25. Trust strip pills: hover state --- */
+.direct-trust-pill {
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.direct-trust-pill:hover {
+  background: rgba(236, 253, 245, 0.8) !important;
+  border-color: rgba(14, 165, 163, 0.3) !important;
+}
+
+/* --- 26. Mockup: larger chrome + fewer details for scanability --- */
+.direct-mockup-chrome-v2 {
+  border-radius: 20px !important;
+}
+
+.direct-mockup-body-v2 {
+  gap: 10px !important;
+  padding: 18px 18px 20px !important;
+}
+
+.direct-mockup-row-v2 {
+  padding: 12px 14px !important;
+  border-radius: 10px !important;
+}
+
+.direct-mockup-header-v2 .direct-mockup-heading {
+  font-size: 15px !important;
+  letter-spacing: -0.01em;
+}
+
+/* --- 27. Comparison cards: more internal padding + clearer visual --- */
+.direct-notform-card {
+  padding: 28px 26px !important;
+  gap: 14px !important;
+}
+
+.direct-notform-card h3 {
+  font-size: 1.12rem !important;
+  font-weight: 800 !important;
+}
+
+/* --- 28. FAQ: more breathing room, larger questions --- */
+.direct-faq-question {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  padding: 24px 6px !important;
+}
+
+.direct-faq-answer {
+  padding: 0 6px 24px !important;
+  font-size: 15.5px !important;
+  line-height: 1.65 !important;
+}
+
+/* --- 29. Persona cards: transform row larger text --- */
+.direct-audience-transform {
+  font-size: 13.5px !important;
+  padding: 14px 16px !important;
+}
+
+/* --- 30. Hero: slight opacity reduction on mockup so headline is clearer --- */
+.direct-hero-mockup {
+  opacity: 0.94;
+  transition: opacity 0.3s ease;
+}
+
+.direct-hero-panel:hover .direct-hero-mockup {
+  opacity: 1;
+}
+
+/* --- 31. Pricing trust claims: more generous spacing --- */
+.direct-pricing-trust {
+  margin-top: 36px !important;
+  padding-top: 24px;
+  border-top: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.direct-pricing-trust-claims {
+  gap: 20px 28px !important;
+}
+
+.direct-pricing-trust .direct-security-claim {
+  font-size: 13px !important;
+  padding: 6px 14px !important;
+  border-radius: 999px;
+  background: rgba(14, 165, 163, 0.06);
+  border: 1px solid rgba(14, 165, 163, 0.14);
+}
+
+/* === End Pass 7/16 (cron direct-v2-07) === */

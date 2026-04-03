@@ -42,24 +42,24 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Stop letting strangers decide');
     expect(html).toContain('what lands in your inbox.');
     expect(html).toContain('private until you approve');
-    // Hero subtitle is concrete and jargon-free
-    expect(html).toContain('Replace your public email');
+    // Hero subtitle references access layer
+    expect(html).toContain('access layer');
+    expect(html).toContain('One link replaces your public email');
     // Testimonial attribution
     expect(html).toContain('Mia Chen');
     expect(html).toContain('David Okafor');
     expect(html).toContain('Sarah Kim');
     expect(html).toContain('Protect my inbox');
     expect(html).toContain('See a live example');
-    expect(html).toContain('Every request arrives structured');
-    expect(html).toContain('Noise is stopped automatically');
+    expect(html).toContain('Structured from the start');
+    expect(html).toContain('Noise never reaches you');
     expect(html).toContain('Who Direct is for');
     expect(html).toContain('Small businesses');
     expect(html).toContain('Public figures');
     expect(html).toContain('See more use cases');
-    // Cost of inaction section
-    expect(html).toContain('The cost of doing nothing');
-    expect(html).toContain('147');
-    expect(html).toContain('emails per day');
+    // "Not a contact form" comparison (key differentiator)
+    expect(html).toContain('Not a contact form');
+    expect(html).toContain('access layer');
     // Trust architecture section
     expect(html).toContain('Privacy by design');
     expect(html).toContain('Encrypted everywhere');
