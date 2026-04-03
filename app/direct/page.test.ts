@@ -42,10 +42,16 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Stay reachable without losing control of your inbox.');
     expect(html).toContain('Protect my inbox');
     expect(html).toContain('See a live example');
-    expect(html).toContain('Your inbox stays private');
+    expect(html).toContain('Private until you approve');
     expect(html).toContain('Every request arrives with context');
     expect(html).toContain('Noise never reaches you');
+    expect(html).toContain('access layer');
     expect(html).toContain('Who Direct is for');
+    expect(html).toContain('Online services and small businesses');
+    expect(html).toContain('Public figures');
+    expect(html).toContain('Freelancers and agencies');
+    expect(html).toContain('See more use cases');
+    expect(html).toContain('Open source maintainers');
     expect(html).toContain('How Direct works');
     expect(html).toContain('See Direct in action');
     expect(html).toContain('Plans');

@@ -1287,6 +1287,17 @@ a:hover {
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.03);
 }
 
+.direct-proof-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.direct-proof-head .direct-proof-icon {
+  flex-shrink: 0;
+  color: rgba(15, 23, 42, 0.68);
+}
+
 .direct-proof-title {
   margin: 0;
   font-size: 15px;
@@ -1526,6 +1537,57 @@ a:hover {
   font-weight: 700;
 }
 
+.direct-audience-more {
+  margin-top: 4px;
+}
+
+.direct-audience-more-toggle {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.78);
+  padding: 8px 0;
+  transition: color 150ms ease;
+}
+
+.direct-audience-more-toggle:hover {
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.direct-audience-more-toggle::after {
+  content: '↓';
+  display: inline-block;
+  transition: transform 250ms ease;
+}
+
+.direct-audience-more[open] > .direct-audience-more-toggle::after {
+  transform: rotate(180deg);
+}
+
+.direct-audience-more-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.direct-audience-more-grid {
+  margin-top: 14px;
+  animation: direct-audience-reveal 300ms ease both;
+}
+
+@keyframes direct-audience-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .direct-steps-panel,
 .direct-system-showcase {
   display: grid;
@@ -1572,6 +1634,12 @@ a:hover {
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.06em;
+}
+
+.direct-step-card-inline .direct-step-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .direct-step-card h3 {
@@ -1628,6 +1696,16 @@ a:hover {
   border-radius: 16px;
   border: 1px solid rgba(229, 231, 235, 0.8);
   background: rgba(255, 255, 255, 0.74);
+}
+
+.direct-audience-card-inline .direct-audience-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.direct-audience-card-inline .direct-audience-icon {
+  flex-shrink: 0;
 }
 
 .direct-audience-card h3 {
@@ -3256,22 +3334,7 @@ a:hover {
   transform: translateY(-1px);
 }
 
-/* --- Value proof card icons --- */
-.direct-proof-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: rgba(83, 240, 226, 0.14);
-  font-size: 20px;
-  line-height: 1;
-}
-
-.direct-proof-card {
-  padding: 20px !important;
-}
+/* (proof icon overrides removed — inline layout via .direct-proof-head) */
 
 .direct-proof-title {
   font-size: 16px !important;
@@ -3292,15 +3355,19 @@ a:hover {
 
 /* --- Audience card icons --- */
 .direct-audience-icon {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(83, 240, 226, 0.12) 0%, rgba(255, 68, 171, 0.08) 100%);
-  font-size: 22px;
-  line-height: 1;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.direct-audience-icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .direct-audience-card {
@@ -3493,13 +3560,14 @@ a:hover {
 }
 
 .direct-inline-cta .button.secondary {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.16);
-  color: rgba(241, 245, 249, 0.9);
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(15, 23, 42, 0.16);
+  color: rgba(15, 23, 42, 0.88);
 }
 
 .direct-inline-cta .button.secondary:hover {
-  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(15, 23, 42, 0.28);
+  background: rgba(255, 255, 255, 1);
 }
 
 /* --- Kicker labels: slightly bigger for scanability --- */
@@ -3784,10 +3852,7 @@ a:hover {
   color: rgba(21, 128, 61, 0.8);
 }
 
-/* --- Audience panel with tinted bg: boost card borders --- */
-.direct-section-tinted .direct-audience-icon {
-  font-size: 1.6rem;
-}
+/* --- Audience panel with tinted bg --- */
 
 /* --- Main shell: slightly more breathing room --- */
 .direct-main-shell {
@@ -3871,21 +3936,7 @@ a:hover {
   background: rgba(255, 255, 255, 0.14) !important;
 }
 
-/* --- Proof card icons --- */
-.direct-proof-icon {
-  display: block;
-  font-size: 1.5rem;
-  line-height: 1;
-  margin-bottom: 2px;
-}
-
-/* --- Audience card icons --- */
-.direct-audience-icon {
-  display: block;
-  font-size: 1.5rem;
-  line-height: 1;
-  margin-bottom: 4px;
-}
+/* (proof + audience icon overrides removed — consolidated earlier) */
 
 /* --- Social proof / What changes section --- */
 .direct-proof-panel {
@@ -4101,9 +4152,15 @@ a:hover {
   transform: translateY(-2px);
 }
 
+.direct-demo-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .direct-demo-card-icon {
-  font-size: 1.5rem;
-  line-height: 1;
+  flex-shrink: 0;
+  color: rgba(15, 23, 42, 0.72);
 }
 
 .direct-demo-card-title {
@@ -4189,3 +4246,96 @@ a:hover {
 }
 
 /* === End Pass 14 === */
+
+/* === Pass 15: Access layer terminology, "not a contact form" section, CTA differentiation === */
+
+/* --- "Not just a contact form" comparison section --- */
+.direct-notform-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.direct-notform-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.direct-notform-card {
+  display: grid;
+  gap: 10px;
+  padding: 22px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.direct-notform-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.direct-notform-icon {
+  flex-shrink: 0;
+}
+
+.direct-notform-card h3 {
+  margin: 0;
+  font-size: 1.06rem;
+}
+
+.direct-notform-card p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(31, 42, 68, 0.82);
+}
+
+.direct-notform-card-form {
+  background: linear-gradient(160deg, rgba(254, 242, 242, 0.7) 0%, rgba(255, 255, 255, 0.9) 100%);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.direct-notform-card-form .direct-notform-icon {
+  color: rgba(185, 28, 28, 0.7);
+}
+
+.direct-notform-card-form h3 {
+  color: rgba(127, 29, 29, 0.88);
+}
+
+.direct-notform-card-form p {
+  color: rgba(127, 29, 29, 0.7);
+}
+
+.direct-notform-card-direct {
+  background: linear-gradient(160deg, rgba(236, 253, 245, 0.7) 0%, rgba(255, 255, 255, 0.95) 100%);
+  border-color: rgba(14, 165, 163, 0.28);
+  box-shadow: 0 0 0 1px rgba(14, 165, 163, 0.08), 0 8px 20px rgba(14, 165, 163, 0.06);
+}
+
+.direct-notform-card-direct .direct-notform-icon {
+  color: rgba(13, 148, 136, 0.8);
+}
+
+.direct-notform-card-direct h3 {
+  color: rgba(13, 101, 101, 0.92);
+}
+
+/* --- Mid-page CTA kicker line --- */
+.direct-inline-cta-kicker {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.92);
+  letter-spacing: -0.01em;
+}
+
+/* --- Mobile: notform grid stacks --- */
+@media (max-width: 640px) {
+  .direct-notform-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === End Pass 15 === */
