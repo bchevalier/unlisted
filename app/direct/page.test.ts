@@ -41,10 +41,10 @@ describe('DirectClientPage', () => {
 
     expect(html).toContain('Stop letting strangers decide');
     expect(html).toContain('what lands in your inbox.');
-    expect(html).toContain('private until you approve');
+    expect(html).toContain('Private until approved.');
     // Hero subtitle references access layer
     expect(html).toContain('access layer');
-    expect(html).toContain('one link replaces your public email');
+    expect(html).toContain('One link replaces your public email');
     // Credibility inline in hero (pass 15 — moved from standalone strip)
     expect(html).toContain('Trusted by professionals in');
     expect(html).toContain('Content Creation');
@@ -87,7 +87,7 @@ describe('DirectClientPage', () => {
     expect(html).toContain('FAQ');
     // Trust strip removed in pass 15 (redundant with hero meta + pricing trust)
     // Proof stats integrated into testimonials section (pass 15)
-    expect(html).toContain('of spam stopped before inbox');
+    expect(html).toContain('of noise filtered before inbox');
     expect(html).toContain('saved per week on triage');
     expect(html).toContain('close rate on qualified leads');
     // Cost of inaction section removed in pass 12 for page length

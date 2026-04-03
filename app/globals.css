@@ -8754,26 +8754,12 @@ a:hover {
   line-height: 1.58 !important;
 }
 
-/* --- 11. Comparison section: "Recommended" visual badge on Direct card --- */
+/* --- 11. Comparison section: badge handled by HTML .direct-notform-winner-badge --- */
 .direct-notform-card-direct {
   position: relative !important;
 }
 
-.direct-notform-card-direct::before {
-  content: '✓ RECOMMENDED' !important;
-  position: absolute !important;
-  top: -12px !important;
-  right: 20px !important;
-  display: inline-flex !important;
-  padding: 4px 12px !important;
-  border-radius: 999px !important;
-  background: linear-gradient(135deg, #0d9488 0%, #0ea5a3 100%) !important;
-  color: #ffffff !important;
-  font-size: 10px !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.08em !important;
-  box-shadow: 0 4px 12px rgba(14, 165, 163, 0.3) !important;
-}
+/* ::before RECOMMENDED badge removed in pass 16 — HTML badge handles this */
 
 /* --- 12. Comparison cards: stronger contrast between form and Direct --- */
 .direct-notform-card-form {
@@ -10088,3 +10074,96 @@ a:hover {
 }
 
 /* === End Pass 15/16 === */
+
+/* === Pass 16/16 (final): Hero declutter, credibility polish, comparison fix, final CTA tightening === */
+
+/* --- 1. Hero: remove endorsement block (JSX removed) → reclaim vertical space --- */
+.direct-hero-endorsement {
+  display: none !important;
+}
+
+/* --- 2. Hero credibility line: more visible, placed at bottom of hero content --- */
+.direct-hero-credibility {
+  margin-top: 4px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: rgba(226, 232, 240, 0.5) !important;
+  letter-spacing: 0.01em !important;
+}
+
+.direct-hero-credibility strong {
+  font-weight: 700 !important;
+  color: rgba(226, 232, 240, 0.65) !important;
+}
+
+/* --- 3. Hero stats bar: slightly tighter gap to save vertical space --- */
+.direct-hero-stats-bar {
+  gap: 20px !important;
+  margin-top: 8px !important;
+}
+
+/* --- 4. Hero content: tighter gap after removing endorsement --- */
+.direct-hero-content {
+  gap: 16px !important;
+}
+
+/* --- 5. Comparison: remove overlapping ::before pseudo-badge (HTML winner-badge stays) --- */
+.direct-notform-card-direct::before {
+  display: none !important;
+}
+
+/* --- 6. Winner badge: tighter alignment with card edge --- */
+.direct-notform-winner-badge {
+  position: absolute;
+  top: -11px;
+  left: 20px;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #0d9488 0%, #0ea5a3 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(14, 165, 163, 0.3);
+  z-index: 2;
+}
+
+/* --- 7. Final CTA: hide stat ring (JSX removed), cleaner spacing --- */
+.direct-final-cta-stat-ring {
+  display: none !important;
+}
+
+/* --- 8. Final CTA description: ensure it's visible and well-placed --- */
+.direct-final-cta-desc {
+  font-size: 17px !important;
+  color: rgba(203, 213, 225, 0.82) !important;
+  max-width: 520px !important;
+  text-align: center !important;
+  line-height: 1.55 !important;
+}
+
+/* --- 9. Hero layout: recover space from removed elements --- */
+.direct-hero-layout {
+  padding: 92px 44px 76px !important;
+}
+
+/* --- 10. Comparison faded card: slightly more visible for readability --- */
+.direct-notform-card-faded {
+  opacity: 0.68 !important;
+  filter: saturate(0.4) !important;
+}
+
+/* --- 11. Mobile adjustments --- */
+@media (max-width: 860px) {
+  .direct-hero-layout {
+    padding: 60px 22px 52px !important;
+  }
+  .direct-hero-content {
+    gap: 14px !important;
+  }
+}
+
+/* === End Pass 16/16 === */
