@@ -39,7 +39,7 @@ describe('DirectClientPage', () => {
     mock.mockResolvedValue(null as never);
     const html = await render();
 
-    expect(html).toContain('Stop getting emails you never asked for');
+    expect(html).toContain('Your inbox is yours.');
     expect(html).toContain('Private until you approve');
     expect(html).toContain('Protect my inbox');
     expect(html).toContain('See a live example');
@@ -57,7 +57,7 @@ describe('DirectClientPage', () => {
     // Security strip
     expect(html).toContain('Built for privacy from day one');
     expect(html).toContain('Open source maintainers');
-    expect(html).toContain('The access layer for your inbox');
+    expect(html).toContain('KNOKIO DIRECT');
     expect(html).toContain('How Direct works');
     expect(html).toContain('Before &amp; after');
     expect(html).toContain('See Direct in action');

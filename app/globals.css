@@ -5166,3 +5166,349 @@ a:hover {
 }
 
 /* === End Pass 2 (cron iter-02) === */
+
+/* === Pass 4 (cron iter-04): Hero rewrite, mockup upgrade, trust specifics, section polish === */
+
+/* --- Hero: bigger, bolder headline for the rewrite --- */
+.direct-hero-title {
+  font-size: clamp(36px, 5.5vw, 52px) !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.03em !important;
+  font-weight: 800 !important;
+  max-width: 620px !important;
+}
+
+/* --- Hero subtitle: slightly more breathing room --- */
+.direct-hero-subtitle {
+  font-size: 17px !important;
+  line-height: 1.58 !important;
+  max-width: 560px !important;
+  color: rgba(203, 213, 225, 0.9) !important;
+}
+
+/* --- Hero meta line: more visible --- */
+.direct-hero-meta {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  color: rgba(148, 163, 184, 0.72) !important;
+}
+
+/* --- Hero bullets: slightly bigger gap and text --- */
+.direct-hero-bullets {
+  gap: 12px !important;
+}
+
+.direct-hero-bullets li {
+  font-size: 15.5px !important;
+  font-weight: 600 !important;
+  gap: 10px !important;
+  color: rgba(226, 232, 240, 0.94) !important;
+}
+
+.direct-hero-bullet-icon {
+  color: rgba(83, 240, 226, 0.85) !important;
+}
+
+/* --- V2 Mockup: larger, more detailed --- */
+.direct-mockup-chrome-v2 {
+  max-width: 460px !important;
+  border-radius: 18px !important;
+  box-shadow:
+    0 24px 56px rgba(0, 0, 0, 0.18),
+    0 8px 20px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: #0f172a !important;
+}
+
+.direct-mockup-chrome-v2 .direct-mockup-bar {
+  background: rgba(15, 23, 42, 0.8) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+  padding: 11px 16px !important;
+}
+
+.direct-mockup-chrome-v2 .direct-mockup-dot {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.direct-mockup-chrome-v2 .direct-mockup-url {
+  color: rgba(148, 163, 184, 0.6) !important;
+}
+
+.direct-mockup-body-v2 {
+  padding: 18px 16px !important;
+  gap: 8px !important;
+  background: linear-gradient(180deg, #0f172a 0%, #131d32 100%) !important;
+}
+
+.direct-mockup-header-v2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.direct-mockup-header-v2 .direct-mockup-heading {
+  color: rgba(241, 245, 249, 0.92) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+.direct-mockup-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: rgba(252, 165, 165, 0.9);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.direct-mockup-row-v2 {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  padding: 10px 12px !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  transition: background 0.15s ease;
+}
+
+.direct-mockup-row-v2.direct-mockup-row-accepted {
+  background: rgba(83, 240, 226, 0.04) !important;
+  border-color: rgba(83, 240, 226, 0.1) !important;
+}
+
+.direct-mockup-row-v2.direct-mockup-row-filtered {
+  background: rgba(239, 68, 68, 0.04) !important;
+  border-color: rgba(239, 68, 68, 0.08) !important;
+  opacity: 0.55;
+}
+
+.direct-mockup-row-v2.direct-mockup-row-pending {
+  background: rgba(251, 191, 36, 0.04) !important;
+  border-color: rgba(251, 191, 36, 0.1) !important;
+}
+
+.direct-mockup-row-v2 .direct-mockup-status {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 2px 8px !important;
+  border-radius: 999px !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  margin-top: 2px;
+}
+
+.direct-mockup-row-v2 .direct-mockup-status-accepted {
+  background: rgba(83, 240, 226, 0.15) !important;
+  color: rgba(83, 240, 226, 0.9) !important;
+}
+
+.direct-mockup-row-v2 .direct-mockup-status-filtered {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: rgba(252, 165, 165, 0.85) !important;
+}
+
+.direct-mockup-row-v2 .direct-mockup-status-pending {
+  background: rgba(251, 191, 36, 0.15) !important;
+  color: rgba(251, 191, 36, 0.85) !important;
+}
+
+.direct-mockup-row-v2 .direct-mockup-row-content {
+  display: grid !important;
+  gap: 2px !important;
+  min-width: 0;
+}
+
+.direct-mockup-row-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.direct-mockup-row-v2 .direct-mockup-from {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: rgba(241, 245, 249, 0.88) !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.direct-mockup-time {
+  font-size: 11px;
+  color: rgba(148, 163, 184, 0.5);
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.direct-mockup-row-v2 .direct-mockup-detail {
+  font-size: 12px !important;
+  color: rgba(148, 163, 184, 0.7) !important;
+  line-height: 1.4 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.direct-mockup-body-v2 .direct-mockup-note {
+  margin-top: 4px !important;
+  font-size: 11px !important;
+  color: rgba(148, 163, 184, 0.5) !important;
+  text-align: center;
+}
+
+/* --- "Not a form" highlights pills --- */
+.direct-notform-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.direct-notform-highlight {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.direct-notform-card-form .direct-notform-highlight {
+  background: rgba(239, 68, 68, 0.08);
+  color: rgba(185, 28, 28, 0.7);
+  border: 1px solid rgba(239, 68, 68, 0.14);
+}
+
+.direct-notform-card-direct .direct-notform-highlight {
+  background: rgba(14, 165, 163, 0.08);
+  color: rgba(13, 101, 101, 0.88);
+  border: 1px solid rgba(14, 165, 163, 0.18);
+}
+
+/* --- Security claims row --- */
+.direct-security-claims {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.direct-security-claim {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(14, 165, 163, 0.08);
+  border: 1px solid rgba(14, 165, 163, 0.16);
+  color: rgba(13, 101, 101, 0.88);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.direct-security-strip-v2 {
+  padding: 28px 24px !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+}
+
+.direct-security-strip-v2 .direct-security-content {
+  display: grid;
+  gap: 6px;
+}
+
+.direct-security-strip-v2 .direct-security-icon-wrap {
+  margin-bottom: 4px;
+}
+
+/* --- Section gaps: tighter for better flow --- */
+.direct-main-shell {
+  gap: 24px !important;
+}
+
+/* --- Proof cards: subtle hover --- */
+.direct-proof-card {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.direct-proof-card:hover {
+  border-color: rgba(14, 165, 163, 0.24);
+  box-shadow: 0 6px 18px rgba(14, 165, 163, 0.06);
+}
+
+/* --- Testimonial cards: subtle left accent --- */
+.direct-testimonial-card {
+  border-left: 3px solid rgba(14, 165, 163, 0.3) !important;
+}
+
+/* --- Before/After dramatic cards: better dark-on-dark contrast --- */
+.direct-section-dark .direct-proof-example-large {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+}
+
+.direct-section-dark .direct-proof-example-headline-large {
+  color: #f1f5f9 !important;
+}
+
+.direct-section-dark .direct-proof-col-before {
+  background: rgba(239, 68, 68, 0.06) !important;
+  border-color: rgba(239, 68, 68, 0.12) !important;
+}
+
+.direct-section-dark .direct-proof-col-before .direct-proof-col-label {
+  color: rgba(252, 165, 165, 0.85) !important;
+}
+
+.direct-section-dark .direct-proof-col-before p {
+  color: rgba(203, 213, 225, 0.75) !important;
+}
+
+.direct-section-dark .direct-proof-col-after {
+  background: rgba(83, 240, 226, 0.06) !important;
+  border-color: rgba(83, 240, 226, 0.12) !important;
+}
+
+.direct-section-dark .direct-proof-col-after .direct-proof-col-label {
+  color: rgba(83, 240, 226, 0.85) !important;
+}
+
+.direct-section-dark .direct-proof-col-after p {
+  color: rgba(226, 232, 240, 0.88) !important;
+}
+
+.direct-section-dark .direct-proof-example-icon-large {
+  color: rgba(148, 163, 184, 0.7) !important;
+}
+
+/* --- Mobile: mockup stacks below hero --- */
+@media (max-width: 860px) {
+  .direct-mockup-chrome-v2 {
+    max-width: 100% !important;
+  }
+
+  .direct-security-claims {
+    gap: 6px;
+  }
+
+  .direct-notform-highlights {
+    gap: 4px;
+  }
+}
+
+/* === End Pass 4 (cron iter-04) === */

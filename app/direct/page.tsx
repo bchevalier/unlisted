@@ -13,15 +13,17 @@ const TRUST_SIGNALS = [
 ] as const;
 
 const HERO_INBOX_PREVIEW = [
-  { status: 'accepted', from: 'Nike Brand Team', category: 'Sponsorship', detail: 'Budget: $12K · Brief attached' },
-  { status: 'filtered', from: 'Random cold pitch', category: 'Spam', detail: 'Blocked — no budget, no brief' },
-  { status: 'pending', from: 'TechCrunch Editor', category: 'Media', detail: 'Interview request · Timeline: 2 weeks' },
+  { status: 'accepted', from: 'Nike Brand Team', category: 'Sponsorship', detail: 'Budget: $12K · Brief attached', time: '2h ago' },
+  { status: 'filtered', from: 'Random cold pitch', category: 'Spam', detail: 'Blocked — no budget, no brief', time: '4h ago' },
+  { status: 'accepted', from: 'Verge Editorial', category: 'Media', detail: 'Interview request · Timeline: 2 weeks', time: '1d ago' },
+  { status: 'pending', from: 'Series A Fund', category: 'Investor', detail: 'Intro request · $2M seed follow-on', time: '1d ago' },
+  { status: 'filtered', from: 'Hey quick question', category: 'Vague', detail: 'Blocked — missing scope and intent', time: '2d ago' },
 ] as const;
 
 const HERO_BULLETS = [
-  { icon: 'lock', text: 'Private until you approve — your email stays hidden' },
+  { icon: 'lock', text: 'Your real email is never exposed to senders' },
   { icon: 'clipboard', text: 'Every request arrives with budget, scope, and timeline' },
-  { icon: 'shield', text: 'Spam, cold pitches, and vague asks are blocked automatically' },
+  { icon: 'shield', text: 'Spam, cold pitches, and vague asks never reach your inbox' },
 ] as const;
 
 const BENEFITS = [
@@ -37,8 +39,8 @@ const HOW_IT_WORKS = [
 ] as const;
 
 const NOT_A_FORM = [
-  { icon: 'zap', title: 'Contact form', issue: 'Drops messages into your inbox with no filtering, no structure, no control. Every sender gets equal access to your attention.' },
-  { icon: 'shield', title: 'Knokio Direct', issue: 'An access layer that protects your inbox — it filters noise, structures every request, enforces volume limits, and keeps your private email hidden.' },
+  { icon: 'zap', title: 'Contact form', issue: 'Drops messages into your inbox with no filtering, no structure, no control. Every sender gets equal access to your attention.', highlights: ['No filtering', 'No structure', 'No privacy'] },
+  { icon: 'shield', title: 'Knokio Direct', issue: 'An access layer that protects your inbox — filters noise, structures every request, enforces volume limits, and keeps your private email hidden.', highlights: ['Smart filtering', 'Structured intake', 'Private until approved'] },
 ] as const;
 
 const TESTIMONIALS = [
@@ -107,8 +109,7 @@ export default async function DirectClientPage() {
           <div className="direct-hero-layout">
             <div className="direct-hero-content">
               <p className="hero-word">KNOKIO DIRECT</p>
-              <p className="direct-hero-tagline">The access layer for your inbox</p>
-              <h1 className="hero-title direct-hero-title">Stop getting emails you never asked for.</h1>
+              <h1 className="hero-title direct-hero-title">Your inbox is yours.<br />Keep it that way.</h1>
               <p className="direct-hero-subtitle">Replace your public email with one page that filters, structures, and protects every inbound request — private until you approve.</p>
               <ul className="direct-hero-bullets">
                 {HERO_BULLETS.map((b) => (
@@ -126,28 +127,34 @@ export default async function DirectClientPage() {
                 )}
                 <Link className="button secondary direct-hero-button" href="/direct/inbox?slug=john&fixture=demo">See a live example</Link>
               </div>
-              <p className="hero-meta direct-hero-meta">No credit card required · Set up in under 2 minutes</p>
+              <p className="hero-meta direct-hero-meta">Free forever · No credit card · Set up in 2 minutes</p>
             </div>
             <div className="direct-hero-mockup" aria-label="Direct inbox preview">
-              <div className="direct-mockup-chrome">
+              <div className="direct-mockup-chrome direct-mockup-chrome-v2">
                 <div className="direct-mockup-bar">
                   <span className="direct-mockup-dot" />
                   <span className="direct-mockup-dot" />
                   <span className="direct-mockup-dot" />
                   <span className="direct-mockup-url">knokio.io/u/you</span>
                 </div>
-                <div className="direct-mockup-body">
-                  <p className="direct-mockup-heading">Your Direct inbox</p>
+                <div className="direct-mockup-body direct-mockup-body-v2">
+                  <div className="direct-mockup-header-v2">
+                    <p className="direct-mockup-heading">Your Direct inbox</p>
+                    <span className="direct-mockup-badge">2 filtered</span>
+                  </div>
                   {HERO_INBOX_PREVIEW.map((item) => (
-                    <div key={item.from} className={`direct-mockup-row direct-mockup-row-${item.status}`}>
+                    <div key={item.from} className={`direct-mockup-row direct-mockup-row-v2 direct-mockup-row-${item.status}`}>
                       <span className={`direct-mockup-status direct-mockup-status-${item.status}`}>{item.status}</span>
                       <div className="direct-mockup-row-content">
-                        <span className="direct-mockup-from">{item.from}</span>
+                        <div className="direct-mockup-row-top">
+                          <span className="direct-mockup-from">{item.from}</span>
+                          <span className="direct-mockup-time">{item.time}</span>
+                        </div>
                         <span className="direct-mockup-detail">{item.detail}</span>
                       </div>
                     </div>
                   ))}
-                  <p className="direct-mockup-note">3 requests · 1 filtered automatically</p>
+                  <p className="direct-mockup-note">5 requests · 2 filtered automatically · 0 require reply</p>
                 </div>
               </div>
             </div>
@@ -243,6 +250,11 @@ export default async function DirectClientPage() {
                   <h3>{item.title}</h3>
                 </div>
                 <p>{item.issue}</p>
+                <div className="direct-notform-highlights">
+                  {item.highlights.map((h) => (
+                    <span key={h} className="direct-notform-highlight">{h}</span>
+                  ))}
+                </div>
               </article>
             ))}
           </div>
@@ -402,13 +414,19 @@ export default async function DirectClientPage() {
         </section>
 
         {/* 6d. Security trust block */}
-        <section className="direct-security-strip" aria-label="Security and privacy">
+        <section className="direct-security-strip direct-security-strip-v2" aria-label="Security and privacy">
           <div className="direct-security-icon-wrap" aria-hidden="true">
             <DirectIcon name="shield" size={22} />
           </div>
           <div className="direct-security-content">
             <p className="direct-security-headline">Built for privacy from day one</p>
             <p className="direct-security-copy">Your real email is never exposed to senders. Data is encrypted in transit and at rest. No tracking pixels, no ad networks, no selling your data — ever.</p>
+            <div className="direct-security-claims">
+              <span className="direct-security-claim"><DirectIcon name="lock" size={13} /> Email never shared</span>
+              <span className="direct-security-claim"><DirectIcon name="shield" size={13} /> Encrypted at rest</span>
+              <span className="direct-security-claim"><DirectIcon name="eye-off" size={13} /> No tracking pixels</span>
+              <span className="direct-security-claim"><DirectIcon name="x" size={13} /> No ad networks</span>
+            </div>
           </div>
         </section>
 
@@ -469,7 +487,7 @@ export default async function DirectClientPage() {
         {/* 9. Final CTA */}
         <section className="lane-panel direct-final-cta direct-section-dark" aria-label="Final call to action">
           <p className="lane-kicker">Your access layer</p>
-          <h2>Your inbox is yours.<br />Keep it that way.</h2>
+          <h2>Stop letting strangers decide<br />what lands in your inbox.</h2>
           <p>One page. Structured requests. Private until approved. No spam, no exposure, no obligation to reply.</p>
           <div className="direct-faq-actions">
             {session ? (
