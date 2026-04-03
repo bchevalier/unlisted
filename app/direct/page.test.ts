@@ -42,6 +42,8 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Stop letting strangers decide');
     expect(html).toContain('what lands in your inbox.');
     expect(html).toContain('private until you approve');
+    // Hero subtitle is concrete and jargon-free
+    expect(html).toContain('Replace your public email');
     // Testimonial attribution
     expect(html).toContain('Mia Chen');
     expect(html).toContain('David Okafor');
@@ -51,20 +53,19 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Every request arrives structured');
     expect(html).toContain('Noise is stopped automatically');
     expect(html).toContain('Who Direct is for');
-    expect(html).toContain('Small businesses and online services');
-    expect(html).toContain('Public figures and founders');
+    expect(html).toContain('Small businesses');
+    expect(html).toContain('Public figures');
     expect(html).toContain('See more use cases');
     // Hero mockup elements
     expect(html).toContain('knokio.io/u/you');
     expect(html).toContain('Nike Brand Team');
     expect(html).toContain('filtered');
-    // Security strip
-    expect(html).toContain('Private by default. No exceptions.');
+    // Security claims (merged into pricing trust row)
     expect(html).toContain('GDPR compliant');
     expect(html).toContain('Open source maintainers');
     expect(html).toContain('KNOKIO DIRECT');
     expect(html).toContain('How it works');
-    expect(html).toContain('Before &amp; after');
+    expect(html).toContain('Before &amp;');
     expect(html).toContain('Simple pricing');
     expect(html).toContain('FAQ');
     // Trust strip
@@ -77,7 +78,6 @@ describe('DirectClientPage', () => {
     // CTAs should use varied labels across the page
     const protectMatches = html.match(/Protect my inbox/g);
     expect(protectMatches && protectMatches.length).toBeGreaterThanOrEqual(2);
-    expect(html).toContain('Set up your access layer');
     expect(html).toContain('Set up in 2 minutes');
   });
 

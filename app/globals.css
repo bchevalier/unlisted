@@ -6442,3 +6442,278 @@ a:hover {
 }
 
 /* === End Pass 7/16 === */
+
+/* === Pass 8/16 (cron iter-08): Clarity, mockup size, section consolidation, rhythm === */
+
+/* --- 1. Mockup: larger and more legible in hero --- */
+.direct-mockup-chrome-v2 {
+  max-width: 520px !important;
+}
+
+.direct-hero-layout {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr) !important;
+  align-items: center !important;
+}
+
+/* --- 2. Hero subtitle: larger, clearer for cold visitors --- */
+.direct-hero-subtitle {
+  font-size: 18px !important;
+  line-height: 1.6 !important;
+  max-width: 580px !important;
+}
+
+/* --- 3. Benefit cards: larger stat numbers for scannability --- */
+.direct-proof-stat strong {
+  font-size: 24px !important;
+}
+
+/* --- 4. Section transitions: subtle gradient bridges --- */
+.direct-steps-panel {
+  margin-top: 4px !important;
+}
+
+.direct-testimonials-panel {
+  margin-top: 2px !important;
+}
+
+/* --- 5. Before/After cards: slightly more padding for readability --- */
+.direct-proof-col {
+  padding: 20px 22px !important;
+}
+
+.direct-proof-col-list li {
+  font-size: 15px !important;
+  line-height: 1.52 !important;
+}
+
+/* --- 6. Pricing section: clearer free vs pro differentiation --- */
+.direct-pricing-card-free {
+  position: relative;
+}
+
+.direct-pricing-card-paid {
+  opacity: 0.88;
+  transition: opacity 0.2s ease;
+}
+
+.direct-pricing-card-paid:hover {
+  opacity: 1;
+}
+
+/* --- 7. "Not a contact form" section: bigger headline for impact --- */
+.direct-notform-panel-wide .direct-panel-intro h2 {
+  font-size: 1.55rem !important;
+  line-height: 1.28 !important;
+  max-width: 720px !important;
+}
+
+/* --- 8. FAQ: slightly more breathing room between items --- */
+.direct-faq-item {
+  border-bottom: 1px solid rgba(229, 231, 235, 0.55) !important;
+}
+
+.direct-faq-question {
+  padding: 20px 4px !important;
+  font-size: 16.5px !important;
+}
+
+/* --- 9. Final CTA: tighter text, more breathing room --- */
+.direct-final-cta.direct-section-dark {
+  padding: 48px 32px !important;
+}
+
+.direct-final-cta.direct-section-dark h2 {
+  font-size: 2.1rem !important;
+  line-height: 1.18 !important;
+}
+
+.direct-final-cta.direct-section-dark p {
+  font-size: 16px !important;
+  max-width: 520px !important;
+  margin: 0 auto !important;
+}
+
+/* --- 10. Hero action buttons: slightly larger --- */
+.direct-hero-button {
+  font-size: 16px !important;
+  padding: 14px 28px !important;
+  min-width: 200px !important;
+}
+
+/* --- 11. Audience section: tighter grid for scanning --- */
+.direct-audience-card p {
+  font-size: 14.5px !important;
+}
+
+/* --- 12. Trust strip: more prominent placement --- */
+.direct-trust-strip {
+  padding: 10px 0 !important;
+}
+
+.direct-trust-pill {
+  padding: 9px 16px !important;
+  font-size: 13.5px !important;
+}
+
+/* === End Pass 8/16 === */
+
+/* === Pass 9/16 — Conversion & hierarchy upgrades === */
+
+/* 1. Hero aggregate social proof (avatar stack + line) */
+.direct-hero-avatar-stack {
+  display: flex;
+  gap: 0;
+  margin-right: 12px;
+}
+
+.direct-hero-avatar-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(15, 23, 42, 0.9);
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  margin-left: -8px;
+  letter-spacing: 0.5px;
+}
+
+.direct-hero-avatar-dot:first-child {
+  margin-left: 0;
+}
+
+.direct-hero-social-proof {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  gap: 0;
+}
+
+.direct-hero-social-line {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+}
+
+.direct-hero-social-line strong {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+}
+
+/* 2. Marquee heading variant — larger for key sections */
+.direct-heading-marquee {
+  font-size: 1.65rem !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.02em;
+}
+
+/* 3. Mid-page CTA bridge */
+.direct-mid-page-cta {
+  padding: 48px 24px;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.06) 0%, rgba(37, 99, 235, 0.04) 100%);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.direct-mid-page-cta-inner {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.direct-mid-page-cta-headline {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+
+.direct-mid-page-cta-sub {
+  font-size: 15px;
+  color: #475569;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.direct-mid-page-cta-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* 4. Featured testimonial — first card gets emphasis */
+.direct-testimonial-card-featured {
+  border-color: rgba(13, 148, 136, 0.25) !important;
+  background: rgba(13, 148, 136, 0.03) !important;
+}
+
+.direct-testimonial-card-featured .direct-testimonial-quote {
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+}
+
+/* 5. Elevated testimonials section — tighter, more prominent */
+.direct-testimonials-elevated .direct-testimonial-quote {
+  font-size: 15.5px !important;
+  line-height: 1.55 !important;
+  color: #1e293b;
+}
+
+.direct-testimonials-elevated .direct-panel-intro h2 {
+  font-size: 1.55rem !important;
+}
+
+/* 6. Pricing trust row (merged security claims) */
+.direct-pricing-trust {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.direct-pricing-trust-claims {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px 24px;
+}
+
+.direct-pricing-trust .direct-security-claim {
+  font-size: 13.5px;
+}
+
+/* 7. Typography variation — alternate section heading sizes */
+.direct-notform-panel .direct-panel-intro h2 {
+  font-size: 1.5rem !important;
+  line-height: 1.35 !important;
+}
+
+.direct-audience-panel .direct-panel-intro h2 {
+  font-size: 1.35rem !important;
+}
+
+.direct-proof-panel-large .direct-panel-intro h2 {
+  font-size: 1.45rem !important;
+}
+
+/* 8. Mobile: mid-page CTA */
+@media (max-width: 640px) {
+  .direct-mid-page-cta {
+    padding: 36px 16px;
+  }
+  .direct-mid-page-cta-headline {
+    font-size: 1.15rem;
+  }
+  .direct-hero-social-proof {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .direct-heading-marquee {
+    font-size: 1.3rem !important;
+  }
+}
+
+/* === End Pass 9/16 === */
