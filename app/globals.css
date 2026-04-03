@@ -4435,3 +4435,80 @@ a:hover {
 }
 
 /* === End Pass 16 === */
+
+/* === Pass 2-iter: Section reorder polish, social proof, hero headline, visual rhythm === */
+
+/* --- Inline CTA: light version with strong border for rhythm --- */
+.direct-inline-cta {
+  background:
+    radial-gradient(circle at 12% 14%, rgba(83, 240, 226, 0.14) 0%, transparent 38%),
+    radial-gradient(circle at 88% 82%, rgba(255, 68, 171, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, #f0fdf9 0%, #f8fffe 60%, #fff 100%) !important;
+  border: 2px solid rgba(14, 165, 163, 0.22) !important;
+  box-shadow: 0 12px 32px rgba(14, 165, 163, 0.08) !important;
+}
+
+.direct-inline-cta p {
+  color: rgba(15, 23, 42, 0.82) !important;
+}
+
+.direct-inline-cta .direct-inline-cta-kicker {
+  color: rgba(15, 23, 42, 0.94) !important;
+  font-size: 19px !important;
+}
+
+/* --- Social proof strip: more visual weight --- */
+.direct-social-proof-strip {
+  padding: 22px 28px;
+  border-radius: 18px;
+  background: linear-gradient(160deg, rgba(248, 250, 252, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+  border: 1px solid rgba(229, 231, 235, 0.76);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+}
+
+.direct-social-proof-stat strong {
+  font-size: 26px !important;
+  letter-spacing: -0.03em;
+}
+
+.direct-social-proof-stat span {
+  font-size: 14px !important;
+  font-weight: 600;
+}
+
+/* --- Hero: two-line headline with line break styling --- */
+.direct-hero-title br {
+  display: block;
+  content: '';
+}
+
+/* --- Notform section: stronger visual contrast between cards --- */
+.direct-notform-card-form {
+  position: relative;
+}
+
+.direct-notform-card-form::after {
+  content: '✕';
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(185, 28, 28, 0.3);
+}
+
+.direct-notform-card-direct::after {
+  content: '✓';
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(14, 165, 163, 0.4);
+}
+
+.direct-notform-card {
+  position: relative;
+}
+
+/* === End Pass 2-iter === */

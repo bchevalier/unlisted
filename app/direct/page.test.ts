@@ -39,10 +39,10 @@ describe('DirectClientPage', () => {
     mock.mockResolvedValue(null as never);
     const html = await render();
 
-    expect(html).toContain('Stay reachable without losing control of your inbox.');
+    expect(html).toContain('One page. Structured requests.');
+    expect(html).toContain('Private until you approve');
     expect(html).toContain('Protect my inbox');
     expect(html).toContain('See a live example');
-    expect(html).toContain('Private until you approve');
     expect(html).toContain('Every request arrives with context');
     expect(html).toContain('Noise never reaches you');
     expect(html).toContain('access layer');
@@ -57,10 +57,12 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Plans');
     expect(html).toContain('FAQ');
     expect(html).toContain('Your inbox is yours. Keep it that way.');
-    // Pass 16: trust strip + post-scenarios CTA + unified CTA labels
+    // Trust strip + post-scenarios CTA + unified CTA labels
     expect(html).toContain('Free tier is permanent');
     expect(html).toContain('Your data stays yours');
-    expect(html).toContain('Sound familiar?');
+    // Social proof
+    expect(html).toContain('requests processed');
+    expect(html).toContain('doors created');
     // All CTAs should use unified label
     const ctaMatches = html.match(/Protect my inbox/g);
     expect(ctaMatches && ctaMatches.length).toBeGreaterThanOrEqual(4);
