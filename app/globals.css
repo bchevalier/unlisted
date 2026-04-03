@@ -10167,3 +10167,228 @@ a:hover {
 }
 
 /* === End Pass 16/16 === */
+
+/* === Pass v2-04: Sender view section, testimonial pull-quotes, visual rhythm === */
+
+/* --- Sender view section --- */
+.direct-sender-panel {
+  display: grid;
+  gap: 28px;
+}
+
+.direct-sender-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.direct-sender-mockup {
+  width: 100%;
+}
+
+.direct-mockup-chrome-sender {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  background: #fff;
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.06), 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+.direct-sender-mockup-body {
+  padding: 24px 22px 20px;
+  display: grid;
+  gap: 14px;
+}
+
+.direct-sender-mockup-heading {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: rgba(15, 23, 42, 0.94);
+  letter-spacing: -0.01em;
+}
+
+.direct-sender-mockup-subheading {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(15, 23, 42, 0.52);
+}
+
+.direct-sender-fields {
+  display: grid;
+  gap: 10px;
+}
+
+.direct-sender-field {
+  display: grid;
+  gap: 4px;
+}
+
+.direct-sender-field-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.56);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.direct-sender-field-value {
+  font-size: 14px;
+  color: rgba(15, 23, 42, 0.88);
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  background: rgba(248, 250, 252, 0.6);
+  line-height: 1.45;
+}
+
+.direct-sender-field-textarea .direct-sender-field-value {
+  min-height: 52px;
+  line-height: 1.5;
+  font-size: 13.5px;
+  color: rgba(15, 23, 42, 0.72);
+}
+
+.direct-sender-submit {
+  margin-top: 4px;
+}
+
+.direct-sender-submit-btn {
+  display: inline-block;
+  padding: 10px 24px;
+  border-radius: 8px;
+  background: rgba(13, 148, 136, 0.9);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.01em;
+  cursor: default;
+}
+
+.direct-sender-mockup-footer {
+  margin: 0;
+  font-size: 11.5px;
+  color: rgba(15, 23, 42, 0.4);
+  text-align: center;
+  font-style: italic;
+}
+
+/* Sender callouts (right side) */
+.direct-sender-callouts {
+  display: grid;
+  gap: 20px;
+  align-content: center;
+  padding: 8px 0;
+}
+
+.direct-sender-callout {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.direct-sender-callout-icon {
+  flex-shrink: 0;
+  color: rgba(13, 148, 136, 0.7);
+  margin-top: 2px;
+}
+
+.direct-sender-callout-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: rgba(15, 23, 42, 0.92);
+  letter-spacing: -0.01em;
+}
+
+.direct-sender-callout-copy {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(15, 23, 42, 0.62);
+}
+
+/* --- Testimonial pull-quote (featured) --- */
+.direct-testimonial-pullquote {
+  font-size: 17.5px !important;
+  line-height: 1.52 !important;
+  color: rgba(15, 23, 42, 0.94) !important;
+  font-style: normal !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.005em;
+  position: relative;
+  padding-left: 16px;
+  border-left: 3px solid rgba(13, 148, 136, 0.4);
+}
+
+/* Result badge — more visual weight */
+.direct-testimonial-result-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: rgba(236, 253, 245, 0.7);
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(21, 128, 61, 0.85);
+  width: fit-content;
+}
+
+.direct-testimonial-result-badge .direct-testimonial-result-icon {
+  color: rgba(21, 128, 61, 0.7);
+}
+
+/* --- Tighter section spacing for middle third --- */
+.direct-main-shell > .direct-sender-panel {
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+
+.direct-main-shell > .direct-notform-panel {
+  padding-top: 52px !important;
+  padding-bottom: 52px !important;
+}
+
+.direct-main-shell > .direct-midpage-cta {
+  padding-top: 36px !important;
+  padding-bottom: 36px !important;
+}
+
+/* --- Mobile: sender view stacks --- */
+@media (max-width: 860px) {
+  .direct-sender-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .direct-sender-callouts {
+    gap: 16px;
+  }
+
+  .direct-testimonial-pullquote {
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .direct-sender-mockup-body {
+    padding: 18px 16px 16px;
+  }
+
+  .direct-sender-field-value {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .direct-testimonial-result-badge {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+}
+
+/* === End Pass v2-04 === */

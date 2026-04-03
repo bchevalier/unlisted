@@ -8,6 +8,14 @@ import { FloatingCTA } from './floating-cta';
 
 /* Trust signals strip removed in pass 15 — redundant with hero meta + pricing trust row */
 
+const SENDER_VIEW_FIELDS = [
+  { label: 'Category', value: 'Sponsorship', type: 'select' },
+  { label: 'Budget range', value: '$5,000 – $15,000', type: 'select' },
+  { label: 'Timeline', value: 'Within 4 weeks', type: 'select' },
+  { label: 'Brief / scope', value: 'Product integration for Q2 campaign, 1 dedicated video + 2 story mentions…', type: 'textarea' },
+  { label: 'Your email', value: 'brand@company.com', type: 'input' },
+] as const;
+
 const HERO_INBOX_PREVIEW = [
   { status: 'accepted', from: 'Nike Brand Team', category: 'Sponsorship', detail: 'Budget: $12K · Brief attached', time: '2h ago' },
   { status: 'filtered', from: 'Random cold pitch', category: 'Spam', detail: 'Blocked — no budget, no brief', time: '4h ago' },
@@ -147,7 +155,7 @@ export default async function DirectClientPage() {
                 ) : (
                   <Link className="button primary direct-hero-button" href="/direct/signup">Protect my inbox — free</Link>
                 )}
-                <a className="direct-hero-link-secondary" href="#how-it-works">See how it works ↓</a>
+                <a className="direct-hero-link-secondary" href="#sender-view">See what senders see ↓</a>
               </div>
               <p className="hero-meta direct-hero-meta">Free forever · No credit card · Live in 2 minutes</p>
               <div className="direct-hero-stats-bar" aria-label="Key metrics">
@@ -231,7 +239,65 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 3a. Trust signals strip removed in pass 15 — redundant */}
+        {/* 3a. What senders see — builds trust by showing the sender's experience */}
+        <section id="sender-view" className="lane-panel direct-sender-panel" aria-label="What senders see">
+          <div className="direct-panel-intro">
+            <p className="lane-kicker">The sender&apos;s experience</p>
+            <h2>What people see when they reach you</h2>
+            <p className="direct-section-lede">Your access layer collects everything you need — before senders reach your inbox. Here&apos;s what they fill out.</p>
+          </div>
+          <div className="direct-sender-layout">
+            <div className="direct-sender-mockup">
+              <div className="direct-mockup-chrome direct-mockup-chrome-sender">
+                <div className="direct-mockup-bar">
+                  <span className="direct-mockup-dot" />
+                  <span className="direct-mockup-dot" />
+                  <span className="direct-mockup-dot" />
+                  <span className="direct-mockup-url">knokio.io/u/you</span>
+                </div>
+                <div className="direct-sender-mockup-body">
+                  <p className="direct-sender-mockup-heading">Send a request</p>
+                  <p className="direct-sender-mockup-subheading">This person uses Knokio Direct. Fill in the details below — only structured, complete requests are reviewed.</p>
+                  <div className="direct-sender-fields">
+                    {SENDER_VIEW_FIELDS.map((f) => (
+                      <div key={f.label} className={`direct-sender-field direct-sender-field-${f.type}`}>
+                        <span className="direct-sender-field-label">{f.label}</span>
+                        <span className="direct-sender-field-value">{f.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="direct-sender-submit">
+                    <span className="direct-sender-submit-btn">Submit request</span>
+                  </div>
+                  <p className="direct-sender-mockup-footer">Your email is only shared if this request is approved.</p>
+                </div>
+              </div>
+            </div>
+            <div className="direct-sender-callouts">
+              <div className="direct-sender-callout">
+                <DirectIcon name="clipboard" size={16} className="direct-sender-callout-icon" />
+                <div>
+                  <p className="direct-sender-callout-title">Structure before access</p>
+                  <p className="direct-sender-callout-copy">Senders provide budget, scope, and timeline before anything reaches you. No vague &quot;hey, can I pick your brain?&quot;</p>
+                </div>
+              </div>
+              <div className="direct-sender-callout">
+                <DirectIcon name="lock" size={16} className="direct-sender-callout-icon" />
+                <div>
+                  <p className="direct-sender-callout-title">Your email stays hidden</p>
+                  <p className="direct-sender-callout-copy">Senders never see your real email. It&apos;s only revealed if you choose to approve their request.</p>
+                </div>
+              </div>
+              <div className="direct-sender-callout">
+                <DirectIcon name="shield" size={16} className="direct-sender-callout-icon" />
+                <div>
+                  <p className="direct-sender-callout-title">Low-effort outreach self-filters</p>
+                  <p className="direct-sender-callout-copy">Anyone not willing to fill in the basics isn&apos;t serious enough for your time. The form does the gatekeeping.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* 4. Not a contact form — comparison */}
         <section className="lane-panel direct-notform-panel direct-notform-panel-wide" aria-label="Not just a contact form">
@@ -333,7 +399,15 @@ export default async function DirectClientPage() {
                   <DirectIcon name={t.icon} size={13} className="direct-testimonial-tag-icon" />
                   <span>{t.role.split('·')[1]?.trim() || t.role}</span>
                 </div>
-                <blockquote className="direct-testimonial-quote">&ldquo;{t.quote}&rdquo;</blockquote>
+                {i === 0 ? (
+                  <blockquote className="direct-testimonial-quote direct-testimonial-pullquote">&ldquo;{t.quote}&rdquo;</blockquote>
+                ) : (
+                  <blockquote className="direct-testimonial-quote">&ldquo;{t.quote}&rdquo;</blockquote>
+                )}
+                <div className="direct-testimonial-result-badge">
+                  <DirectIcon name="check" size={13} className="direct-testimonial-result-icon" />
+                  <span>{t.result}</span>
+                </div>
                 <div className="direct-testimonial-attribution">
                   <span className="direct-testimonial-avatar" style={{ background: t.color }}>{t.initials}</span>
                   <div className="direct-testimonial-meta">
@@ -341,7 +415,6 @@ export default async function DirectClientPage() {
                     <p className="direct-testimonial-role">{t.role}</p>
                   </div>
                 </div>
-                <p className="direct-testimonial-result"><DirectIcon name="check" size={14} className="direct-testimonial-result-icon" /> {t.result}</p>
               </article>
             ))}
           </div>

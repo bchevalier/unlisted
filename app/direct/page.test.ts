@@ -54,7 +54,7 @@ describe('DirectClientPage', () => {
     expect(html).toContain('David Okafor');
     expect(html).toContain('Sarah Kim');
     expect(html).toContain('Protect my inbox');
-    expect(html).toContain('See how it works');
+    expect(html).toContain('See what senders see');
     // Hero stats bar (pass 14, tweaked pass 15)
     expect(html).toContain('noise filtered');
     expect(html).toContain('doors active');
@@ -66,6 +66,12 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Small businesses');
     expect(html).toContain('Public figures');
     expect(html).toContain('See more use cases');
+    // Sender view section (pass v2-04)
+    expect(html).toContain('What people see when they reach you');
+    expect(html).toContain('Send a request');
+    expect(html).toContain('Structure before access');
+    expect(html).toContain('Your email stays hidden');
+    expect(html).toContain('Low-effort outreach self-filters');
     // Comparison section (key differentiator — kicker changed pass 15)
     expect(html).toContain('The difference');
     expect(html).toContain('Contact form');
@@ -105,7 +111,10 @@ describe('DirectClientPage', () => {
 
     expect(html).toContain('j@example.com');
     expect(html).toContain('Protect my inbox');
-    expect(html).toContain('See how it works');
+    expect(html).toContain('See what senders see');
+    // Sender view section (pass v2-04)
+    expect(html).toContain('Send a request');
+    expect(html).toContain('Structure before access');
     // Verify GDPR security claim is present
     expect(html).toContain('GDPR compliant');
   });
