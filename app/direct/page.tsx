@@ -5,6 +5,7 @@ import { getKeeperSessionFromCookies } from '../../lib/keeper-auth';
 import { DirectIcon } from './direct-icons';
 import { LogoutButton } from './logout-button';
 import { FloatingCTA } from './floating-cta';
+import { ScrollReveal, StaggerReveal } from './scroll-reveal';
 
 /* Trust signals strip removed in pass 15 — redundant with hero meta + pricing trust row */
 /* Hero pain paragraph removed in pass 15 — headline already communicates the problem */
@@ -215,6 +216,7 @@ export default async function DirectClientPage() {
         </section>
 
         {/* 1a. Industry trust bar — quick credibility scan after hero */}
+        <ScrollReveal>
         <section className="direct-industry-bar" aria-label="Trusted by professionals">
           <p className="direct-industry-bar-label">Trusted across industries</p>
           <div className="direct-industry-bar-items">
@@ -226,13 +228,14 @@ export default async function DirectClientPage() {
             ))}
           </div>
         </section>
+        </ScrollReveal>
 
         {/* 1b. Featured quote removed in pass v2-12 — redundant with testimonials + hero social proof */}
 
         {/* 2. Three benefit cards */}
-        <section className="direct-proof-strip" aria-label="Direct key benefits">
+        <StaggerReveal className="direct-proof-strip" stagger={100}>
           {BENEFITS.map((b) => (
-            <article key={b.title} className="direct-proof-card direct-proof-card-enhanced">
+            <article key={b.title} className="direct-proof-card direct-proof-card-enhanced sr-stagger-item">
               <div className="direct-proof-head">
                 <DirectIcon name={b.icon} size={18} className="direct-proof-icon" />
                 <p className="direct-proof-title">{b.title}</p>
@@ -244,18 +247,19 @@ export default async function DirectClientPage() {
               </div>
             </article>
           ))}
-        </section>
+        </StaggerReveal>
 
         {/* 3. How it works — immediately after benefits for comprehension */}
+        <ScrollReveal>
         <section id="how-it-works" className="lane-panel direct-steps-panel direct-section-dark" aria-label="How Direct works">
           <div className="direct-steps-intro">
             <p className="lane-kicker">Simple by design</p>
             <h2>Three steps to a protected inbox</h2>
             <p className="direct-section-lede">No code. No complex setup. You&apos;ll be filtering inbound in under two minutes.</p>
           </div>
-          <div className="direct-steps-grid">
+          <StaggerReveal className="direct-steps-grid" stagger={120}>
             {HOW_IT_WORKS.map((s) => (
-              <article key={s.step} className="direct-step-card direct-step-card-inline">
+              <article key={s.step} className="direct-step-card direct-step-card-inline sr-stagger-item">
                 <div className="direct-step-head">
                   <span className="direct-step-number">{s.step}</span>
                   <h3>{s.title}</h3>
@@ -263,10 +267,12 @@ export default async function DirectClientPage() {
                 <p>{s.copy}</p>
               </article>
             ))}
-          </div>
+          </StaggerReveal>
         </section>
+        </ScrollReveal>
 
         {/* 3a. What senders see — builds trust by showing the sender's experience */}
+        <ScrollReveal>
         <section id="sender-view" className="lane-panel direct-sender-panel" aria-label="What senders see">
           <div className="direct-panel-intro">
             <p className="lane-kicker">The sender&apos;s experience</p>
@@ -326,7 +332,10 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
+        </ScrollReveal>
+
         {/* 4. Not a contact form — comparison */}
+        <ScrollReveal>
         <section className="lane-panel direct-notform-panel direct-notform-panel-wide" aria-label="Not just a contact form">
           <div className="direct-panel-intro">
             <p className="lane-kicker">The difference</p>
@@ -352,7 +361,10 @@ export default async function DirectClientPage() {
           <p className="direct-notform-verdict"><DirectIcon name="shield" size={15} className="direct-notform-verdict-icon" /> <strong>Knokio Direct isn&apos;t a better contact form — it&apos;s a different category entirely.</strong> Structure, filtering, and privacy that contact forms were never designed for.</p>
         </section>
 
+        </ScrollReveal>
+
         {/* 4a. Mid-page CTA — after comparison (high-conviction moment) + objection handling */}
+        <ScrollReveal>
         <section className="direct-midpage-cta" aria-label="Mid-page call to action">
           {session ? (
             <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Create your access layer — free</Link>
@@ -363,15 +375,18 @@ export default async function DirectClientPage() {
           <p className="direct-microproof">Join 2,400+ professionals who protect their inbox with Direct</p>
         </section>
 
+        </ScrollReveal>
+
         {/* 5. Who it is for — after explanation sections, self-identification */}
+        <ScrollReveal>
         <section className="lane-panel direct-audience-panel direct-section-tinted" aria-label="Who Direct is for">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Built for you</p>
             <h2>If you receive unsolicited inbound, this is your tool</h2>
           </div>
-          <div className="direct-audience-grid direct-audience-grid-2col">
+          <StaggerReveal className="direct-audience-grid direct-audience-grid-2col" stagger={100}>
             {WHO_FOR_PRIMARY.map((w, i) => (
-              <article key={w.title} className={`direct-audience-card direct-audience-card-expanded${i === 0 ? ' direct-audience-card-featured' : ''}`}>
+              <article key={w.title} className={`direct-audience-card direct-audience-card-expanded sr-stagger-item${i === 0 ? ' direct-audience-card-featured' : ''}`}>
                 <div className="direct-audience-head">
                   <span className="direct-audience-icon" style={{ color: w.color }}>
                     <DirectIcon name={w.icon} size={18} />
@@ -386,7 +401,7 @@ export default async function DirectClientPage() {
                 </div>
               </article>
             ))}
-          </div>
+          </StaggerReveal>
           <details className="direct-audience-more">
             <summary className="direct-audience-more-toggle">See more use cases</summary>
             <div className="direct-audience-grid direct-audience-more-grid">
@@ -405,7 +420,10 @@ export default async function DirectClientPage() {
           </details>
         </section>
 
+        </ScrollReveal>
+
         {/* 6. Testimonials — with integrated proof stats */}
+        <ScrollReveal>
         <section className="lane-panel direct-testimonials-panel direct-testimonials-elevated" aria-label="What users say">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Proven results</p>
@@ -422,9 +440,9 @@ export default async function DirectClientPage() {
               </React.Fragment>
             ))}
           </div>
-          <div className="direct-testimonials-grid">
+          <StaggerReveal className="direct-testimonials-grid" stagger={120}>
             {TESTIMONIALS.map((t, i) => (
-              <article key={t.author} className={`direct-testimonial-card${i === 0 ? ' direct-testimonial-card-featured' : ''}`}>
+              <article key={t.author} className={`direct-testimonial-card sr-stagger-item${i === 0 ? ' direct-testimonial-card-featured' : ''}`}>
                 <div className="direct-testimonial-category-tag">
                   <DirectIcon name={t.icon} size={13} className="direct-testimonial-tag-icon" />
                   <span>{t.role.split('·')[1]?.trim() || t.role}</span>
@@ -447,10 +465,13 @@ export default async function DirectClientPage() {
                 </div>
               </article>
             ))}
-          </div>
+          </StaggerReveal>
         </section>
 
+        </ScrollReveal>
+
         {/* 7. Pricing summary (with integrated security trust) */}
+        <ScrollReveal>
         <section className="lane-panel direct-pricing-panel direct-section-tinted" aria-label="Direct pricing overview">
           <div className="direct-panel-intro">
             <p className="lane-kicker">No surprises</p>
@@ -504,7 +525,10 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
+        </ScrollReveal>
+
         {/* 9. FAQ — polished card-style accordion */}
+        <ScrollReveal>
         <section className="lane-panel direct-faq-panel direct-faq-panel-v2" aria-label="FAQ">
           <div className="direct-faq-intro">
             <p className="lane-kicker">FAQ</p>
@@ -520,7 +544,10 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
+        </ScrollReveal>
+
         {/* 10. Final CTA — with reinforcing stat */}
+        <ScrollReveal>
         <section className="lane-panel direct-final-cta direct-section-dark" aria-label="Final call to action">
           <p className="lane-kicker">Start now</p>
           <h2>Your inbox, your rules.<br />Live in two minutes.</h2>
@@ -534,6 +561,8 @@ export default async function DirectClientPage() {
           </div>
           <p className="direct-final-cta-expectation">Pick your categories → your access layer goes live → start filtering inbound. No code needed.</p>
         </section>
+
+        </ScrollReveal>
 
         {/* 11. Footer */}
         <footer className="direct-footer" aria-label="Knokio footer">

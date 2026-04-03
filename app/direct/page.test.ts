@@ -23,6 +23,11 @@ vi.mock('./logout-button', () => ({
   LogoutButton: () => React.createElement('button', { type: 'button' }, 'Log out'),
 }));
 
+vi.mock('./scroll-reveal', () => ({
+  ScrollReveal: ({ children }: { children: React.ReactNode }) => React.createElement('div', null, children),
+  StaggerReveal: ({ children, className }: { children: React.ReactNode; className?: string }) => React.createElement('div', { className }, children),
+}));
+
 import { getKeeperSessionFromCookies } from '../../lib/keeper-auth';
 import DirectClientPage from './page';
 

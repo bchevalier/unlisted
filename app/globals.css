@@ -11068,3 +11068,531 @@ a:hover {
 }
 
 /* === End Pass v2-15 === */
+
+/* === Pass v2-16: Scroll-reveal animations, visual rhythm, hero polish, section drama === */
+
+/* --- Scroll-reveal base system (SSR-safe: hidden applied by JS after hydration) --- */
+.sr-hidden {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.sr-hidden.sr-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sr-stagger-hidden {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.sr-stagger-hidden.sr-stagger-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sr-hidden,
+  .sr-stagger-hidden {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* --- Hero title gradient highlight --- */
+.direct-hero-title-highlight {
+  background: linear-gradient(135deg, #0ea5a3 0%, #0d9488 40%, #14b8a6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --- Hero entrance animation --- */
+@keyframes direct-hero-fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes direct-hero-slide-in-right {
+  from { opacity: 0; transform: translateX(32px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.direct-hero-content {
+  animation: direct-hero-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.direct-hero-mockup {
+  animation: direct-hero-slide-in-right 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+}
+
+/* --- Mockup hover lift --- */
+.direct-mockup-chrome {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+}
+
+.direct-mockup-chrome:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 28px 64px rgba(15, 23, 42, 0.14),
+    0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+/* --- Benefit card hover lift --- */
+.direct-proof-card {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.direct-proof-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.07);
+  border-color: rgba(14, 165, 163, 0.24);
+}
+
+/* --- Step card hover --- */
+.direct-step-card {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+}
+
+.direct-section-dark .direct-step-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Comparison cards: scale on hover for drama --- */
+.direct-notform-card {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+}
+
+.direct-notform-card-winner:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 16px 36px rgba(14, 165, 163, 0.12);
+}
+
+.direct-notform-card-faded {
+  opacity: 0.88;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.direct-notform-card-faded:hover {
+  opacity: 1;
+}
+
+/* --- Notform winner badge --- */
+.direct-notform-winner-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(14, 165, 163, 0.1);
+  border: 1px solid rgba(14, 165, 163, 0.2);
+  color: rgba(13, 101, 101, 0.88);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+/* --- Asymmetric comparison grid: winner card slightly larger --- */
+.direct-notform-grid-asymmetric {
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+}
+
+/* --- Heading marquee: big, dramatic --- */
+.direct-heading-marquee {
+  font-size: 1.65rem !important;
+  line-height: 1.28 !important;
+  letter-spacing: -0.02em;
+  max-width: 720px;
+}
+
+/* --- Audience card hover lift --- */
+.direct-audience-card {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+}
+
+.direct-audience-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+/* --- Audience featured card: subtle accent border --- */
+.direct-audience-card-featured {
+  border-color: rgba(14, 165, 163, 0.2);
+  background: linear-gradient(160deg, rgba(236, 253, 245, 0.3) 0%, rgba(255, 255, 255, 0.9) 100%);
+}
+
+/* --- Audience before/after transform styling --- */
+.direct-audience-transform {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(229, 231, 235, 0.6);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.direct-audience-before {
+  color: rgba(185, 28, 28, 0.7);
+  flex: 1;
+}
+
+.direct-audience-x {
+  color: rgba(239, 68, 68, 0.6);
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.direct-audience-arrow {
+  flex-shrink: 0;
+  color: rgba(15, 23, 42, 0.3);
+  font-size: 14px;
+}
+
+.direct-audience-after {
+  color: rgba(13, 101, 101, 0.88);
+  font-weight: 600;
+  flex: 1;
+}
+
+.direct-audience-check {
+  color: rgba(14, 165, 163, 0.7);
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+/* --- Audience expanded cards: 2-col grid --- */
+.direct-audience-grid-2col {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px;
+}
+
+.direct-audience-card-expanded {
+  padding: 20px 22px;
+}
+
+/* --- Testimonial card hover --- */
+.direct-testimonial-card {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+}
+
+.direct-testimonial-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
+}
+
+/* --- Testimonial featured pullquote --- */
+.direct-testimonial-pullquote {
+  font-size: 17px !important;
+  line-height: 1.55 !important;
+}
+
+/* --- Testimonial category tag --- */
+.direct-testimonial-category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.05);
+  color: rgba(31, 42, 68, 0.7);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.direct-testimonial-tag-icon {
+  color: rgba(31, 42, 68, 0.5);
+}
+
+/* --- Testimonial result badge --- */
+.direct-testimonial-result-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(236, 253, 245, 0.7);
+  border: 1px solid rgba(14, 165, 163, 0.18);
+  color: rgba(13, 101, 101, 0.88);
+  font-size: 12px;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.direct-testimonial-result-icon {
+  color: rgba(14, 165, 163, 0.7);
+}
+
+/* --- Testimonial attribution --- */
+.direct-testimonial-attribution {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.direct-testimonial-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.direct-testimonial-meta {
+  display: grid;
+  gap: 1px;
+}
+
+.direct-testimonial-name {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.88);
+}
+
+.direct-testimonial-role {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(31, 42, 68, 0.58);
+}
+
+/* --- Testimonial proof stats bar --- */
+.direct-testimonial-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 20px 28px;
+  border-radius: 14px;
+  background: linear-gradient(160deg, rgba(248, 250, 252, 0.95) 0%, rgba(255, 255, 255, 0.92) 100%);
+  border: 1px solid rgba(229, 231, 235, 0.7);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.03);
+}
+
+.direct-testimonial-stat {
+  display: grid;
+  text-align: center;
+  gap: 2px;
+  padding: 0 28px;
+}
+
+.direct-testimonial-stat strong {
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  color: rgba(14, 165, 163, 0.92);
+}
+
+.direct-testimonial-stat span {
+  font-size: 13px;
+  color: rgba(31, 42, 68, 0.64);
+  font-weight: 500;
+}
+
+.direct-testimonial-stats-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(229, 231, 235, 0.7);
+  flex-shrink: 0;
+}
+
+/* --- Pricing card hover --- */
+.direct-pricing-card {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+}
+
+.direct-pricing-card:hover {
+  transform: translateY(-2px);
+}
+
+.direct-pricing-card-highlighted:hover {
+  box-shadow:
+    0 0 0 1px rgba(14, 165, 163, 0.14),
+    0 16px 36px rgba(14, 165, 163, 0.12) !important;
+}
+
+/* --- Pricing badge --- */
+.direct-pricing-badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(14, 165, 163, 0.1);
+  color: rgba(13, 101, 101, 0.88);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  width: fit-content;
+  margin-bottom: 2px;
+}
+
+.direct-pricing-coming-badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.06);
+  color: rgba(31, 42, 68, 0.6);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  width: fit-content;
+  margin-bottom: 2px;
+}
+
+/* --- Pricing price styling --- */
+.direct-pricing-price {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: rgba(15, 23, 42, 0.94);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.direct-pricing-period {
+  font-size: 0.45em;
+  font-weight: 500;
+  color: rgba(31, 42, 68, 0.56);
+  letter-spacing: 0;
+}
+
+.direct-pricing-desc {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(31, 42, 68, 0.76);
+}
+
+.direct-pricing-reassurance {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: rgba(31, 42, 68, 0.56);
+  text-align: center;
+}
+
+/* --- Pricing trust row --- */
+.direct-pricing-trust {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+  padding: 20px 24px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(229, 231, 235, 0.6);
+}
+
+.direct-pricing-trust-heading {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.86);
+}
+
+.direct-pricing-trust-claims {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.direct-security-claim {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: rgba(31, 42, 68, 0.66);
+  font-weight: 500;
+}
+
+/* --- FAQ item hover --- */
+.direct-faq-item-v2 {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.direct-faq-item-v2:hover {
+  border-color: rgba(14, 165, 163, 0.2);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+/* --- Final CTA section polish --- */
+.direct-final-cta.direct-section-dark {
+  text-align: center;
+}
+
+.direct-final-cta-desc {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba(203, 213, 225, 0.82);
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.direct-final-cta-expectation {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: rgba(148, 163, 184, 0.7);
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --- Section divider lines between major sections --- */
+.direct-main-shell > *:not(:first-child)::before {
+  display: none;
+}
+
+/* --- Sender panel callout hover --- */
+.direct-sender-callout {
+  transition: transform 0.25s ease;
+}
+
+.direct-sender-callout:hover {
+  transform: translateX(4px);
+}
+
+/* --- Hero link secondary styling --- */
+.direct-hero-link-secondary {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(15, 23, 42, 0.68);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.direct-hero-link-secondary:hover {
+  color: rgba(14, 165, 163, 0.88);
+}
+
+/* --- Mobile: audience grid stacks --- */
+@media (max-width: 768px) {
+  .direct-audience-grid-2col {
+    grid-template-columns: 1fr !important;
+  }
+  .direct-notform-grid-asymmetric {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === End Pass v2-16 === */
