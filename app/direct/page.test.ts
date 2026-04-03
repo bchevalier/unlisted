@@ -60,11 +60,8 @@ describe('DirectClientPage', () => {
     // "Not a contact form" comparison (key differentiator)
     expect(html).toContain('Not a contact form');
     expect(html).toContain('access layer');
-    // Trust architecture section
+    // Privacy by design — integrated into pricing trust row
     expect(html).toContain('Privacy by design');
-    expect(html).toContain('Encrypted everywhere');
-    expect(html).toContain('Zero tracking, zero ads');
-    expect(html).toContain('You own your data');
     // Inline before/after on audience cards
     expect(html).toContain('qualified pitches with budget attached');
     // Hero mockup elements
@@ -85,11 +82,7 @@ describe('DirectClientPage', () => {
     expect(html).toContain('of spam stopped before inbox');
     expect(html).toContain('saved per week on inbox triage');
     expect(html).toContain('close rate on qualified leads');
-    // Cost of inaction section
-    expect(html).toContain('The cost of doing nothing');
-    expect(html).toContain('147');
-    expect(html).toContain('28%');
-    expect(html).toContain('$1,250');
+    // Cost of inaction section removed in pass 12 for page length
     // CTAs should use varied labels across the page
     const protectMatches = html.match(/Protect my inbox/g);
     expect(protectMatches && protectMatches.length).toBeGreaterThanOrEqual(2);

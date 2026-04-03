@@ -8892,3 +8892,367 @@ a:hover {
 }
 
 /* === End Pass 11/16 === */
+
+/* === Pass 12/16: Readability overhaul, CTA prominence, visual density reduction === */
+
+/* --- 1. Global body text floor: 15.5px → 16px across all sections --- */
+.direct-proof-copy,
+.direct-step-card p,
+.direct-notform-card p,
+.direct-audience-card p,
+.direct-trust-arch-card p,
+.direct-pricing-desc,
+.direct-pricing-list li,
+.direct-cost-card p,
+.direct-faq-answer {
+  font-size: 16px !important;
+  line-height: 1.62 !important;
+}
+
+/* --- 2. Hero subtitle: stronger contrast on dark hero for cold visitors --- */
+.direct-hero-subtitle {
+  font-size: 18px !important;
+  line-height: 1.6 !important;
+  max-width: 540px !important;
+  color: rgba(226, 232, 240, 0.92) !important;
+}
+
+.direct-hero-subtitle strong {
+  color: rgba(83, 240, 226, 0.95) !important;
+  font-weight: 700 !important;
+}
+
+/* --- 3. Hero bullets: larger, higher contrast on dark bg --- */
+.direct-hero-bullets li {
+  font-size: 15.5px !important;
+  color: rgba(226, 232, 240, 0.92) !important;
+  font-weight: 600 !important;
+  line-height: 1.45 !important;
+}
+
+.direct-hero-bullet-icon {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* --- 4. Hero meta: slightly more visible --- */
+.direct-hero-meta {
+  font-size: 14px !important;
+  color: rgba(226, 232, 240, 0.6) !important;
+}
+
+/* --- 5. Section H2s: slightly bigger for hierarchy --- */
+.direct-panel-intro h2,
+.direct-steps-intro h2 {
+  font-size: 1.85rem !important;
+}
+
+.direct-faq-intro h2 {
+  font-size: 1.55rem !important;
+}
+
+/* --- 6. Benefit cards: body text and stat readability --- */
+.direct-proof-title {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+}
+
+.direct-proof-copy {
+  color: rgba(31, 42, 68, 0.86) !important;
+}
+
+.direct-proof-stat strong {
+  font-size: 28px !important;
+}
+
+.direct-proof-stat span {
+  font-size: 13px !important;
+}
+
+/* --- 7. Testimonial quotes: larger for readability and trust --- */
+.direct-testimonial-quote {
+  font-size: 16.5px !important;
+  line-height: 1.62 !important;
+  color: rgba(15, 23, 42, 0.88) !important;
+}
+
+.direct-testimonial-card-featured .direct-testimonial-quote {
+  font-size: 17.5px !important;
+  line-height: 1.58 !important;
+}
+
+/* --- 8. Testimonial result line: larger for credibility --- */
+.direct-testimonial-result {
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+}
+
+/* --- 9. Pricing: larger description and list text --- */
+.direct-pricing-desc {
+  color: rgba(31, 42, 68, 0.78) !important;
+}
+
+.direct-pricing-list li {
+  color: rgba(31, 42, 68, 0.86) !important;
+}
+
+.direct-pricing-card h3 {
+  font-size: 1.35rem !important;
+  font-weight: 900 !important;
+}
+
+/* --- 10. Pricing reassurance: slightly more visible --- */
+.direct-pricing-reassurance {
+  font-size: 13px !important;
+  color: rgba(31, 42, 68, 0.58) !important;
+}
+
+/* --- 11. FAQ questions: larger for scannability --- */
+.direct-faq-question {
+  font-size: 17.5px !important;
+  font-weight: 700 !important;
+}
+
+.direct-faq-answer {
+  color: rgba(31, 42, 68, 0.82) !important;
+}
+
+/* --- 12. "Not a form" comparison: body text bump --- */
+.direct-notform-card p {
+  color: rgba(31, 42, 68, 0.84) !important;
+}
+
+.direct-notform-card-form p {
+  color: rgba(127, 29, 29, 0.72) !important;
+}
+
+.direct-notform-card h3 {
+  font-size: 1.25rem !important;
+  font-weight: 800 !important;
+}
+
+.direct-heading-marquee {
+  font-size: 1.7rem !important;
+}
+
+/* --- 13. Social proof strip: larger descriptions --- */
+.direct-social-proof-stat span {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  max-width: 160px !important;
+}
+
+/* --- 14. Cost section: body text bump on dark bg --- */
+.direct-cost-card p {
+  color: rgba(203, 213, 225, 0.88) !important;
+}
+
+.direct-cost-label {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+/* --- 15. Trust arch section: body text bump on dark bg --- */
+.direct-trust-arch-card h3 {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+}
+
+.direct-trust-arch-card p {
+  color: rgba(203, 213, 225, 0.88) !important;
+}
+
+/* --- 16. Audience card headings: larger --- */
+.direct-audience-card h3 {
+  font-size: 1.12rem !important;
+  font-weight: 800 !important;
+}
+
+/* --- 17. Step card headings: larger --- */
+.direct-step-card h3 {
+  font-size: 1.12rem !important;
+  font-weight: 800 !important;
+}
+
+/* --- 18. Audience transform: slightly bigger text --- */
+.direct-audience-transform {
+  font-size: 14px !important;
+}
+
+/* --- 19. Section dark lede text: higher contrast --- */
+.direct-section-dark .direct-section-lede {
+  color: rgba(203, 213, 225, 0.88) !important;
+}
+
+/* --- 20. How it works section heading: pump for dark bg --- */
+.direct-section-dark h2 {
+  font-size: 1.85rem !important;
+}
+
+/* --- 21. Hero CTA: slightly larger primary for more visual weight --- */
+.direct-hero-actions .button.primary {
+  font-size: 17px !important;
+  padding: 16px 34px !important;
+  min-width: 250px !important;
+}
+
+/* --- 22. Topbar CTA: slightly larger --- */
+.topbar-cta-primary {
+  font-size: 14px !important;
+  padding: 9px 20px !important;
+}
+
+/* --- 23. Lane kicker: consistent sizing --- */
+.lane-kicker {
+  font-size: 13px !important;
+}
+
+/* --- 24. Section gap slightly tighter for cohesion without losing breathing room --- */
+.direct-main-shell {
+  gap: 36px !important;
+}
+
+/* --- 25. Mobile adjustments --- */
+@media (max-width: 860px) {
+  .direct-hero-subtitle {
+    font-size: 16.5px !important;
+  }
+  .direct-hero-bullets li {
+    font-size: 14.5px !important;
+  }
+  .direct-testimonial-quote {
+    font-size: 15.5px !important;
+  }
+  .direct-panel-intro h2,
+  .direct-steps-intro h2 {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* --- 26. Pricing trust heading: integrated from removed trust arch section --- */
+.direct-pricing-trust-heading {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.88);
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+/* --- 27. AGGRESSIVE body text floor: .direct-page parent for higher specificity --- */
+.direct-page .direct-proof-copy,
+.direct-page .direct-step-card p,
+.direct-page .direct-notform-card p,
+.direct-page .direct-audience-card p,
+.direct-page .direct-trust-arch-card p,
+.direct-page .direct-cost-card p,
+.direct-page .direct-faq-answer,
+.direct-page .direct-pricing-list li,
+.direct-page .direct-pricing-desc {
+  font-size: 16px !important;
+  line-height: 1.65 !important;
+}
+
+/* Body text color: darker for readability */
+.direct-page .direct-proof-copy,
+.direct-page .direct-audience-card p,
+.direct-page .direct-notform-card p {
+  color: rgba(15, 23, 42, 0.82) !important;
+}
+
+.direct-page .direct-notform-card-form p {
+  color: rgba(127, 29, 29, 0.75) !important;
+}
+
+/* Step cards on dark: higher contrast body text */
+.direct-page .direct-section-dark .direct-step-card p {
+  font-size: 16px !important;
+  color: rgba(226, 232, 240, 0.92) !important;
+}
+
+/* Hero bullets: ensure dark-bg contrast */
+.direct-page .direct-hero-bullets li {
+  font-size: 16px !important;
+  color: rgba(226, 232, 240, 0.95) !important;
+  font-weight: 600 !important;
+}
+
+/* Hero subtitle: solid contrast on dark hero */
+.direct-page .direct-hero-subtitle {
+  font-size: 18.5px !important;
+  color: rgba(226, 232, 240, 0.95) !important;
+  line-height: 1.6 !important;
+}
+
+/* Section lede: bump */
+.direct-page .direct-section-lede {
+  font-size: 17px !important;
+  line-height: 1.6 !important;
+}
+
+.direct-page .direct-section-dark .direct-section-lede {
+  color: rgba(226, 232, 240, 0.88) !important;
+}
+
+/* Testimonial quotes: floor at 17px */
+.direct-page .direct-testimonial-quote {
+  font-size: 17px !important;
+  line-height: 1.62 !important;
+  color: rgba(15, 23, 42, 0.88) !important;
+}
+
+.direct-page .direct-testimonial-card-featured .direct-testimonial-quote {
+  font-size: 18px !important;
+}
+
+/* FAQ answers and questions: larger */
+.direct-page .direct-faq-question {
+  font-size: 18px !important;
+}
+
+.direct-page .direct-faq-answer {
+  font-size: 16px !important;
+  color: rgba(15, 23, 42, 0.8) !important;
+}
+
+/* Pricing: bump text */
+.direct-page .direct-pricing-list li {
+  color: rgba(15, 23, 42, 0.84) !important;
+}
+
+/* --- 28. Mid-page CTA strip styles --- */
+.direct-mid-cta-strip {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  text-align: center;
+  padding: 44px 28px;
+  border-radius: 20px;
+  border: 2px solid rgba(14, 165, 163, 0.2);
+  background:
+    radial-gradient(circle at 40% 50%, rgba(83, 240, 226, 0.1) 0%, transparent 50%),
+    linear-gradient(160deg, rgba(240, 253, 250, 0.7) 0%, rgba(255, 255, 255, 0.96) 100%);
+  box-shadow: 0 12px 32px rgba(14, 165, 163, 0.06);
+}
+
+.direct-mid-cta-strip h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: rgba(15, 23, 42, 0.92);
+  letter-spacing: -0.01em;
+}
+
+.direct-mid-cta-strip p {
+  margin: 0;
+  font-size: 15px;
+  color: rgba(31, 42, 68, 0.68);
+  font-weight: 500;
+}
+
+/* Hide gradient divider before mid-CTA strip */
+.direct-main-shell > .direct-mid-cta-strip::before {
+  display: none !important;
+}
+
+/* === End Pass 12/16 === */

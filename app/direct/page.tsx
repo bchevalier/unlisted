@@ -59,11 +59,7 @@ const TESTIMONIALS = [
   { quote: 'Investor intros, hiring leads, and partnership requests each route into separate categories automatically. We went from 3 hours of weekly triage to zero.', author: 'Sarah Kim', role: 'CEO, Layerform · Series A', initials: 'SK', color: '#0d9488', icon: 'store', result: 'Zero manual inbox sorting' },
 ] as const;
 
-const COST_OF_INACTION = [
-  { stat: '147', label: 'emails per day', copy: 'The average professional receives 147 emails daily. Most are noise.', source: 'Radicati Group, 2024' },
-  { stat: '28%', label: 'of the workday', copy: 'Workers spend 28% of their day managing email — that\'s 11 hours a week.', source: 'McKinsey Global Institute' },
-  { stat: '$1,250', label: 'lost per week', copy: 'Unstructured inbound costs professionals $1,250/week in lost productivity.', source: 'Based on avg. salary × email time' },
-] as const;
+/* Cost of inaction section removed in pass 12 — adds scroll without conversion lift */
 
 const WHO_FOR_PRIMARY = [
   { icon: 'film', color: '#e11a8c', title: 'Creators and influencers', copy: 'Brand deals, collabs, and sponsorship requests — structured with budget and brief before they reach you.', before: '40+ random DMs a week', after: '5 qualified pitches with budget attached' },
@@ -74,29 +70,20 @@ const WHO_FOR_PRIMARY = [
 
 const WHO_FOR_MORE = [
   { icon: 'users', color: '#0284c7', title: 'Recruiters and hiring managers', copy: 'Require role, resume, and availability before candidate or vendor pitches land in your inbox.' },
-  { icon: 'home', color: '#16a34a', title: 'Real estate agents', copy: 'Collect property type, budget, and timeline before buyer or seller inquiries reach you.' },
   { icon: 'heart', color: '#dc2626', title: 'Nonprofits and communities', copy: 'Route volunteer inquiries, donations, partnerships, and media requests without manual triage.' },
   { icon: 'mic', color: '#9333ea', title: 'Event organizers', copy: 'Speaker submissions, sponsor inquiries, attendee questions, and media passes — each with their own intake form.' },
-  { icon: 'activity', color: '#0891b2', title: 'Healthcare and legal practices', copy: 'New patient or client intake, referrals, and existing client requests — structured before anyone reviews.' },
-  { icon: 'music', color: '#c026d3', title: 'Artists and musicians', copy: 'Licensing requests, booking inquiries, fan messages, and press — separated before they reach you.' },
   { icon: 'code', color: '#64748b', title: 'Open source maintainers', copy: 'Separate sponsorship inquiries, consulting requests, and hiring outreach from community noise.' },
 ] as const;
 
-const TRUST_ARCHITECTURE = [
-  { icon: 'lock', title: 'Encrypted everywhere', copy: 'All data encrypted in transit (TLS 1.3) and at rest (AES-256). Your email address is never stored in plaintext alongside sender data.' },
-  { icon: 'eye-off', title: 'Zero tracking, zero ads', copy: 'No analytics trackers, no ad pixels, no data brokers. We make money from subscriptions, not your data.' },
-  { icon: 'shield', title: 'You own your data', copy: 'Export or delete everything with one click. When you leave, your data leaves with you. GDPR and CCPA compliant.' },
-] as const;
+/* Trust architecture section removed in pass 12 — key claims moved to pricing trust row */
 
 const FAQ = [
   { q: 'Will people still be able to reach me easily?', a: 'Yes. Direct keeps you reachable — it just turns random inbound into structured requests with the context you need.' },
-  { q: 'Do I have to reply to every request?', a: 'No. You can accept, decline, or let requests expire on their own. Silence is a valid response.' },
-  { q: 'What happens to requests I don\u2019t accept?', a: 'They stay in your inbox with a "pending" status until you act on them or they expire automatically. Senders see a neutral status page — no ghosting guilt.' },
+  { q: 'Do I have to reply to every request?', a: 'No. You can accept, decline, or let requests expire on their own. Silence is a valid response — senders see a neutral status page, no ghosting guilt.' },
   { q: 'How is my data protected?', a: 'All data is encrypted in transit and at rest. Your email is never shared with senders, and we don\u2019t track, sell, or monetize your data. GDPR compliant.' },
   { q: 'What if someone doesn\u2019t want to fill out a form?', a: 'Then they probably weren\u2019t serious enough to deserve your time. Direct is designed to filter out low-effort outreach — that\u2019s the point.' },
   { q: 'Can I customize what information I collect?', a: 'Yes. You define the categories, required fields, and intake questions. Different request types can collect different information.' },
   { q: 'How does this work with my existing email?', a: 'Direct doesn\u2019t replace your email — it sits in front of it. Approved requests are forwarded to your real email. Your address is never exposed to senders.' },
-  { q: 'Is this just for individuals, or can teams use it?', a: 'Both. Individuals get a personal Direct page. Teams can route different request types to different people automatically — no shared inbox chaos.' },
 ] as const;
 
 export default async function DirectClientPage() {
@@ -261,7 +248,18 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 4a. Social proof — outcome metrics strip */}
+        {/* 4a. Mid-page CTA strip */}
+        <section className="direct-mid-cta-strip" aria-label="Mid-page call to action">
+          <h3>Ready to take control of your inbox?</h3>
+          {session ? (
+            <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — free</Link>
+          ) : (
+            <Link className="button primary direct-hero-button" href="/direct/signup">Protect my inbox — free</Link>
+          )}
+          <p>Free forever · No credit card · Live in 2 minutes</p>
+        </section>
+
+        {/* 4b. Social proof — outcome metrics strip */}
         <div className="direct-social-proof-strip" aria-label="Social proof">
           <div className="direct-social-proof-stat">
             <strong>96%</strong>
@@ -321,25 +319,7 @@ export default async function DirectClientPage() {
           </details>
         </section>
 
-        {/* 6. Cost of inaction — urgency section (moved before testimonials for narrative flow: problem → proof) */}
-        <section className="lane-panel direct-cost-panel" aria-label="The cost of unfiltered inbound">
-          <div className="direct-panel-intro">
-            <p className="lane-kicker">The cost of doing nothing</p>
-            <h2>Unfiltered inbound is expensive — even when it&apos;s &ldquo;free&rdquo;</h2>
-          </div>
-          <div className="direct-cost-grid">
-            {COST_OF_INACTION.map((c) => (
-              <article key={c.label} className="direct-cost-card">
-                <span className="direct-cost-stat">{c.stat}</span>
-                <span className="direct-cost-label">{c.label}</span>
-                <p>{c.copy}</p>
-                <span className="direct-cost-source">{c.source}</span>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* 6b. Testimonials — elevated typography (after cost section for maximum contrast: "this hurts" → "this works") */}
+        {/* 6. Testimonials — elevated typography */}
         <section className="lane-panel direct-testimonials-panel direct-testimonials-elevated" aria-label="What users say">
           <div className="direct-panel-intro">
             <p className="lane-kicker">What users say</p>
@@ -362,25 +342,7 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 7. Trust architecture — "why trust Knokio with privacy" */}
-        <section className="lane-panel direct-trust-arch-panel direct-section-dark" aria-label="Why trust Knokio">
-          <div className="direct-panel-intro">
-            <p className="lane-kicker">Privacy by design</p>
-            <h2>Your data is yours. Full stop.</h2>
-            <p className="direct-section-lede">Knokio is a privacy product — so we built it like one. No tracking, no ads, no data deals. Here&apos;s how we protect you.</p>
-          </div>
-          <div className="direct-trust-arch-grid">
-            {TRUST_ARCHITECTURE.map((t) => (
-              <article key={t.title} className="direct-trust-arch-card">
-                <DirectIcon name={t.icon} size={20} className="direct-trust-arch-icon" />
-                <h3>{t.title}</h3>
-                <p>{t.copy}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* 8. Pricing summary (with integrated security trust) */}
+        {/* 7. Pricing summary (with integrated security trust) */}
         <section className="lane-panel direct-pricing-panel direct-section-tinted" aria-label="Direct pricing overview">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Simple pricing</p>
@@ -422,12 +384,13 @@ export default async function DirectClientPage() {
             </article>
           </div>
           <div className="direct-pricing-trust" aria-label="Security and privacy">
+            <p className="direct-pricing-trust-heading">Privacy by design — your data is yours. Full stop.</p>
             <div className="direct-pricing-trust-claims">
               <span className="direct-security-claim"><DirectIcon name="lock" size={13} /> Email never shared</span>
               <span className="direct-security-claim"><DirectIcon name="shield" size={13} /> End-to-end encryption</span>
-              <span className="direct-security-claim"><DirectIcon name="eye-off" size={13} /> Zero tracking</span>
-              <span className="direct-security-claim"><DirectIcon name="x" size={13} /> No ads, ever</span>
-              <span className="direct-security-claim"><DirectIcon name="check" size={13} /> GDPR compliant</span>
+              <span className="direct-security-claim"><DirectIcon name="eye-off" size={13} /> Zero tracking or ads</span>
+              <span className="direct-security-claim"><DirectIcon name="check" size={13} /> GDPR &amp; CCPA compliant</span>
+              <span className="direct-security-claim"><DirectIcon name="check" size={13} /> Export or delete anytime</span>
             </div>
           </div>
         </section>
