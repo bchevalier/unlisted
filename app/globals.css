@@ -4512,3 +4512,378 @@ a:hover {
 }
 
 /* === End Pass 2-iter === */
+
+/* === Pass 1 (cron): Hero tagline, section ledes, visual hierarchy === */
+
+.direct-hero-tagline {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(14, 165, 163, 0.82);
+}
+
+.direct-hero-title {
+  font-size: 2.2rem;
+  line-height: 1.22;
+  max-width: 680px;
+  letter-spacing: -0.02em;
+}
+
+.direct-section-lede {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(31, 42, 68, 0.72);
+  max-width: 600px;
+}
+
+.direct-section-dark .direct-section-lede {
+  color: rgba(203, 213, 225, 0.82);
+}
+
+/* Enhanced benefit cards */
+.direct-proof-card {
+  padding: 20px 22px;
+}
+
+.direct-proof-title {
+  font-size: 16px;
+}
+
+.direct-proof-copy {
+  font-size: 15px;
+  line-height: 1.52;
+}
+
+/* Social proof strip — bigger, bolder */
+.direct-social-proof-strip {
+  padding: 24px 28px;
+  gap: 28px;
+}
+
+.direct-social-proof-stat strong {
+  font-size: 28px;
+  letter-spacing: -0.03em;
+}
+
+.direct-social-proof-stat span {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Comparison section — wide, visual emphasis */
+.direct-notform-panel-wide {
+  background:
+    radial-gradient(circle at 10% 14%, rgba(83, 240, 226, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 88% 84%, rgba(255, 68, 171, 0.06) 0%, transparent 40%),
+    linear-gradient(160deg, rgba(248, 250, 252, 0.96) 0%, rgba(255, 255, 255, 0.98) 100%) !important;
+  border-width: 2px !important;
+}
+
+.direct-notform-panel-wide .direct-panel-intro h2 {
+  font-size: 1.5rem;
+  line-height: 1.3;
+  max-width: 680px;
+}
+
+/* Mid-page CTA — elevated with larger text */
+.direct-inline-cta-elevated {
+  padding: 36px 28px;
+}
+
+.direct-inline-cta-elevated .direct-inline-cta-headline {
+  font-size: 17px;
+  font-weight: 600;
+  color: rgba(15, 23, 42, 0.86);
+  max-width: 560px;
+}
+
+.direct-inline-cta-elevated .direct-inline-cta-kicker {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.92);
+  max-width: 560px;
+}
+
+.direct-inline-cta-elevated .direct-inline-cta-kicker strong {
+  color: rgba(14, 165, 163, 0.88);
+}
+
+/* Before/after in example scenarios */
+.direct-proof-example-before {
+  margin: 0 0 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(31, 42, 68, 0.64);
+}
+
+.direct-proof-example-before strong {
+  color: rgba(31, 42, 68, 0.78);
+  font-weight: 700;
+}
+
+.direct-proof-example-detail strong {
+  color: rgba(14, 165, 163, 0.86);
+  font-weight: 700;
+}
+
+/* Audience section — bump body copy */
+.direct-audience-card p {
+  font-size: 15px;
+}
+
+/* Step cards — bump copy size */
+.direct-step-card p {
+  font-size: 15px;
+}
+
+/* FAQ — bump answer size */
+.direct-faq-answer {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* Pricing card highlighted (free) */
+.direct-pricing-card-highlighted {
+  border-color: rgba(14, 165, 163, 0.42);
+  box-shadow: 0 8px 24px rgba(14, 165, 163, 0.08);
+  background: linear-gradient(160deg, rgba(236, 253, 245, 0.4) 0%, rgba(255, 255, 255, 0.92) 100%);
+}
+
+/* Trust strip — slightly bigger pills */
+.direct-trust-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.direct-trust-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: rgba(255, 255, 255, 0.72);
+  color: rgba(15, 23, 42, 0.76);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.direct-trust-pill::before {
+  content: '✓';
+  color: rgba(14, 165, 163, 0.78);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* Final CTA — bigger heading */
+.direct-final-cta.direct-section-dark h2 {
+  font-size: 1.8rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+/* Post-scenarios CTA — slightly bigger lead */
+.direct-post-scenarios-lead {
+  font-size: 16px;
+}
+
+/* Demo entry — section bridge text */
+.direct-demo-entry .direct-panel-intro p {
+  font-size: 15px;
+  color: rgba(31, 42, 68, 0.76);
+}
+
+/* === End Pass 1 (cron) === */
+
+/* === Pass 2 (cron iter-02): Hero bullets, access layer def, testimonials, large before/after === */
+
+/* --- Hero: "access layer" definition line --- */
+.direct-hero-access-def {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(148, 163, 184, 0.92);
+  max-width: 580px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(83, 240, 226, 0.12);
+  background: rgba(83, 240, 226, 0.06);
+}
+
+/* --- Hero: scannable bullet list --- */
+.direct-hero-bullets {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  max-width: 580px;
+}
+
+.direct-hero-bullets li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.92);
+  line-height: 1.4;
+}
+
+.direct-hero-bullet-icon {
+  flex-shrink: 0;
+  color: rgba(83, 240, 226, 0.8);
+}
+
+/* --- Testimonials section --- */
+.direct-testimonials-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.direct-testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.direct-testimonial-card {
+  display: grid;
+  gap: 12px;
+  padding: 22px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  background: linear-gradient(160deg, rgba(248, 250, 252, 0.9) 0%, rgba(255, 255, 255, 0.96) 100%);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+  align-content: start;
+}
+
+.direct-testimonial-icon {
+  color: rgba(14, 165, 163, 0.7);
+}
+
+.direct-testimonial-quote {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.58;
+  color: rgba(15, 23, 42, 0.86);
+  font-style: italic;
+}
+
+.direct-testimonial-author {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(31, 42, 68, 0.6);
+  letter-spacing: 0.02em;
+}
+
+/* --- Large Before/After cards --- */
+.direct-proof-panel-large {
+  display: grid;
+  gap: 20px;
+}
+
+.direct-proof-examples-large {
+  display: grid;
+  gap: 16px;
+}
+
+.direct-proof-example-large {
+  display: grid;
+  gap: 14px;
+  padding: 24px;
+  border-radius: 18px;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  background: linear-gradient(160deg, rgba(248, 250, 252, 0.92) 0%, rgba(255, 255, 255, 0.98) 100%);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+}
+
+.direct-proof-example-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.direct-proof-example-icon-large {
+  flex-shrink: 0;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.direct-proof-example-headline-large {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: rgba(15, 23, 42, 0.94);
+  letter-spacing: -0.01em;
+}
+
+.direct-proof-example-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.direct-proof-col {
+  padding: 18px 20px;
+  border-radius: 14px;
+}
+
+.direct-proof-col p {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.direct-proof-col-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.direct-proof-col-before {
+  background: rgba(254, 242, 242, 0.6);
+  border: 1px solid rgba(239, 68, 68, 0.14);
+}
+
+.direct-proof-col-before .direct-proof-col-label {
+  color: rgba(185, 28, 28, 0.7);
+}
+
+.direct-proof-col-before p {
+  color: rgba(31, 42, 68, 0.72);
+}
+
+.direct-proof-col-after {
+  background: rgba(236, 253, 245, 0.6);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.direct-proof-col-after .direct-proof-col-label {
+  color: rgba(21, 128, 61, 0.8);
+}
+
+.direct-proof-col-after p {
+  color: rgba(15, 23, 42, 0.84);
+}
+
+/* --- Mobile stacks --- */
+@media (max-width: 860px) {
+  .direct-testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .direct-proof-example-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === End Pass 2 (cron iter-02) === */
