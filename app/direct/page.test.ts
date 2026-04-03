@@ -39,8 +39,8 @@ describe('DirectClientPage', () => {
     mock.mockResolvedValue(null as never);
     const html = await render();
 
-    expect(html).toContain('People email you.');
-    expect(html).toContain('You decide what gets through.');
+    expect(html).toContain('Stop letting strangers decide');
+    expect(html).toContain('what lands in your inbox.');
     expect(html).toContain('private until you approve');
     // Testimonial attribution
     expect(html).toContain('Mia Chen');
@@ -70,10 +70,10 @@ describe('DirectClientPage', () => {
     // Trust strip
     expect(html).toContain('Free tier is permanent');
     expect(html).toContain('Your data stays yours');
-    // Social proof
-    expect(html).toContain('requests filtered');
-    expect(html).toContain('Direct pages active');
+    // Social proof (outcome-focused metrics)
     expect(html).toContain('of spam stopped before inbox');
+    expect(html).toContain('saved per week on inbox triage');
+    expect(html).toContain('close rate on qualified leads');
     // CTAs should use varied labels across the page
     const protectMatches = html.match(/Protect my inbox/g);
     expect(protectMatches && protectMatches.length).toBeGreaterThanOrEqual(2);

@@ -6327,3 +6327,118 @@ a:hover {
 }
 
 /* === End Pass 6/16 === */
+
+/* === Pass 7/16 (cron iter-07): Social proof, page length, pricing, section focus === */
+
+/* --- Social proof: outcome-focused stat layout --- */
+.direct-social-proof-strip {
+  padding: 24px 28px !important;
+  gap: 28px !important;
+  border: 2px solid rgba(14, 165, 163, 0.16) !important;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(83, 240, 226, 0.1) 0%, transparent 35%),
+    radial-gradient(circle at 80% 50%, rgba(83, 240, 226, 0.08) 0%, transparent 35%),
+    linear-gradient(160deg, rgba(240, 253, 250, 0.6) 0%, rgba(255, 255, 255, 0.95) 100%) !important;
+}
+
+/* --- Before/After section: 2 cards side by side instead of stacked --- */
+.direct-proof-examples-large {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+/* --- Security strip: more prominent visual weight --- */
+.direct-security-strip-v3 {
+  border: 2px solid rgba(14, 165, 163, 0.2) !important;
+  background:
+    radial-gradient(circle at 4% 50%, rgba(83, 240, 226, 0.14) 0%, transparent 40%),
+    linear-gradient(160deg, rgba(240, 253, 250, 0.7) 0%, rgba(255, 255, 255, 0.96) 100%) !important;
+  box-shadow: 0 8px 22px rgba(14, 165, 163, 0.06) !important;
+}
+
+.direct-security-strip-v3 .direct-security-headline {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.01em;
+}
+
+/* --- Hero: action-oriented subtitle emphasis --- */
+.direct-hero-subtitle strong {
+  color: rgba(83, 240, 226, 0.9) !important;
+}
+
+/* --- Testimonial: result line with teal accent --- */
+.direct-testimonial-result {
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: rgba(14, 165, 163, 0.9) !important;
+}
+
+.direct-testimonial-result-icon {
+  color: rgba(14, 165, 163, 0.85) !important;
+}
+
+/* --- Pricing: Pro card price anchor styling --- */
+.direct-pricing-card-paid .direct-pricing-price {
+  font-size: 1.5rem !important;
+  color: rgba(15, 23, 42, 0.88) !important;
+  font-weight: 800 !important;
+}
+
+/* --- Before/After: tighter cards at 2-col --- */
+.direct-proof-example-large {
+  padding: 20px !important;
+}
+
+.direct-proof-example-headline-large {
+  font-size: 16px !important;
+}
+
+/* --- Inline CTA: eyebrow + kicker stronger hierarchy --- */
+.direct-inline-cta-eyebrow {
+  font-size: 12px !important;
+  color: rgba(14, 165, 163, 0.82) !important;
+}
+
+.direct-inline-cta-headline {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+}
+
+.direct-inline-cta-kicker strong {
+  color: rgba(14, 165, 163, 0.88) !important;
+}
+
+/* --- Mobile: B/A grid stacks --- */
+@media (max-width: 860px) {
+  .direct-proof-examples-large {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* --- Hero social proof line --- */
+.direct-hero-social-proof {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(83, 240, 226, 0.18);
+  background: rgba(83, 240, 226, 0.08);
+  color: rgba(148, 163, 184, 0.92);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.direct-hero-social-proof::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.85);
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
+  flex-shrink: 0;
+}
+
+/* === End Pass 7/16 === */
