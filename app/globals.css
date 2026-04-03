@@ -7719,3 +7719,210 @@ a:hover {
 }
 
 /* === End Pass 7/16 (cron direct-v2-07) === */
+
+/* === Pass 8/16 (cron direct-v2-08): CTA unification, section cleanup, visual polish === */
+
+/* --- 1. Remove gradient divider before tinted sections for cleaner transitions --- */
+.direct-main-shell > .direct-section-tinted::before,
+.direct-main-shell > .direct-post-audience-cta::before,
+.direct-main-shell > .direct-testimonials-elevated::before {
+  display: none !important;
+}
+
+/* --- 2. Tighter section H2 line-height for punchier headings --- */
+.direct-heading-marquee {
+  font-size: 1.6rem !important;
+  line-height: 1.22 !important;
+  max-width: 640px !important;
+}
+
+/* --- 3. Pricing: stronger free card visual weight --- */
+.direct-pricing-card-free.direct-pricing-card-highlighted {
+  border: 2px solid rgba(14, 165, 163, 0.45) !important;
+  background: linear-gradient(160deg, rgba(215, 255, 251, 0.3) 0%, rgba(255, 255, 255, 0.96) 100%) !important;
+  box-shadow:
+    0 0 0 2px rgba(14, 165, 163, 0.08),
+    0 16px 40px rgba(14, 165, 163, 0.12) !important;
+}
+
+.direct-pricing-badge {
+  background: rgba(14, 165, 163, 0.14) !important;
+  color: rgba(13, 120, 113, 0.95) !important;
+  font-size: 11.5px !important;
+  padding: 5px 12px !important;
+}
+
+/* --- 4. Pricing paid card: visually recede to anchor on free --- */
+.direct-pricing-card-paid {
+  opacity: 0.82 !important;
+  background: rgba(248, 250, 252, 0.9) !important;
+  border-color: rgba(203, 213, 225, 0.6) !important;
+}
+
+.direct-pricing-card-paid:hover {
+  opacity: 0.95 !important;
+}
+
+/* --- 5. Final CTA: cleaner, less verbose --- */
+.direct-final-cta.direct-section-dark {
+  padding: 52px 36px !important;
+  text-align: center !important;
+}
+
+.direct-final-cta.direct-section-dark .direct-faq-actions {
+  justify-content: center !important;
+}
+
+/* --- 6. FAQ: single column, max-width for readability --- */
+.direct-faq-accordion {
+  max-width: 660px !important;
+}
+
+/* --- 7. Hero: ensure subtitle doesn't overlap mockup on mid screens --- */
+@media (max-width: 1100px) and (min-width: 861px) {
+  .direct-hero-layout {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 32px !important;
+  }
+}
+
+/* --- 8. Social proof strip: tighter stat descriptions --- */
+.direct-social-proof-stat span {
+  max-width: 130px !important;
+  line-height: 1.3 !important;
+}
+
+/* --- 9. Testimonial result line: bolder for scannability --- */
+.direct-testimonial-result {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  padding-top: 10px !important;
+}
+
+/* --- 10. Audience transform row: slightly bolder "after" state --- */
+.direct-audience-after {
+  font-weight: 700 !important;
+  color: rgba(13, 148, 136, 0.88) !important;
+}
+
+/* === End Pass 8/16 (cron direct-v2-08) === */
+
+/* === Pass 2/16 iter-02 v2: Cost section, section headings, CTA clarity, stat specificity === */
+
+/* --- Cost section: dramatic visual break with urgency --- */
+.direct-cost-panel {
+  background:
+    radial-gradient(circle at 88% 20%, rgba(239, 68, 68, 0.08) 0%, transparent 36%),
+    radial-gradient(circle at 12% 80%, rgba(251, 191, 36, 0.06) 0%, transparent 36%),
+    linear-gradient(160deg, #fffbf5 0%, #fff8f5 50%, #ffffff 100%) !important;
+  border: 2px solid rgba(239, 68, 68, 0.14) !important;
+  box-shadow:
+    0 0 0 1px rgba(239, 68, 68, 0.06),
+    0 14px 36px rgba(239, 68, 68, 0.06) !important;
+}
+
+.direct-cost-panel .direct-panel-intro h2 {
+  font-size: 1.55rem !important;
+  color: rgba(127, 29, 29, 0.88) !important;
+}
+
+.direct-cost-panel .lane-kicker {
+  color: rgba(185, 28, 28, 0.72) !important;
+}
+
+/* Cost stat: red for dramatic urgency */
+.direct-cost-stat {
+  font-size: 42px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.03em;
+  color: rgba(220, 38, 38, 0.85) !important;
+  line-height: 1 !important;
+}
+
+.direct-cost-label {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase;
+  color: rgba(31, 42, 68, 0.58) !important;
+}
+
+.direct-cost-card p {
+  font-size: 14.5px !important;
+  line-height: 1.55 !important;
+  color: rgba(31, 42, 68, 0.76) !important;
+}
+
+.direct-cost-source {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(31, 42, 68, 0.38);
+  font-style: italic;
+}
+
+.direct-cost-card {
+  padding: 22px !important;
+  border-left: 3px solid rgba(220, 38, 38, 0.3) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-radius: 14px;
+  border: 1px solid rgba(239, 68, 68, 0.1);
+  transition: border-left-color 0.2s ease, transform 0.15s ease;
+}
+
+.direct-cost-card:hover {
+  border-left-color: rgba(220, 38, 38, 0.55) !important;
+  transform: translateY(-2px);
+}
+
+/* --- Section flow: cost → how-it-works transition should feel like rescue --- */
+.direct-cost-panel + .direct-section-dark {
+  margin-top: 0 !important;
+}
+
+/* --- Benefit cards: self-explanatory stats --- */
+.direct-proof-stat {
+  margin-top: 4px;
+}
+
+.direct-proof-stat strong {
+  font-size: 24px !important;
+  font-weight: 900 !important;
+}
+
+.direct-proof-stat span {
+  font-size: 13px !important;
+  color: rgba(31, 42, 68, 0.62) !important;
+  font-weight: 600 !important;
+}
+
+/* --- Audience transform rows: stronger visual differentiation --- */
+.direct-audience-transform {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.04) 0%, rgba(255, 255, 255, 0.95) 48%, rgba(14, 165, 163, 0.06) 100%) !important;
+  border: 1px solid rgba(229, 231, 235, 0.6) !important;
+}
+
+.direct-audience-before {
+  font-size: 13px;
+  color: rgba(185, 28, 28, 0.72) !important;
+}
+
+.direct-audience-after {
+  font-size: 13px;
+  color: rgba(13, 148, 136, 0.92) !important;
+  font-weight: 700 !important;
+}
+
+/* --- Hero subtitle: stronger "access layer" + "private until approved" emphasis --- */
+.direct-hero-subtitle strong {
+  color: rgba(83, 240, 226, 0.95) !important;
+  font-weight: 800 !important;
+}
+
+/* --- Proof strip before cost section: divider removal for flow --- */
+.direct-main-shell > .direct-cost-panel::before {
+  display: none !important;
+}
+
+/* === End Pass 2/16 iter-02 v2 === */

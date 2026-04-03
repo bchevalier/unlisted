@@ -85,6 +85,11 @@ describe('DirectClientPage', () => {
     expect(html).toContain('of spam stopped before inbox');
     expect(html).toContain('saved per week on inbox triage');
     expect(html).toContain('close rate on qualified leads');
+    // Cost of inaction section
+    expect(html).toContain('The cost of doing nothing');
+    expect(html).toContain('147');
+    expect(html).toContain('28%');
+    expect(html).toContain('$1,250');
     // CTAs should use varied labels across the page
     const protectMatches = html.match(/Protect my inbox/g);
     expect(protectMatches && protectMatches.length).toBeGreaterThanOrEqual(2);
