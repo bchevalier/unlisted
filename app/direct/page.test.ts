@@ -50,7 +50,7 @@ describe('DirectClientPage', () => {
     expect(html).toContain('David Okafor');
     expect(html).toContain('Sarah Kim');
     expect(html).toContain('Protect my inbox');
-    expect(html).toContain('See a live example');
+    expect(html).toContain('See how it works');
     expect(html).toContain('Structured from the start');
     expect(html).toContain('Noise never reaches you');
     expect(html).toContain('Who Direct is for');
@@ -102,7 +102,7 @@ describe('DirectClientPage', () => {
 
     expect(html).toContain('j@example.com');
     expect(html).toContain('Protect my inbox');
-    expect(html).toContain('See a live example');
+    expect(html).toContain('See how it works');
     // Verify GDPR security claim is present
     expect(html).toContain('GDPR compliant');
   });

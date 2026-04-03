@@ -8639,3 +8639,256 @@ a:hover {
 }
 
 /* === End Pass 10/16 === */
+
+/* === Pass 11/16 (cron direct-iter-11): Section reorder, hero declutter, testimonial credibility, typography hierarchy === */
+
+/* --- 1. Hero social proof: simplified (icon + text, no avatar stack) --- */
+.direct-hero-social-proof-simple {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 20px !important;
+  border-radius: 999px !important;
+  background: rgba(83, 240, 226, 0.08) !important;
+  border: 1px solid rgba(83, 240, 226, 0.18) !important;
+  margin-top: 8px !important;
+}
+
+.direct-hero-social-proof-simple .direct-hero-social-proof-icon {
+  color: rgba(83, 240, 226, 0.78);
+  flex-shrink: 0;
+}
+
+.direct-hero-social-proof-simple .direct-hero-social-line {
+  margin: 0;
+  font-size: 14px !important;
+  color: rgba(226, 232, 240, 0.78) !important;
+  line-height: 1.3;
+}
+
+.direct-hero-social-proof-simple .direct-hero-social-line strong {
+  color: rgba(83, 240, 226, 0.95) !important;
+  font-weight: 700 !important;
+}
+
+/* --- 2. Hero: wider content gap for breathing room, reduce density --- */
+.direct-hero-content {
+  gap: 22px !important;
+}
+
+.direct-hero-layout {
+  padding: 100px 44px 84px !important;
+  gap: 48px !important;
+}
+
+/* --- 3. Hero title: slightly larger for dominance --- */
+.direct-hero-title {
+  font-size: 2.85rem !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.035em !important;
+  font-weight: 800 !important;
+}
+
+/* --- 4. Hero subtitle: max-width tighter for comfortable reading --- */
+.direct-hero-subtitle {
+  font-size: 17px !important;
+  max-width: 520px !important;
+  line-height: 1.65 !important;
+  color: rgba(15, 23, 42, 0.72) !important;
+}
+
+/* --- 5. Hero bullets: slightly more space between items --- */
+.direct-hero-bullets {
+  gap: 10px !important;
+}
+
+.direct-hero-bullets li {
+  font-size: 14.5px !important;
+  font-weight: 500 !important;
+}
+
+/* --- 6. Mockup: full opacity, larger presence --- */
+.direct-hero-mockup {
+  opacity: 1 !important;
+}
+
+.direct-mockup-chrome-v2 {
+  max-width: 540px !important;
+}
+
+/* --- 7. Main shell gap: slightly larger for premium breathing room --- */
+.direct-main-shell {
+  gap: 40px !important;
+}
+
+/* --- 8. Section panels: slightly more internal vertical padding for openness --- */
+.direct-page .lane-panel {
+  padding: 48px 40px !important;
+}
+
+/* --- 9. Testimonial credibility: role text slightly larger + emphasized --- */
+.direct-testimonial-role {
+  font-size: 13px !important;
+  color: rgba(31, 42, 68, 0.64) !important;
+}
+
+.direct-testimonial-name {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+.direct-testimonial-avatar {
+  width: 42px !important;
+  height: 42px !important;
+  font-size: 14px !important;
+}
+
+/* --- 10. Testimonial card: larger quote for prominence --- */
+.direct-testimonial-quote {
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+}
+
+.direct-testimonial-card-featured .direct-testimonial-quote {
+  font-size: 17px !important;
+  line-height: 1.58 !important;
+}
+
+/* --- 11. Comparison section: "Recommended" visual badge on Direct card --- */
+.direct-notform-card-direct {
+  position: relative !important;
+}
+
+.direct-notform-card-direct::before {
+  content: '✓ RECOMMENDED' !important;
+  position: absolute !important;
+  top: -12px !important;
+  right: 20px !important;
+  display: inline-flex !important;
+  padding: 4px 12px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, #0d9488 0%, #0ea5a3 100%) !important;
+  color: #ffffff !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  box-shadow: 0 4px 12px rgba(14, 165, 163, 0.3) !important;
+}
+
+/* --- 12. Comparison cards: stronger contrast between form and Direct --- */
+.direct-notform-card-form {
+  border: 2px solid rgba(239, 68, 68, 0.2) !important;
+  background: linear-gradient(160deg, rgba(254, 226, 226, 0.55) 0%, rgba(255, 245, 245, 0.92) 100%) !important;
+}
+
+.direct-notform-card-direct {
+  border: 2px solid rgba(14, 165, 163, 0.4) !important;
+  background: linear-gradient(160deg, rgba(204, 251, 241, 0.55) 0%, rgba(240, 253, 250, 0.96) 100%) !important;
+  box-shadow:
+    0 0 0 2px rgba(14, 165, 163, 0.1),
+    0 16px 40px rgba(14, 165, 163, 0.12) !important;
+}
+
+/* --- 13. Section heading hierarchy: biggest for key conversion sections --- */
+.direct-cost-panel .direct-panel-intro h2 {
+  font-size: 1.7rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.025em !important;
+}
+
+.direct-testimonials-panel .direct-panel-intro h2 {
+  font-size: 1.65rem !important;
+}
+
+.direct-pricing-panel .direct-panel-intro h2 {
+  font-size: 1.8rem !important;
+  line-height: 1.18 !important;
+}
+
+/* --- 14. Section kickers: consistent teal accent --- */
+.lane-kicker {
+  color: rgba(14, 165, 163, 0.78) !important;
+}
+
+/* Light section kicker override */
+.direct-section-dark .lane-kicker {
+  color: rgba(83, 240, 226, 0.78) !important;
+}
+
+/* --- 15. Section lede text: larger for clarity --- */
+.direct-section-lede {
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+  max-width: 600px !important;
+  color: rgba(31, 42, 68, 0.72) !important;
+}
+
+.direct-section-dark .direct-section-lede {
+  color: rgba(203, 213, 225, 0.82) !important;
+}
+
+/* --- 16. Social proof strip: more dramatic stats for scannability --- */
+.direct-social-proof-stat strong {
+  font-size: 42px !important;
+  font-weight: 900 !important;
+}
+
+/* --- 17. Trust strip: better visual weight --- */
+.direct-trust-strip {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 14px !important;
+  flex-wrap: wrap !important;
+  padding: 14px 0 !important;
+}
+
+.direct-trust-pill {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: rgba(15, 23, 42, 0.68) !important;
+  padding: 8px 14px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(14, 165, 163, 0.18) !important;
+  background: rgba(240, 253, 250, 0.6) !important;
+}
+
+/* --- 18. Proof cards: larger body text for readability --- */
+.direct-proof-copy {
+  font-size: 14.5px !important;
+  line-height: 1.55 !important;
+}
+
+/* --- 19. Hero CTA: stop pulse animation (too distracting) --- */
+.direct-hero-actions .button.primary {
+  animation: none !important;
+}
+
+/* --- 20. Audience "See more" toggle: push further down --- */
+.direct-audience-more {
+  margin-top: 10px !important;
+}
+
+/* --- 21. Mobile adjustments --- */
+@media (max-width: 860px) {
+  .direct-page .lane-panel {
+    padding: 36px 24px !important;
+  }
+  .direct-hero-layout {
+    padding: 64px 22px 52px !important;
+  }
+  .direct-hero-title {
+    font-size: 2rem !important;
+    line-height: 1.15 !important;
+  }
+  .direct-main-shell {
+    gap: 28px !important;
+  }
+  .direct-notform-card-direct::before {
+    top: -10px !important;
+    right: 12px !important;
+    font-size: 9px !important;
+  }
+}
+
+/* === End Pass 11/16 === */

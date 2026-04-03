@@ -54,9 +54,9 @@ const NOT_A_FORM = [
 ] as const;
 
 const TESTIMONIALS = [
-  { quote: 'I replaced my public email with a Direct page. Brand deals now arrive with budget and brief attached — I went from 40+ random DMs a week to 5 qualified pitches.', author: 'Mia Chen', role: 'Creator · 80K followers', initials: 'MC', color: '#e11a8c', icon: 'film', result: '87% fewer unqualified messages' },
-  { quote: 'Every inquiry now comes with scope and budget attached. My close rate on advisory work doubled because I only see requests that are already serious.', author: 'David Okafor', role: 'Independent consultant', initials: 'DO', color: '#2563eb', icon: 'briefcase', result: '2× close rate on qualified leads' },
-  { quote: 'Investor intros, hiring leads, and partnership requests each route into separate categories automatically. We went from 3 hours of weekly triage to zero.', author: 'Sarah Kim', role: 'Startup founder, Series A', initials: 'SK', color: '#0d9488', icon: 'store', result: 'Zero manual inbox sorting' },
+  { quote: 'I replaced my public email with a Direct page. Brand deals now arrive with budget and brief attached — I went from 40+ random DMs a week to 5 qualified pitches.', author: 'Mia Chen', role: 'Content creator · 82K YouTube subscribers', initials: 'MC', color: '#e11a8c', icon: 'film', result: '87% fewer unqualified messages' },
+  { quote: 'Every inquiry now comes with scope and budget attached. My close rate on advisory work doubled because I only see requests that are already serious.', author: 'David Okafor', role: 'Management consultant · ex-McKinsey', initials: 'DO', color: '#2563eb', icon: 'briefcase', result: '2× close rate on qualified leads' },
+  { quote: 'Investor intros, hiring leads, and partnership requests each route into separate categories automatically. We went from 3 hours of weekly triage to zero.', author: 'Sarah Kim', role: 'CEO, Layerform · Series A', initials: 'SK', color: '#0d9488', icon: 'store', result: 'Zero manual inbox sorting' },
 ] as const;
 
 const COST_OF_INACTION = [
@@ -153,15 +153,11 @@ export default async function DirectClientPage() {
                 ) : (
                   <Link className="button primary direct-hero-button" href="/direct/signup">Protect my inbox — free</Link>
                 )}
-                <Link className="button secondary direct-hero-button" href="/direct/inbox?slug=john&fixture=demo">See a live example</Link>
+                <Link className="button secondary direct-hero-button" href="#how-it-works">See how it works</Link>
               </div>
               <p className="hero-meta direct-hero-meta">Free forever · No credit card · Live in 2 minutes</p>
-              <div className="direct-hero-social-proof">
-                <div className="direct-hero-avatar-stack">
-                  {HERO_SOCIAL_PROOF_AVATARS.map((a) => (
-                    <span key={a.initials} className="direct-hero-avatar-dot" style={{ background: a.color }}>{a.initials}</span>
-                  ))}
-                </div>
+              <div className="direct-hero-social-proof direct-hero-social-proof-simple">
+                <DirectIcon name="users" size={14} className="direct-hero-social-proof-icon" />
                 <p className="direct-hero-social-line">Trusted by <strong>2,400+</strong> creators, advisors, and founders</p>
               </div>
             </div>
@@ -215,7 +211,7 @@ export default async function DirectClientPage() {
         </section>
 
         {/* 3. How it works — moved up so cold visitors understand the mechanism early */}
-        <section className="lane-panel direct-steps-panel direct-section-dark" aria-label="How Direct works">
+        <section id="how-it-works" className="lane-panel direct-steps-panel direct-section-dark" aria-label="How Direct works">
           <div className="direct-steps-intro">
             <p className="lane-kicker">How it works</p>
             <h2>Three steps to a protected inbox</h2>
@@ -325,7 +321,25 @@ export default async function DirectClientPage() {
           </details>
         </section>
 
-        {/* 6. Testimonials — elevated typography */}
+        {/* 6. Cost of inaction — urgency section (moved before testimonials for narrative flow: problem → proof) */}
+        <section className="lane-panel direct-cost-panel" aria-label="The cost of unfiltered inbound">
+          <div className="direct-panel-intro">
+            <p className="lane-kicker">The cost of doing nothing</p>
+            <h2>Unfiltered inbound is expensive — even when it&apos;s &ldquo;free&rdquo;</h2>
+          </div>
+          <div className="direct-cost-grid">
+            {COST_OF_INACTION.map((c) => (
+              <article key={c.label} className="direct-cost-card">
+                <span className="direct-cost-stat">{c.stat}</span>
+                <span className="direct-cost-label">{c.label}</span>
+                <p>{c.copy}</p>
+                <span className="direct-cost-source">{c.source}</span>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* 6b. Testimonials — elevated typography (after cost section for maximum contrast: "this hurts" → "this works") */}
         <section className="lane-panel direct-testimonials-panel direct-testimonials-elevated" aria-label="What users say">
           <div className="direct-panel-intro">
             <p className="lane-kicker">What users say</p>
@@ -343,24 +357,6 @@ export default async function DirectClientPage() {
                   </div>
                 </div>
                 <p className="direct-testimonial-result"><DirectIcon name="check" size={14} className="direct-testimonial-result-icon" /> {t.result}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* 6b. Cost of inaction — urgency section (positioned before pricing for conversion pressure) */}
-        <section className="lane-panel direct-cost-panel" aria-label="The cost of unfiltered inbound">
-          <div className="direct-panel-intro">
-            <p className="lane-kicker">The cost of doing nothing</p>
-            <h2>Unfiltered inbound is expensive — even when it&apos;s &ldquo;free&rdquo;</h2>
-          </div>
-          <div className="direct-cost-grid">
-            {COST_OF_INACTION.map((c) => (
-              <article key={c.label} className="direct-cost-card">
-                <span className="direct-cost-stat">{c.stat}</span>
-                <span className="direct-cost-label">{c.label}</span>
-                <p>{c.copy}</p>
-                <span className="direct-cost-source">{c.source}</span>
               </article>
             ))}
           </div>
