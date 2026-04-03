@@ -7926,3 +7926,330 @@ a:hover {
 }
 
 /* === End Pass 2/16 iter-02 v2 === */
+
+/* === Pass 9/16: Section reorder polish, warm CTA, body text bump, hero tightening === */
+
+/* --- 1. Warm CTA accent — orange-amber primary buttons pop against teal brand --- */
+.button.primary.direct-hero-button,
+.direct-pricing-cta.button.primary,
+.direct-floating-cta-btn.button.primary,
+.direct-final-cta .button.primary {
+  background: linear-gradient(160deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(217, 119, 6, 0.4) !important;
+  box-shadow:
+    0 8px 24px rgba(245, 158, 11, 0.25),
+    0 0 0 1px rgba(217, 119, 6, 0.12) !important;
+}
+
+.button.primary.direct-hero-button:hover,
+.direct-pricing-cta.button.primary:hover,
+.direct-floating-cta-btn.button.primary:hover,
+.direct-final-cta .button.primary:hover {
+  background: linear-gradient(160deg, #d97706 0%, #b45309 100%) !important;
+  box-shadow:
+    0 12px 32px rgba(245, 158, 11, 0.35),
+    0 0 0 1px rgba(217, 119, 6, 0.2) !important;
+  transform: translateY(-1px);
+}
+
+/* Override the teal pulse for warm CTA */
+.direct-hero-actions .button.primary {
+  animation: cta-warm-glow 3s ease-in-out infinite !important;
+}
+
+@keyframes cta-warm-glow {
+  0%, 100% { box-shadow: 0 10px 28px rgba(245, 158, 11, 0.22), 0 0 0 1px rgba(217, 119, 6, 0.1); }
+  50% { box-shadow: 0 10px 32px rgba(245, 158, 11, 0.35), 0 0 0 3px rgba(245, 158, 11, 0.08); }
+}
+
+.direct-hero-actions .button.primary:hover {
+  animation: none !important;
+}
+
+/* Floating CTA also warm */
+.direct-floating-cta-btn {
+  background: linear-gradient(160deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(217, 119, 6, 0.3) !important;
+  box-shadow:
+    0 8px 24px rgba(245, 158, 11, 0.3),
+    0 0 0 1px rgba(217, 119, 6, 0.15),
+    0 20px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* --- 2. Body text size bump — key sections get 15-16px for readability --- */
+.direct-proof-copy {
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+.direct-step-card p {
+  font-size: 15.5px !important;
+  line-height: 1.6 !important;
+}
+
+.direct-notform-card p {
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+.direct-audience-card p {
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+.direct-trust-arch-card p {
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+.direct-pricing-desc {
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+.direct-pricing-list li {
+  font-size: 15px !important;
+}
+
+.direct-cost-card p {
+  font-size: 15px !important;
+  line-height: 1.58 !important;
+}
+
+/* --- 3. Hero subtitle: larger for cold-visitor clarity --- */
+.direct-hero-subtitle {
+  font-size: 17.5px !important;
+  line-height: 1.58 !important;
+  max-width: 560px !important;
+  color: rgba(15, 23, 42, 0.78) !important;
+}
+
+/* "access layer" and "Private until approved" emphasis in lighter teal for readability */
+.direct-hero-subtitle strong {
+  color: rgba(13, 148, 136, 0.92) !important;
+  font-weight: 700 !important;
+}
+
+/* --- 4. Hero bullets: slightly larger --- */
+.direct-hero-bullets li {
+  font-size: 15px !important;
+  color: rgba(15, 23, 42, 0.84) !important;
+  font-weight: 500 !important;
+}
+
+/* --- 5. Hero meta: more visible --- */
+.direct-hero-meta {
+  font-size: 13.5px !important;
+  color: rgba(15, 23, 42, 0.58) !important;
+  font-weight: 600 !important;
+}
+
+/* --- 6. Hero social proof: on-brand but not overwhelming --- */
+.direct-hero-social-proof {
+  margin-top: 16px !important;
+  padding: 8px 14px !important;
+  background: rgba(15, 23, 42, 0.04) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  border-radius: 999px !important;
+}
+
+.direct-hero-social-line {
+  font-size: 13.5px !important;
+  color: rgba(15, 23, 42, 0.68) !important;
+}
+
+.direct-hero-social-line strong {
+  color: rgba(13, 148, 136, 0.9) !important;
+  font-weight: 700 !important;
+}
+
+.direct-hero-avatar-dot {
+  border-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.direct-hero-avatar-stack {
+  display: flex;
+  margin-right: 8px;
+}
+
+.direct-hero-avatar-dot {
+  width: 28px !important;
+  height: 28px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 9.5px !important;
+  font-weight: 700;
+  color: #fff;
+  margin-left: -6px;
+}
+
+.direct-hero-avatar-dot:first-child {
+  margin-left: 0;
+}
+
+/* --- 7. Section heading consistency: all panels use same kicker + heading pattern --- */
+.lane-kicker {
+  font-size: 12.5px !important;
+  letter-spacing: 0.1em !important;
+  font-weight: 800 !important;
+  color: rgba(13, 148, 136, 0.78) !important;
+}
+
+/* Override for dark sections */
+.direct-section-dark .lane-kicker {
+  color: rgba(83, 240, 226, 0.8) !important;
+}
+
+/* Override for cost section */
+.direct-cost-panel .lane-kicker {
+  color: rgba(185, 28, 28, 0.72) !important;
+}
+
+/* --- 8. Section H2 consistency: uniform size across all mid-page sections --- */
+.direct-panel-intro h2,
+.direct-steps-intro h2 {
+  font-size: 1.75rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.025em !important;
+  font-weight: 800 !important;
+  color: rgba(15, 23, 42, 0.95) !important;
+}
+
+.direct-faq-intro h2 {
+  font-size: 1.5rem !important;
+  color: rgba(15, 23, 42, 0.95) !important;
+}
+
+.direct-section-dark h2 {
+  color: #f1f5f9 !important;
+}
+
+.direct-final-cta.direct-section-dark h2 {
+  color: transparent !important; /* keeps gradient text */
+}
+
+/* --- 9. Section lede text: consistent across dark/light sections --- */
+.direct-section-lede {
+  font-size: 16px !important;
+  line-height: 1.55 !important;
+  max-width: 640px !important;
+}
+
+/* --- 10. How-it-works step cards: slightly more prominent on dark bg --- */
+.direct-section-dark .direct-step-card {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(6px);
+}
+
+.direct-section-dark .direct-step-card h3 {
+  font-size: 1.08rem !important;
+  font-weight: 700 !important;
+}
+
+/* --- 11. Benefit proof-strip: cards taller with stat prominence --- */
+.direct-proof-stat strong {
+  font-size: 28px !important;
+  color: rgba(13, 148, 136, 0.92) !important;
+  font-weight: 900 !important;
+}
+
+.direct-proof-stat span {
+  font-size: 12.5px !important;
+  color: rgba(31, 42, 68, 0.58) !important;
+  font-weight: 600 !important;
+}
+
+/* --- 12. Comparison highlights: pill-style badges --- */
+.direct-notform-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.direct-notform-highlight {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.direct-notform-card-form .direct-notform-highlight {
+  background: rgba(239, 68, 68, 0.08);
+  color: rgba(185, 28, 28, 0.78);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.direct-notform-card-direct .direct-notform-highlight {
+  background: rgba(14, 165, 163, 0.08);
+  color: rgba(13, 120, 113, 0.88);
+  border: 1px solid rgba(14, 165, 163, 0.2);
+}
+
+/* --- 13. Testimonial cards: larger quote for readability --- */
+.direct-testimonial-quote {
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+  color: rgba(15, 23, 42, 0.88) !important;
+}
+
+.direct-testimonial-card-featured .direct-testimonial-quote {
+  font-size: 17px !important;
+}
+
+/* --- 14. FAQ answers: more readable --- */
+.direct-faq-answer {
+  font-size: 15.5px !important;
+  line-height: 1.65 !important;
+  color: rgba(31, 42, 68, 0.78) !important;
+}
+
+/* --- 15. Pricing: badge styling with warm accent --- */
+.direct-pricing-badge {
+  background: linear-gradient(160deg, rgba(245, 158, 11, 0.14) 0%, rgba(217, 119, 6, 0.1) 100%) !important;
+  color: rgba(180, 83, 9, 0.92) !important;
+  font-size: 11.5px !important;
+  font-weight: 800 !important;
+  padding: 5px 14px !important;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 158, 11, 0.2) !important;
+}
+
+/* --- 16. Pricing free CTA: warm accent matches hero --- */
+.direct-pricing-card-free .direct-pricing-cta {
+  background: linear-gradient(160deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(217, 119, 6, 0.3) !important;
+}
+
+/* --- 17. Mobile: preserve warm CTA on smaller screens --- */
+@media (max-width: 640px) {
+  .direct-hero-subtitle {
+    font-size: 16px !important;
+  }
+  .direct-hero-bullets li {
+    font-size: 14px !important;
+  }
+  .button.primary.direct-hero-button {
+    font-size: 15px !important;
+    padding: 14px 24px !important;
+    min-width: 200px !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .direct-panel-intro h2,
+  .direct-steps-intro h2 {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* === End Pass 9/16 === */

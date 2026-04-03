@@ -214,14 +214,34 @@ export default async function DirectClientPage() {
           ))}
         </section>
 
-        {/* 2b. Trust signals strip */}
+        {/* 3. How it works — moved up so cold visitors understand the mechanism early */}
+        <section className="lane-panel direct-steps-panel direct-section-dark" aria-label="How Direct works">
+          <div className="direct-steps-intro">
+            <p className="lane-kicker">How it works</p>
+            <h2>Three steps to a protected inbox</h2>
+            <p className="direct-section-lede">No code, no complex setup. You&apos;ll be filtering inbound in under two minutes.</p>
+          </div>
+          <div className="direct-steps-grid">
+            {HOW_IT_WORKS.map((s) => (
+              <article key={s.step} className="direct-step-card direct-step-card-inline">
+                <div className="direct-step-head">
+                  <span className="direct-step-number">{s.step}</span>
+                  <h3>{s.title}</h3>
+                </div>
+                <p>{s.copy}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* 3a. Trust signals strip */}
         <div className="direct-trust-strip" aria-label="Trust signals">
           {TRUST_SIGNALS.map((signal) => (
             <span key={signal} className="direct-trust-pill">{signal}</span>
           ))}
         </div>
 
-        {/* 3. Not a contact form — comparison (moved up as key differentiator) */}
+        {/* 4. Not a contact form — comparison */}
         <section className="lane-panel direct-notform-panel direct-notform-panel-wide" aria-label="Not just a contact form">
           <div className="direct-panel-intro">
             <p className="lane-kicker">Not a contact form</p>
@@ -245,7 +265,7 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 3a. Social proof — outcome metrics strip */}
+        {/* 4a. Social proof — outcome metrics strip */}
         <div className="direct-social-proof-strip" aria-label="Social proof">
           <div className="direct-social-proof-stat">
             <strong>96%</strong>
@@ -262,44 +282,6 @@ export default async function DirectClientPage() {
             <span>close rate on qualified leads</span>
           </div>
         </div>
-
-        {/* 3b. Cost of inaction — urgency section */}
-        <section className="lane-panel direct-cost-panel" aria-label="The cost of unfiltered inbound">
-          <div className="direct-panel-intro">
-            <p className="lane-kicker">The cost of doing nothing</p>
-            <h2>Unfiltered inbound is expensive — even when it&apos;s &ldquo;free&rdquo;</h2>
-          </div>
-          <div className="direct-cost-grid">
-            {COST_OF_INACTION.map((c) => (
-              <article key={c.label} className="direct-cost-card">
-                <span className="direct-cost-stat">{c.stat}</span>
-                <span className="direct-cost-label">{c.label}</span>
-                <p>{c.copy}</p>
-                <span className="direct-cost-source">{c.source}</span>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* 4. How it works — 3-step strip */}
-        <section className="lane-panel direct-steps-panel direct-section-dark" aria-label="How Direct works">
-          <div className="direct-steps-intro">
-            <p className="lane-kicker">How it works</p>
-            <h2>Three steps to a protected inbox</h2>
-            <p className="direct-section-lede">No code, no complex setup. You&apos;ll be filtering inbound in under two minutes.</p>
-          </div>
-          <div className="direct-steps-grid">
-            {HOW_IT_WORKS.map((s) => (
-              <article key={s.step} className="direct-step-card direct-step-card-inline">
-                <div className="direct-step-head">
-                  <span className="direct-step-number">{s.step}</span>
-                  <h3>{s.title}</h3>
-                </div>
-                <p>{s.copy}</p>
-              </article>
-            ))}
-          </div>
-        </section>
 
         {/* 5. Who it is for */}
         <section className="lane-panel direct-audience-panel direct-section-tinted" aria-label="Who Direct is for">
@@ -361,6 +343,24 @@ export default async function DirectClientPage() {
                   </div>
                 </div>
                 <p className="direct-testimonial-result"><DirectIcon name="check" size={14} className="direct-testimonial-result-icon" /> {t.result}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* 6b. Cost of inaction — urgency section (positioned before pricing for conversion pressure) */}
+        <section className="lane-panel direct-cost-panel" aria-label="The cost of unfiltered inbound">
+          <div className="direct-panel-intro">
+            <p className="lane-kicker">The cost of doing nothing</p>
+            <h2>Unfiltered inbound is expensive — even when it&apos;s &ldquo;free&rdquo;</h2>
+          </div>
+          <div className="direct-cost-grid">
+            {COST_OF_INACTION.map((c) => (
+              <article key={c.label} className="direct-cost-card">
+                <span className="direct-cost-stat">{c.stat}</span>
+                <span className="direct-cost-label">{c.label}</span>
+                <p>{c.copy}</p>
+                <span className="direct-cost-source">{c.source}</span>
               </article>
             ))}
           </div>
