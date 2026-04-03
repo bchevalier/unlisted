@@ -7086,3 +7086,236 @@ a:hover {
 }
 
 /* === End Pass 4/16 (cron iter-04-v2) === */
+
+/* === Pass 5/16 (cron direct-v2-05): Whitespace, section reorder, CTA variation, visual clarity === */
+
+/* --- 1. Increased whitespace: bump main shell gap for premium spacing --- */
+.direct-main-shell {
+  gap: 36px !important;
+}
+
+/* --- 2. Hero: more vertical breathing room --- */
+.direct-hero-layout {
+  padding: 96px 40px 80px !important;
+}
+
+.direct-hero-panel {
+  min-height: 600px !important;
+}
+
+/* --- 3. Hero content: increase gap between elements --- */
+.direct-hero-content {
+  gap: 20px !important;
+}
+
+/* --- 4. Section panels: increase internal padding for breathing room --- */
+.direct-page .lane-panel {
+  padding: 44px 36px !important;
+}
+
+/* --- 5. Section intros: more gap between kicker and heading --- */
+.direct-panel-intro,
+.direct-steps-intro,
+.direct-faq-intro {
+  gap: 10px !important;
+}
+
+/* --- 6. Benefit cards: more generous internal spacing --- */
+.direct-proof-card {
+  padding: 24px 26px !important;
+  gap: 12px !important;
+}
+
+/* --- 7. Step cards: more padding --- */
+.direct-step-card {
+  padding: 22px 20px !important;
+  gap: 12px !important;
+}
+
+/* --- 8. Audience cards: more padding for wider cards --- */
+.direct-audience-card-expanded {
+  padding: 24px !important;
+  gap: 12px !important;
+}
+
+/* --- 9. Testimonial cards: more generous spacing --- */
+.direct-testimonial-card {
+  padding: 26px 24px !important;
+  gap: 16px !important;
+}
+
+/* --- 10. Pricing cards: more generous padding --- */
+.direct-pricing-card {
+  padding: 28px 26px !important;
+  gap: 12px !important;
+}
+
+/* --- 11. Comparison cards: more padding and gap --- */
+.direct-notform-card {
+  padding: 26px 24px !important;
+  gap: 12px !important;
+}
+
+/* --- 12. Cost cards: more internal space --- */
+.direct-cost-card {
+  padding: 24px !important;
+  gap: 6px !important;
+}
+
+/* --- 13. Trust architecture cards: more padding --- */
+.direct-trust-arch-card {
+  padding: 24px !important;
+  gap: 10px !important;
+}
+
+/* --- 14. FAQ items: more question padding --- */
+.direct-faq-question {
+  padding: 22px 6px !important;
+}
+
+.direct-faq-answer {
+  padding: 0 6px 20px !important;
+}
+
+/* --- 15. Hero: remove redundant expectation text clutter --- */
+.direct-hero-expectation {
+  font-size: 12.5px !important;
+  color: rgba(148, 163, 184, 0.55) !important;
+}
+
+/* --- 16. Social proof strip: more generous padding --- */
+.direct-social-proof-strip {
+  padding: 30px 36px !important;
+}
+
+/* --- 17. Mid-page CTA: more generous vertical space --- */
+.direct-mid-page-cta {
+  padding: 52px 28px !important;
+}
+
+.direct-post-audience-cta {
+  padding: 44px 32px !important;
+}
+
+/* --- 18. Final CTA: generous vertical padding --- */
+.direct-final-cta.direct-section-dark {
+  padding: 56px 36px !important;
+}
+
+/* --- 19. Grids: slightly more gap between cards --- */
+.direct-proof-strip {
+  gap: 18px !important;
+}
+
+.direct-steps-grid {
+  gap: 18px !important;
+}
+
+.direct-audience-grid-2col {
+  gap: 18px !important;
+}
+
+.direct-testimonials-grid {
+  gap: 18px !important;
+}
+
+.direct-notform-grid {
+  gap: 18px !important;
+}
+
+.direct-cost-grid {
+  gap: 18px !important;
+}
+
+.direct-trust-arch-grid {
+  gap: 18px !important;
+}
+
+.direct-pricing-grid {
+  gap: 18px !important;
+}
+
+/* --- 20. Section H2s: letter-spacing refinement for premium feel --- */
+.direct-panel-intro h2,
+.direct-faq-intro h2,
+.direct-steps-intro h2 {
+  font-weight: 800 !important;
+  color: rgba(15, 23, 42, 0.96) !important;
+}
+
+/* --- 21. Benefit card titles: slightly larger for scannability --- */
+.direct-proof-title {
+  font-size: 17px !important;
+  font-weight: 800 !important;
+}
+
+/* --- 22. Audience head: better alignment with icon --- */
+.direct-audience-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.direct-audience-card h3 {
+  font-weight: 700 !important;
+}
+
+/* --- 23. Mobile adjustments --- */
+@media (max-width: 860px) {
+  .direct-page .lane-panel {
+    padding: 32px 22px !important;
+  }
+  .direct-hero-layout {
+    padding: 60px 20px 48px !important;
+  }
+  .direct-main-shell {
+    gap: 24px !important;
+  }
+}
+
+/* --- 24. Step cards: numbered circles with teal accent for premium look --- */
+.direct-section-dark .direct-step-number {
+  background: rgba(83, 240, 226, 0.15) !important;
+  color: rgba(83, 240, 226, 0.9) !important;
+  border: 1px solid rgba(83, 240, 226, 0.2);
+  font-size: 14px !important;
+  width: 38px !important;
+  height: 38px !important;
+}
+
+.direct-section-dark .direct-step-card h3 {
+  font-size: 1.08rem !important;
+  color: rgba(241, 245, 249, 0.96) !important;
+}
+
+.direct-section-dark .direct-step-card p {
+  font-size: 15px !important;
+  color: rgba(203, 213, 225, 0.88) !important;
+  line-height: 1.58 !important;
+}
+
+/* --- 25. Hero: simpler, less clutter --- */
+.direct-hero-content {
+  gap: 18px !important;
+}
+
+/* --- 26. Hero CTA: make primary dramatically larger than secondary --- */
+.direct-hero-actions .button.primary {
+  font-size: 17px !important;
+  padding: 16px 32px !important;
+  min-width: 240px !important;
+}
+
+.direct-hero-actions .button.secondary {
+  font-size: 14px !important;
+  padding: 12px 20px !important;
+  opacity: 0.8;
+}
+
+/* --- 27. Final CTA: single primary emphasis --- */
+.direct-final-cta .direct-faq-actions .button.secondary {
+  font-size: 13px !important;
+  opacity: 0.7;
+}
+
+/* === End Pass 5/16 (cron direct-v2-05) === */
