@@ -11596,3 +11596,750 @@ a:hover {
 }
 
 /* === End Pass v2-16 === */
+
+/* === Pass v2-17: Hero readability, section spacing, stat prominence, comparison readability, typography hierarchy === */
+
+/* --- 1. Hero title accent: white with subtle glow instead of low-contrast teal gradient --- */
+.direct-hero-title-accent {
+  color: #fff;
+  text-shadow: 0 2px 24px rgba(83, 240, 226, 0.35);
+  position: relative;
+}
+
+.direct-hero-title-accent::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(83, 240, 226, 0.7), rgba(14, 165, 163, 0.5), transparent);
+  border-radius: 2px;
+}
+
+/* --- 2. Premium section spacing: more breathing room between sections --- */
+.direct-main-shell {
+  gap: 44px !important;
+}
+
+/* Tighter coupling for conceptually related pairs */
+.direct-main-shell > .direct-midpage-cta {
+  margin-top: -20px !important;
+  margin-bottom: -12px !important;
+}
+
+/* --- 3. Section panels: increased vertical padding for openness --- */
+.direct-page .lane-panel {
+  padding: 56px 44px !important;
+}
+
+/* --- 4. Hero: more vertical breathing room for premium feel --- */
+.direct-hero-panel {
+  min-height: 620px !important;
+}
+
+.direct-hero-layout {
+  padding: 100px 48px 84px !important;
+  gap: 52px !important;
+}
+
+/* --- 5. Testimonial proof stats: dramatically bigger numbers --- */
+.direct-testimonial-stat strong {
+  font-size: 40px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1 !important;
+}
+
+.direct-testimonial-stat span {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  max-width: 130px !important;
+}
+
+.direct-testimonial-stats {
+  padding: 28px 36px !important;
+  gap: 8px !important;
+  border-radius: 18px !important;
+  margin-bottom: 18px !important;
+  background: linear-gradient(160deg, rgba(240, 253, 250, 0.6) 0%, rgba(255, 255, 255, 0.96) 100%) !important;
+  border: 1.5px solid rgba(14, 165, 163, 0.15) !important;
+  box-shadow: 0 8px 24px rgba(14, 165, 163, 0.05) !important;
+}
+
+.direct-testimonial-stat {
+  padding: 8px 32px !important;
+}
+
+.direct-testimonial-stats-divider {
+  height: 42px !important;
+  background: rgba(14, 165, 163, 0.12) !important;
+}
+
+/* --- 6. Comparison: faded card more readable (higher opacity, less desaturation) --- */
+.direct-notform-card-faded {
+  opacity: 0.78 !important;
+  filter: saturate(0.6) !important;
+}
+
+.direct-notform-card-faded:hover {
+  opacity: 0.92 !important;
+  filter: saturate(0.85) !important;
+}
+
+/* VS badge: more prominent */
+.direct-notform-grid::after {
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  color: rgba(15, 23, 42, 0.32) !important;
+  padding: 8px 14px !important;
+  background: #fff !important;
+  border: 1.5px solid rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* --- 7. Typography hierarchy: sharper size differentials --- */
+
+/* Section H2s: clear dominance over body */
+.direct-panel-intro h2,
+.direct-steps-intro h2 {
+  font-size: 2rem !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.03em !important;
+  font-weight: 800 !important;
+}
+
+.direct-faq-intro h2 {
+  font-size: 1.65rem !important;
+  line-height: 1.2 !important;
+}
+
+.direct-heading-marquee {
+  font-size: 1.85rem !important;
+  line-height: 1.22 !important;
+}
+
+/* Benefit titles: prominent but clearly sub-heading */
+.direct-proof-title {
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Card body text: consistent baseline */
+.direct-page .direct-proof-copy,
+.direct-page .direct-step-card p,
+.direct-page .direct-audience-card p,
+.direct-page .direct-notform-card p,
+.direct-page .direct-pricing-list li,
+.direct-page .direct-pricing-desc {
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+/* Step card headings: bigger than body, smaller than section H2 */
+.direct-step-card h3 {
+  font-size: 1.1rem !important;
+}
+
+/* --- 8. Benefit stat numbers: large, visible, consistent --- */
+.direct-proof-stat strong {
+  font-size: 26px !important;
+  color: rgba(14, 165, 163, 0.95) !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.03em !important;
+}
+
+.direct-proof-stat span {
+  font-size: 12px !important;
+  color: rgba(31, 42, 68, 0.52) !important;
+  font-weight: 600 !important;
+}
+
+/* --- 9. Pricing: dramatically larger price for Free plan --- */
+.direct-pricing-price {
+  font-size: 2.8rem !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 1.1 !important;
+}
+
+.direct-pricing-card-paid .direct-pricing-price {
+  font-size: 2rem !important;
+}
+
+/* --- 10. Final CTA: bigger heading, more vertical padding --- */
+.direct-final-cta.direct-section-dark {
+  padding: 80px 48px !important;
+  min-height: 320px !important;
+}
+
+.direct-final-cta.direct-section-dark h2 {
+  font-size: 2.5rem !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.04em !important;
+}
+
+/* --- 11. Hero social row: on light hero, adjust colors to match --- */
+.direct-hero-social-row {
+  background: rgba(15, 23, 42, 0.04) !important;
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
+  border-radius: 12px !important;
+  padding: 12px 18px !important;
+}
+
+.direct-hero-social-text {
+  color: rgba(15, 23, 42, 0.56) !important;
+  font-size: 13px !important;
+}
+
+.direct-hero-social-text strong {
+  color: rgba(14, 165, 163, 0.88) !important;
+}
+
+.direct-hero-avatar-dot {
+  border-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+
+/* --- 12. Sender view section: increase visual weight of mockup --- */
+.direct-mockup-chrome-sender {
+  box-shadow: 0 20px 56px rgba(15, 23, 42, 0.12), 0 6px 16px rgba(15, 23, 42, 0.06) !important;
+  border: 1.5px solid rgba(229, 231, 235, 0.9) !important;
+}
+
+/* --- 13. FAQ v2 cards: slightly more padding for breathing room --- */
+.direct-faq-item-v2 {
+  padding: 0 22px !important;
+}
+
+.direct-faq-question-v2 {
+  padding: 18px 6px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+.direct-faq-answer-v2 {
+  padding: 0 6px 18px !important;
+  font-size: 15px !important;
+  line-height: 1.65 !important;
+}
+
+/* --- 14. Audience transform row: slightly larger text for readability --- */
+.direct-audience-transform {
+  font-size: 13.5px !important;
+  padding: 12px 16px !important;
+}
+
+/* --- 15. Section kickers: slightly more breathing room below --- */
+.lane-kicker {
+  margin-bottom: 2px !important;
+}
+
+/* --- 16. Pricing trust row: tighter visual integration --- */
+.direct-pricing-trust {
+  margin-top: 24px !important;
+  padding: 18px 20px !important;
+}
+
+/* --- 17. Mobile adjustments --- */
+@media (max-width: 860px) {
+  .direct-main-shell {
+    gap: 32px !important;
+  }
+  .direct-page .lane-panel {
+    padding: 40px 26px !important;
+  }
+  .direct-hero-layout {
+    padding: 68px 24px 56px !important;
+    gap: 32px !important;
+  }
+  .direct-hero-panel {
+    min-height: auto !important;
+  }
+  .direct-panel-intro h2,
+  .direct-steps-intro h2 {
+    font-size: 1.6rem !important;
+  }
+  .direct-heading-marquee {
+    font-size: 1.45rem !important;
+  }
+  .direct-testimonial-stat strong {
+    font-size: 30px !important;
+  }
+  .direct-final-cta.direct-section-dark {
+    padding: 52px 28px !important;
+  }
+  .direct-final-cta.direct-section-dark h2 {
+    font-size: 1.9rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .direct-main-shell {
+    gap: 24px !important;
+  }
+  .direct-page .lane-panel {
+    padding: 32px 18px !important;
+  }
+  .direct-hero-layout {
+    padding: 52px 18px 44px !important;
+  }
+  .direct-pricing-price {
+    font-size: 2.2rem !important;
+  }
+  .direct-testimonial-stats {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: flex-start !important;
+    padding: 22px 20px !important;
+  }
+  .direct-testimonial-stats-divider {
+    display: none !important;
+  }
+}
+
+/* === End Pass v2-17 === */
+
+/* === Pass v2-17b: Hero accent visibility, stat visual weight, comparison contrast, CTA prominence === */
+
+/* --- 1. Hero accent line: much more visible with thicker underline + stronger glow --- */
+.direct-hero-title-accent {
+  color: #fff !important;
+  text-shadow: 0 0 40px rgba(83, 240, 226, 0.5), 0 0 80px rgba(83, 240, 226, 0.2) !important;
+  position: relative !important;
+  display: inline !important;
+}
+
+.direct-hero-title-accent::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -2px !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, rgba(83, 240, 226, 0.85), rgba(14, 165, 163, 0.6), transparent) !important;
+  border-radius: 2px !important;
+}
+
+/* --- 2. Testimonial stats: bigger, bolder, with card backgrounds --- */
+.direct-testimonial-stats {
+  padding: 32px 40px !important;
+  background: linear-gradient(160deg, rgba(236, 253, 245, 0.4) 0%, rgba(255, 255, 255, 0.98) 100%) !important;
+  border: 2px solid rgba(14, 165, 163, 0.18) !important;
+  box-shadow: 0 12px 32px rgba(14, 165, 163, 0.08) !important;
+  border-radius: 20px !important;
+  margin-bottom: 24px !important;
+}
+
+.direct-testimonial-stat {
+  padding: 10px 36px !important;
+  text-align: center !important;
+}
+
+.direct-testimonial-stat strong {
+  font-size: 48px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.04em !important;
+  color: rgba(13, 148, 136, 0.95) !important;
+  line-height: 1 !important;
+  display: block !important;
+}
+
+.direct-testimonial-stat span {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: rgba(31, 42, 68, 0.66) !important;
+  max-width: 140px !important;
+  display: block !important;
+  margin-top: 4px !important;
+}
+
+.direct-testimonial-stats-divider {
+  height: 48px !important;
+  width: 2px !important;
+  background: linear-gradient(180deg, transparent, rgba(14, 165, 163, 0.25), transparent) !important;
+}
+
+/* --- 3. Comparison: stronger red/green coding, bigger contrast between cards --- */
+.direct-notform-card-faded {
+  opacity: 0.72 !important;
+  filter: saturate(0.5) !important;
+  border: 2px solid rgba(239, 68, 68, 0.22) !important;
+  background: linear-gradient(160deg, rgba(254, 226, 226, 0.45) 0%, rgba(255, 248, 248, 0.9) 100%) !important;
+}
+
+.direct-notform-card-winner {
+  border: 2.5px solid rgba(14, 165, 163, 0.45) !important;
+  box-shadow:
+    0 0 0 4px rgba(14, 165, 163, 0.06),
+    0 16px 44px rgba(14, 165, 163, 0.14) !important;
+  background: linear-gradient(160deg, rgba(204, 251, 241, 0.45) 0%, rgba(240, 253, 250, 0.98) 100%) !important;
+  transform: scale(1.03) !important;
+}
+
+/* Comparison card body text: larger for readability */
+.direct-notform-card p {
+  font-size: 15.5px !important;
+  line-height: 1.58 !important;
+}
+
+.direct-notform-card h3 {
+  font-size: 1.3rem !important;
+  font-weight: 800 !important;
+}
+
+/* Comparison highlights pills: larger */
+.direct-notform-highlight {
+  font-size: 13px !important;
+  padding: 6px 14px !important;
+}
+
+/* --- 4. Testimonial quotes: bump for readability --- */
+.direct-page .direct-testimonial-quote {
+  font-size: 16px !important;
+  line-height: 1.62 !important;
+}
+
+.direct-page .direct-testimonial-card-featured .direct-testimonial-quote {
+  font-size: 18px !important;
+}
+
+/* --- 5. Benefit cards: stronger stat visual treatment --- */
+.direct-proof-stat {
+  padding-top: 12px !important;
+  border-top: 2px solid rgba(14, 165, 163, 0.12) !important;
+  margin-top: 4px !important;
+}
+
+.direct-proof-stat strong {
+  font-size: 28px !important;
+}
+
+/* --- 6. Hero CTA: larger for prominence --- */
+.direct-hero-actions .button.primary {
+  font-size: 18px !important;
+  padding: 18px 36px !important;
+  min-width: 260px !important;
+  border-radius: 999px !important;
+  box-shadow:
+    0 12px 32px rgba(245, 158, 11, 0.3),
+    0 0 0 1px rgba(217, 119, 6, 0.15) !important;
+}
+
+/* --- 7. Pricing price: even more dramatic for Free plan --- */
+.direct-pricing-card-highlighted .direct-pricing-price {
+  font-size: 3.2rem !important;
+  color: rgba(13, 148, 136, 0.95) !important;
+}
+
+/* --- 8. Section H2s: slightly more breathing room below heading --- */
+.direct-panel-intro {
+  gap: 12px !important;
+  margin-bottom: 8px !important;
+}
+
+.direct-steps-intro {
+  gap: 12px !important;
+  margin-bottom: 8px !important;
+}
+
+/* --- 9. Mobile adjustments --- */
+@media (max-width: 860px) {
+  .direct-testimonial-stat strong {
+    font-size: 36px !important;
+  }
+  .direct-testimonial-stat {
+    padding: 6px 20px !important;
+  }
+  .direct-hero-actions .button.primary {
+    font-size: 16px !important;
+    padding: 16px 28px !important;
+    min-width: 220px !important;
+  }
+  .direct-pricing-card-highlighted .direct-pricing-price {
+    font-size: 2.6rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .direct-testimonial-stat strong {
+    font-size: 32px !important;
+  }
+  .direct-hero-actions .button.primary {
+    font-size: 15px !important;
+    padding: 14px 24px !important;
+    min-width: 200px !important;
+  }
+  .direct-pricing-card-highlighted .direct-pricing-price {
+    font-size: 2.2rem !important;
+  }
+}
+
+/* === End Pass v2-17b === */
+
+/* === Pass v2-17c: Hero accent 3× contrast, comparison hard polarity, CTA magnetism === */
+
+/* --- 1. Hero accent: thick marker-style underline + vivid glow for unmistakable emphasis --- */
+.direct-hero-title-accent {
+  position: relative !important;
+  display: inline !important;
+  color: #fff !important;
+  text-shadow:
+    0 0 48px rgba(83, 240, 226, 0.6),
+    0 0 96px rgba(83, 240, 226, 0.25),
+    0 2px 4px rgba(0, 0, 0, 0.15) !important;
+  -webkit-text-fill-color: unset !important;
+  background: none !important;
+}
+
+.direct-hero-title-accent::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 2px !important;
+  left: -2px !important;
+  right: -2px !important;
+  height: 6px !important;
+  background: linear-gradient(90deg, rgba(83, 240, 226, 0.9) 0%, rgba(14, 165, 163, 0.7) 60%, rgba(83, 240, 226, 0.4) 100%) !important;
+  border-radius: 3px !important;
+  z-index: -1 !important;
+}
+
+/* --- 2. Comparison: explicit red ✕ / green ✓ treatment + hard visual polarity --- */
+
+/* Faded (loser) card: red tint, more desaturated, with ✕ badge */
+.direct-notform-card-faded {
+  opacity: 0.65 !important;
+  filter: saturate(0.35) !important;
+  border: 2px solid rgba(239, 68, 68, 0.28) !important;
+  background: linear-gradient(160deg, rgba(254, 226, 226, 0.5) 0%, rgba(255, 245, 245, 0.92) 100%) !important;
+  box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.06) !important;
+}
+
+.direct-notform-card-faded h3 {
+  color: rgba(127, 29, 29, 0.72) !important;
+}
+
+/* Winner card: vivid teal, elevated, with strong shadow */
+.direct-notform-card-winner {
+  transform: scale(1.04) !important;
+  border: 3px solid rgba(14, 165, 163, 0.5) !important;
+  box-shadow:
+    0 0 0 6px rgba(14, 165, 163, 0.06),
+    0 20px 52px rgba(14, 165, 163, 0.16),
+    0 6px 16px rgba(14, 165, 163, 0.06) !important;
+  background: linear-gradient(160deg, rgba(204, 251, 241, 0.5) 0%, rgba(240, 253, 250, 0.98) 100%) !important;
+}
+
+.direct-notform-card-winner h3 {
+  color: rgba(13, 101, 101, 0.95) !important;
+}
+
+/* Winner badge: more vivid */
+.direct-notform-winner-badge {
+  background: linear-gradient(135deg, #0d9488 0%, #0ea5a3 100%) !important;
+  color: #fff !important;
+  font-size: 11.5px !important;
+  font-weight: 800 !important;
+  padding: 5px 14px !important;
+  box-shadow: 0 4px 14px rgba(14, 165, 163, 0.35) !important;
+  border: none !important;
+}
+
+/* Form card ✕ badge in corner */
+.direct-notform-card-faded::after {
+  content: '✕' !important;
+  position: absolute !important;
+  top: 16px !important;
+  right: 16px !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  color: rgba(239, 68, 68, 0.4) !important;
+}
+
+/* Winner card ✓ badge in corner */
+.direct-notform-card-winner::after {
+  content: '✓' !important;
+  position: absolute !important;
+  top: 16px !important;
+  right: 16px !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  color: rgba(14, 165, 163, 0.45) !important;
+}
+
+/* Verdict line: stronger emphasis */
+.direct-notform-verdict {
+  font-size: 15px !important;
+  margin-top: 16px !important;
+}
+
+.direct-notform-verdict strong {
+  color: rgba(15, 23, 42, 0.92) !important;
+}
+
+/* --- 3. CTA buttons: magnetic presence with glow and size --- */
+
+/* Hero primary CTA: amber with prominent glow */
+.direct-hero-actions .button.primary {
+  font-size: 18px !important;
+  padding: 18px 40px !important;
+  min-width: 280px !important;
+  box-shadow:
+    0 14px 36px rgba(245, 158, 11, 0.35),
+    0 0 0 2px rgba(245, 158, 11, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  animation: cta-warm-pulse 3s ease-in-out infinite !important;
+}
+
+@keyframes cta-warm-pulse {
+  0%, 100% {
+    box-shadow:
+      0 14px 36px rgba(245, 158, 11, 0.3),
+      0 0 0 2px rgba(245, 158, 11, 0.08),
+      0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 14px 40px rgba(245, 158, 11, 0.45),
+      0 0 0 4px rgba(245, 158, 11, 0.12),
+      0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.direct-hero-actions .button.primary:hover {
+  animation: none !important;
+  box-shadow:
+    0 18px 44px rgba(245, 158, 11, 0.45),
+    0 0 0 4px rgba(245, 158, 11, 0.15),
+    0 6px 16px rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Final CTA: also larger and glowing */
+.direct-final-cta .button.primary {
+  font-size: 18px !important;
+  padding: 18px 40px !important;
+  min-width: 280px !important;
+}
+
+/* Pricing CTA: slightly larger for decision moment */
+.direct-pricing-cta.button.primary {
+  font-size: 16px !important;
+  padding: 14px 28px !important;
+}
+
+/* Floating CTA: magnetic */
+.direct-floating-cta-btn {
+  box-shadow:
+    0 12px 28px rgba(245, 158, 11, 0.35),
+    0 0 0 2px rgba(245, 158, 11, 0.1),
+    0 24px 48px rgba(0, 0, 0, 0.18) !important;
+}
+
+/* --- 4. Secondary CTA link: clearer as a link, not competing with primary --- */
+.direct-hero-link-secondary {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: rgba(15, 23, 42, 0.6) !important;
+  text-decoration: underline !important;
+  text-underline-offset: 4px !important;
+  text-decoration-color: rgba(15, 23, 42, 0.2) !important;
+}
+
+.direct-hero-link-secondary:hover {
+  color: rgba(14, 165, 163, 0.88) !important;
+  text-decoration-color: rgba(14, 165, 163, 0.4) !important;
+}
+
+/* --- 5. Mobile adjustments --- */
+@media (max-width: 860px) {
+  .direct-hero-actions .button.primary {
+    font-size: 16px !important;
+    padding: 16px 32px !important;
+    min-width: 240px !important;
+  }
+  .direct-notform-card-winner {
+    transform: scale(1.01) !important;
+  }
+  .direct-final-cta .button.primary {
+    font-size: 16px !important;
+    padding: 16px 32px !important;
+    min-width: 240px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .direct-hero-actions .button.primary {
+    font-size: 15px !important;
+    padding: 14px 24px !important;
+    min-width: 200px !important;
+  }
+  .direct-notform-card-faded,
+  .direct-notform-card-winner {
+    transform: none !important;
+  }
+}
+
+/* === End Pass v2-17c === */
+
+/* === Pass v2-17d: Hero accent fix (background highlight), mid-CTA breathing room === */
+
+/* --- 1. Hero accent: background highlight approach for guaranteed visibility --- */
+.direct-hero-title-accent {
+  position: relative !important;
+  display: inline !important;
+  color: #fff !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: unset !important;
+  background: none !important;
+  /* Thick teal underline via background-image gradient */
+  background-image: linear-gradient(transparent 72%, rgba(83, 240, 226, 0.55) 72%, rgba(83, 240, 226, 0.55) 100%) !important;
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
+  padding-bottom: 2px !important;
+  text-decoration: none !important;
+}
+
+/* Remove the ::after pseudo since we're using background now */
+.direct-hero-title-accent::after {
+  display: none !important;
+}
+
+/* --- 2. Mid-page CTA: more breathing room and visual weight --- */
+.direct-midpage-cta {
+  padding: 48px 28px !important;
+  margin: -8px 0 !important;
+}
+
+/* Objection text: slightly more visible */
+.direct-midpage-objection {
+  font-size: 14px !important;
+  color: rgba(15, 23, 42, 0.55) !important;
+  margin-top: 10px !important;
+}
+
+/* Micro-proof: more visible */
+.direct-microproof {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: rgba(15, 23, 42, 0.48) !important;
+  margin-top: 8px !important;
+}
+
+/* --- 3. Testimonial stat labels: larger for readability --- */
+.direct-testimonial-stat span {
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  color: rgba(31, 42, 68, 0.7) !important;
+  margin-top: 6px !important;
+}
+
+/* --- 4. Mobile --- */
+@media (max-width: 640px) {
+  .direct-midpage-cta {
+    padding: 36px 20px !important;
+  }
+}
+
+/* === End Pass v2-17d === */

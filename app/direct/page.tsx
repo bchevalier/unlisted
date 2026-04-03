@@ -51,9 +51,9 @@ const HERO_STATS = [
 ] as const;
 
 const PROOF_STATS = [
-  { value: '96%', label: 'of noise blocked before inbox' },
-  { value: '6 hrs/wk', label: 'saved on manual triage' },
-  { value: '2×', label: 'close rate on inbound deals' },
+  { value: '96%', label: 'noise blocked before inbox' },
+  { value: '6 hrs', label: 'saved per week on triage' },
+  { value: '2×', label: 'close rate on deals' },
 ] as const;
 
 /* Hero endorsement removed in pass 16 — reduces hero density; trust covered by stats + credibility line */
@@ -155,7 +155,7 @@ export default async function DirectClientPage() {
             <div className="direct-hero-content">
               <p className="hero-word">KNOKIO DIRECT</p>
               <p className="direct-hero-tagline">Private until approved</p>
-              <h1 className="hero-title direct-hero-title">Stop letting strangers decide<br /><span className="direct-hero-title-highlight">what lands in your inbox.</span></h1>
+              <h1 className="hero-title direct-hero-title">Stop letting strangers decide<br /><span className="direct-hero-title-accent">what lands in your inbox.</span></h1>
               <p className="direct-hero-subtitle">One link replaces your public email. Knokio Direct is your <strong>access layer</strong> — senders provide budget, scope, and timeline before anything reaches you. <strong>Private until you approve.</strong></p>
               <ul className="direct-hero-bullets">
                 {HERO_BULLETS.map((b) => (
@@ -215,20 +215,7 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 1a. Industry trust bar — quick credibility scan after hero */}
-        <ScrollReveal>
-        <section className="direct-industry-bar" aria-label="Trusted by professionals">
-          <p className="direct-industry-bar-label">Trusted across industries</p>
-          <div className="direct-industry-bar-items">
-            {INDUSTRY_TRUST.map((item) => (
-              <span key={item.label} className="direct-industry-bar-item">
-                <DirectIcon name={item.icon} size={14} className="direct-industry-bar-icon" />
-                <span>{item.label}</span>
-              </span>
-            ))}
-          </div>
-        </section>
-        </ScrollReveal>
+        {/* 1a. Industry trust bar removed in pass 17 — generic categories without real logos hurt credibility */}
 
         {/* 1b. Featured quote removed in pass v2-12 — redundant with testimonials + hero social proof */}
 
@@ -367,9 +354,9 @@ export default async function DirectClientPage() {
         <ScrollReveal>
         <section className="direct-midpage-cta" aria-label="Mid-page call to action">
           {session ? (
-            <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Create your access layer — free</Link>
+            <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Start filtering your inbox — free</Link>
           ) : (
-            <Link className="button primary direct-hero-button" href="/direct/signup">Create your access layer — free</Link>
+            <Link className="button primary direct-hero-button" href="/direct/signup">Start filtering your inbox — free</Link>
           )}
           <p className="direct-midpage-objection">Your existing email keeps working · No contacts lost · Revert anytime</p>
           <p className="direct-microproof">Join 2,400+ professionals who protect their inbox with Direct</p>
@@ -491,9 +478,9 @@ export default async function DirectClientPage() {
                 <li>Approved requests forwarded to your real inbox</li>
               </ul>
               {session ? (
-                <Link className="button primary direct-pricing-cta" href="/direct/settings?slug=john&fixture=demo">Get started — $0 forever</Link>
+                <Link className="button primary direct-pricing-cta" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — $0 forever</Link>
               ) : (
-                <Link className="button primary direct-pricing-cta" href="/direct/signup">Get started — $0 forever</Link>
+                <Link className="button primary direct-pricing-cta" href="/direct/signup">Protect my inbox — $0 forever</Link>
               )}
               <p className="direct-pricing-reassurance">No credit card · Set up in 2 minutes</p>
             </article>

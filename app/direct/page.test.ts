@@ -58,10 +58,7 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Private until approved');
     // Featured quote — early trust signal (pass v2-11)
     expect(html).toContain('I replaced my public email with a Direct page');
-    // Industry trust bar (pass v2-09 — replaced inline credibility line)
-    expect(html).toContain('Trusted across industries');
-    expect(html).toContain('Content Creation');
-    expect(html).toContain('Venture Capital');
+    // Industry trust bar removed in pass v2-17 — generic categories without real logos hurt credibility
     // Testimonial attribution
     expect(html).toContain('Mia Chen');
     expect(html).toContain('David Okafor');
@@ -106,9 +103,9 @@ describe('DirectClientPage', () => {
     expect(html).toContain('FAQ');
     // Trust strip removed in pass 15 (redundant with hero meta + pricing trust)
     // Proof stats integrated into testimonials section (pass 15)
-    expect(html).toContain('of noise blocked before inbox');
-    expect(html).toContain('saved on manual triage');
-    expect(html).toContain('close rate on inbound deals');
+    expect(html).toContain('noise blocked before inbox');
+    expect(html).toContain('saved per week on triage');
+    expect(html).toContain('close rate on deals');
     // Cost of inaction section removed in pass 12 for page length
     // CTAs — fewer but varied (pass v2-15 removed inline + post-testimonial CTAs)
     expect(html).toContain('Protect my inbox');
