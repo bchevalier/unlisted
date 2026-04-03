@@ -44,7 +44,11 @@ describe('DirectClientPage', () => {
     expect(html).toContain('private until you approve');
     // Hero subtitle references access layer
     expect(html).toContain('access layer');
-    expect(html).toContain('One link replaces your public email');
+    expect(html).toContain('one link replaces your public email');
+    // Credibility strip
+    expect(html).toContain('Trusted by professionals in');
+    expect(html).toContain('Content Creation');
+    expect(html).toContain('Venture Capital');
     // Testimonial attribution
     expect(html).toContain('Mia Chen');
     expect(html).toContain('David Okafor');

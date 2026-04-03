@@ -22,18 +22,18 @@ const HERO_INBOX_PREVIEW = [
   { status: 'pending', from: 'Series A Fund', category: 'Investor', detail: 'Intro request · $2M seed follow-on', time: '1d ago' },
 ] as const;
 
-const HERO_BULLETS = [
-  { icon: 'lock', text: 'Your real email stays hidden — senders never see it' },
-  { icon: 'clipboard', text: 'Budget, scope, and timeline — required before anything reaches you' },
-  { icon: 'shield', text: 'Spam, cold pitches, and vague asks — filtered before your inbox' },
-] as const;
-
 const HERO_SOCIAL_PROOF_AVATARS = [
   { initials: 'MC', color: '#e11a8c' },
   { initials: 'DO', color: '#2563eb' },
   { initials: 'SK', color: '#0d9488' },
   { initials: 'JR', color: '#d97706' },
   { initials: 'AL', color: '#9333ea' },
+] as const;
+
+const HERO_BULLETS = [
+  { icon: 'lock', text: 'Your real email stays hidden — senders never see it' },
+  { icon: 'clipboard', text: 'Budget, scope, and timeline — required upfront' },
+  { icon: 'shield', text: 'Spam and vague asks filtered before your inbox' },
 ] as const;
 
 const BENEFITS = [
@@ -125,7 +125,7 @@ export default async function DirectClientPage() {
             <div className="direct-hero-content">
               <p className="hero-word">KNOKIO DIRECT</p>
               <h1 className="hero-title direct-hero-title">Stop letting strangers decide<br /><span className="direct-hero-title-highlight">what lands in your inbox.</span></h1>
-              <p className="direct-hero-subtitle">Knokio Direct is your <strong>access layer</strong> — a single link between you and the outside world. One link replaces your public email. Senders provide budget, scope, and timeline before anything reaches you. <strong>Private until approved.</strong></p>
+              <p className="direct-hero-subtitle">Knokio Direct is your <strong>access layer</strong> — one link replaces your public email. Senders provide budget, scope, and timeline before anything reaches you. <strong>Private until approved.</strong></p>
               <ul className="direct-hero-bullets">
                 {HERO_BULLETS.map((b) => (
                   <li key={b.text}>
@@ -179,6 +179,18 @@ export default async function DirectClientPage() {
             </div>
           </div>
         </section>
+
+        {/* 1a. Credibility strip — logos/categories */}
+        <div className="direct-credibility-strip" aria-label="Trusted by professionals">
+          <p className="direct-credibility-label">Trusted by professionals in</p>
+          <div className="direct-credibility-logos">
+            <span className="direct-credibility-tag">Media &amp; Publishing</span>
+            <span className="direct-credibility-tag">Venture Capital</span>
+            <span className="direct-credibility-tag">Content Creation</span>
+            <span className="direct-credibility-tag">Management Consulting</span>
+            <span className="direct-credibility-tag">SaaS &amp; Startups</span>
+          </div>
+        </div>
 
         {/* 2. Three benefit cards */}
         <section className="direct-proof-strip" aria-label="Direct key benefits">
@@ -328,6 +340,10 @@ export default async function DirectClientPage() {
           <div className="direct-testimonials-grid">
             {TESTIMONIALS.map((t, i) => (
               <article key={t.author} className={`direct-testimonial-card${i === 0 ? ' direct-testimonial-card-featured' : ''}`}>
+                <div className="direct-testimonial-category-tag">
+                  <DirectIcon name={t.icon} size={13} className="direct-testimonial-tag-icon" />
+                  <span>{t.role.split('·')[1]?.trim() || t.role}</span>
+                </div>
                 <blockquote className="direct-testimonial-quote">&ldquo;{t.quote}&rdquo;</blockquote>
                 <div className="direct-testimonial-attribution">
                   <span className="direct-testimonial-avatar" style={{ background: t.color }}>{t.initials}</span>
@@ -415,7 +431,7 @@ export default async function DirectClientPage() {
         <section className="lane-panel direct-final-cta direct-section-dark" aria-label="Final call to action">
           <p className="lane-kicker">Start now</p>
           <h2>Your inbox, your rules.<br />Live in two minutes.</h2>
-          <p>One link replaces your public email. Structured intake, automatic filtering, private until approved.</p>
+          <p>One link. Structured intake. Private until you approve the interaction.</p>
           <div className="direct-faq-actions">
             {session ? (
               <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — free</Link>

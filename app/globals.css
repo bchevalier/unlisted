@@ -9256,3 +9256,256 @@ a:hover {
 }
 
 /* === End Pass 12/16 === */
+
+/* === Pass 13/16 (cron direct-iter-13): Trust credibility, hero tightening, testimonial polish, typography hierarchy === */
+
+/* --- 1. Credibility strip: industry categories below hero --- */
+.direct-credibility-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 24px;
+  border-radius: 14px;
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.6) 0%, rgba(248, 250, 252, 0.8) 100%);
+}
+
+.direct-credibility-label {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(31, 42, 68, 0.44);
+}
+
+.direct-credibility-logos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.direct-credibility-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(15, 23, 42, 0.7);
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  letter-spacing: 0.01em;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.direct-credibility-tag:hover {
+  background: rgba(14, 165, 163, 0.06);
+  border-color: rgba(14, 165, 163, 0.16);
+}
+
+/* Hide gradient divider before credibility strip */
+.direct-main-shell > .direct-credibility-strip::before {
+  display: none !important;
+}
+
+/* --- 2. Testimonial category tag: mini badge above each quote --- */
+.direct-testimonial-category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(14, 165, 163, 0.06);
+  border: 1px solid rgba(14, 165, 163, 0.14);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(14, 165, 163, 0.78);
+  justify-self: flex-start;
+}
+
+.direct-testimonial-tag-icon {
+  color: rgba(14, 165, 163, 0.6);
+  flex-shrink: 0;
+}
+
+/* --- 3. Hero subtitle: tighter, more persuasive line-height --- */
+.direct-page .direct-hero-subtitle {
+  font-size: 19px !important;
+  line-height: 1.55 !important;
+  max-width: 530px !important;
+}
+
+/* --- 4. Hero bullets: tighter to reduce hero vertical footprint --- */
+.direct-page .direct-hero-bullets {
+  gap: 8px !important;
+}
+
+.direct-page .direct-hero-bullets li {
+  font-size: 15px !important;
+}
+
+/* --- 5. Hero CTA row: tighter margin to compress hero --- */
+.direct-page .direct-hero-actions {
+  margin-top: 6px !important;
+}
+
+/* --- 6. Comparison section: "A contact form exposes..." line → larger, more dramatic --- */
+.direct-page .direct-heading-marquee {
+  font-size: 1.8rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.03em !important;
+  max-width: 720px !important;
+}
+
+/* --- 7. Testimonial card: subtle top-border accent for category feel --- */
+.direct-testimonial-card {
+  border-top: 3px solid transparent !important;
+}
+
+.direct-testimonial-card-featured {
+  border-top-color: rgba(14, 165, 163, 0.4) !important;
+}
+
+.direct-testimonial-card:nth-child(2) {
+  border-top-color: rgba(37, 99, 235, 0.3) !important;
+}
+
+.direct-testimonial-card:nth-child(3) {
+  border-top-color: rgba(13, 148, 136, 0.3) !important;
+}
+
+/* --- 8. Testimonial result: slightly more prominent stat --- */
+.direct-page .direct-testimonial-result {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: rgba(13, 148, 136, 0.92) !important;
+  padding: 10px 0 0 !important;
+  border-top: 1px solid rgba(14, 165, 163, 0.12) !important;
+}
+
+/* --- 9. Benefit cards: icon color accent per card --- */
+.direct-proof-card:nth-child(1) .direct-proof-icon {
+  color: rgba(14, 165, 163, 0.78) !important;
+}
+
+.direct-proof-card:nth-child(2) .direct-proof-icon {
+  color: rgba(37, 99, 235, 0.72) !important;
+}
+
+.direct-proof-card:nth-child(3) .direct-proof-icon {
+  color: rgba(220, 38, 38, 0.68) !important;
+}
+
+/* --- 10. Benefit card left-border: color-coded per card --- */
+.direct-proof-card:nth-child(1) {
+  border-left-color: rgba(14, 165, 163, 0.5) !important;
+}
+
+.direct-proof-card:nth-child(2) {
+  border-left-color: rgba(37, 99, 235, 0.4) !important;
+}
+
+.direct-proof-card:nth-child(3) {
+  border-left-color: rgba(220, 38, 38, 0.35) !important;
+}
+
+/* --- 11. Social proof strip: more generous padding for breathing room --- */
+.direct-page .direct-social-proof-strip {
+  padding: 36px 44px !important;
+  gap: 36px !important;
+}
+
+/* --- 12. Pricing trust section: slightly more visual weight --- */
+.direct-page .direct-pricing-trust-heading {
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.015em !important;
+  color: rgba(15, 23, 42, 0.9) !important;
+}
+
+.direct-page .direct-pricing-trust .direct-security-claim {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  padding: 7px 16px !important;
+  background: rgba(14, 165, 163, 0.05) !important;
+  border-color: rgba(14, 165, 163, 0.15) !important;
+}
+
+/* --- 13. "Not a form" card icon: colored accent --- */
+.direct-notform-card-form .direct-notform-icon {
+  color: rgba(239, 68, 68, 0.65) !important;
+}
+
+.direct-notform-card-direct .direct-notform-icon {
+  color: rgba(14, 165, 163, 0.8) !important;
+}
+
+/* --- 14. "Not a form" card head: larger icon + title --- */
+.direct-notform-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.direct-notform-head h3 {
+  margin: 0;
+}
+
+/* --- 15. FAQ: alternate bg on open items for rhythm --- */
+.direct-page .direct-faq-item[open] {
+  background: rgba(14, 165, 163, 0.03) !important;
+  border-radius: 10px !important;
+  padding: 0 10px !important;
+  margin: 0 -10px !important;
+}
+
+/* --- 16. Mid-page CTA strip: slightly more visual weight --- */
+.direct-page .direct-mid-cta-strip {
+  padding: 48px 32px !important;
+}
+
+.direct-page .direct-mid-cta-strip h3 {
+  font-size: 1.4rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* --- 17. Mobile adjustments --- */
+@media (max-width: 860px) {
+  .direct-credibility-strip {
+    padding: 14px 18px;
+    gap: 8px;
+  }
+  
+  .direct-credibility-logos {
+    gap: 6px;
+  }
+  
+  .direct-credibility-tag {
+    font-size: 12px;
+    padding: 5px 11px;
+  }
+  
+  .direct-testimonial-category-tag {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .direct-credibility-strip {
+    padding: 12px 14px;
+  }
+  
+  .direct-credibility-tag {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+}
+
+/* === End Pass 13/16 === */
