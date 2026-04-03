@@ -6903,3 +6903,186 @@ a:hover {
 }
 
 /* === End Pass 2/16 (iter-02) === */
+
+/* === Pass 4/16 (cron iter-04-v2): Floating CTA, visual hierarchy, expectation-setting === */
+
+/* --- 1. Floating CTA: appears after scrolling past hero --- */
+.direct-floating-cta {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.direct-floating-cta-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.direct-floating-cta-btn {
+  min-width: 200px !important;
+  padding: 14px 24px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  border-radius: 999px !important;
+  box-shadow:
+    0 8px 24px rgba(14, 165, 163, 0.3),
+    0 0 0 1px rgba(14, 165, 163, 0.15),
+    0 20px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.direct-floating-cta-btn:hover {
+  box-shadow:
+    0 12px 32px rgba(14, 165, 163, 0.4),
+    0 0 0 1px rgba(14, 165, 163, 0.2),
+    0 24px 48px rgba(0, 0, 0, 0.18) !important;
+  transform: translateY(-2px);
+}
+
+/* --- 2. Cost-of-inaction source citation --- */
+.direct-cost-source {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(31, 42, 68, 0.42);
+  font-style: italic;
+  letter-spacing: 0.01em;
+}
+
+/* --- 3. Expectation-setting text near CTAs --- */
+.direct-hero-expectation {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(148, 163, 184, 0.7);
+  max-width: 460px;
+}
+
+.direct-mid-page-cta-expectation {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: rgba(31, 42, 68, 0.5);
+  font-weight: 500;
+}
+
+.direct-final-cta-expectation {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(148, 163, 184, 0.62);
+  font-weight: 500;
+}
+
+/* --- 4. Cost section: larger stats for drama --- */
+.direct-cost-stat {
+  font-size: 36px !important;
+  font-weight: 900 !important;
+}
+
+/* --- 5. Comparison section: stronger visual differentiation --- */
+.direct-notform-card-form {
+  background: linear-gradient(160deg, rgba(254, 226, 226, 0.5) 0%, rgba(255, 245, 245, 0.9) 100%) !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+.direct-notform-card-direct {
+  background: linear-gradient(160deg, rgba(204, 251, 241, 0.5) 0%, rgba(240, 253, 250, 0.95) 100%) !important;
+  border-color: rgba(14, 165, 163, 0.35) !important;
+  box-shadow:
+    0 0 0 1px rgba(14, 165, 163, 0.1),
+    0 12px 28px rgba(14, 165, 163, 0.08) !important;
+}
+
+/* --- 6. Testimonial section: alternate bg for rhythm --- */
+.direct-testimonials-elevated {
+  background:
+    radial-gradient(circle at 10% 14%, rgba(83, 240, 226, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(255, 68, 171, 0.05) 0%, transparent 40%),
+    linear-gradient(160deg, rgba(248, 250, 252, 0.98) 0%, #f1f5f9 100%) !important;
+  border-color: rgba(203, 213, 225, 0.5) !important;
+}
+
+/* --- 7. Mid-page CTA: slightly bolder background --- */
+.direct-mid-page-cta {
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.08) 0%, rgba(83, 240, 226, 0.06) 50%, rgba(37, 99, 235, 0.04) 100%) !important;
+  border: 2px solid rgba(14, 165, 163, 0.14) !important;
+  border-radius: var(--iter-panel-radius);
+}
+
+/* --- 8. Social proof strip: anchor with alternating bg --- */
+.direct-social-proof-strip {
+  border: 2px solid rgba(14, 165, 163, 0.2) !important;
+}
+
+/* --- 9. Mobile: floating CTA adjustments --- */
+@media (max-width: 640px) {
+  .direct-floating-cta {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+  }
+  .direct-floating-cta-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+/* --- 10. Post-audience CTA section --- */
+.direct-post-audience-cta {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  text-align: center;
+  padding: 40px 28px;
+  border-radius: var(--iter-panel-radius);
+  border: 2px solid rgba(14, 165, 163, 0.18);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(83, 240, 226, 0.1) 0%, transparent 50%),
+    linear-gradient(160deg, rgba(240, 253, 250, 0.6) 0%, rgba(255, 255, 255, 0.92) 100%);
+  box-shadow: 0 12px 32px rgba(14, 165, 163, 0.06);
+}
+
+.direct-post-audience-headline {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.92);
+  letter-spacing: -0.01em;
+}
+
+.direct-post-audience-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.direct-post-audience-note {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(31, 42, 68, 0.5);
+  font-weight: 500;
+}
+
+/* --- 11. Cost section: dramatic full-width visual break --- */
+.direct-cost-panel {
+  border: 2px solid rgba(239, 68, 68, 0.15) !important;
+  box-shadow:
+    0 0 0 1px rgba(239, 68, 68, 0.06),
+    0 12px 32px rgba(239, 68, 68, 0.06) !important;
+}
+
+/* --- 12. Comparison section: full-bleed look with stronger contrast --- */
+.direct-notform-panel-wide {
+  border: 2px solid rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* === End Pass 4/16 (cron iter-04-v2) === */

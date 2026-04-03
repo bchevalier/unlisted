@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getKeeperSessionFromCookies } from '../../lib/keeper-auth';
 import { DirectIcon } from './direct-icons';
 import { LogoutButton } from './logout-button';
+import { FloatingCTA } from './floating-cta';
 
 const TRUST_SIGNALS = [
   'No credit card required',
@@ -59,9 +60,9 @@ const TESTIMONIALS = [
 ] as const;
 
 const COST_OF_INACTION = [
-  { stat: '147', label: 'emails per day', copy: 'The average professional receives 147 emails daily. Most are noise.' },
-  { stat: '28%', label: 'of the workday', copy: 'Workers spend 28% of their day managing email — that\'s 11 hours a week.' },
-  { stat: '$1,250', label: 'lost per week', copy: 'Unstructured inbound costs professionals $1,250/week in lost productivity.' },
+  { stat: '147', label: 'emails per day', copy: 'The average professional receives 147 emails daily. Most are noise.', source: 'Radicati Group, 2024' },
+  { stat: '28%', label: 'of the workday', copy: 'Workers spend 28% of their day managing email — that\'s 11 hours a week.', source: 'McKinsey Global Institute' },
+  { stat: '$1,250', label: 'lost per week', copy: 'Unstructured inbound costs professionals $1,250/week in lost productivity.', source: 'Based on avg. salary × email time' },
 ] as const;
 
 const WHO_FOR_PRIMARY = [
@@ -125,6 +126,8 @@ export default async function DirectClientPage() {
         </nav>
       </header>
 
+      <FloatingCTA href={session ? '/direct/settings?slug=john&fixture=demo' : '/direct/signup'} />
+
       <div className="direct-main-shell">
         {/* 1. Hero — 2-column with product mockup */}
         <section className="lane-hero-panel direct-hero-panel" aria-label="Knokio Direct overview">
@@ -153,13 +156,14 @@ export default async function DirectClientPage() {
                 <Link className="button secondary direct-hero-button" href="/direct/inbox?slug=john&fixture=demo">See a live example</Link>
               </div>
               <p className="hero-meta direct-hero-meta">Free forever · No credit card · Set up in 2 minutes</p>
+              <p className="direct-hero-expectation">Click → pick your categories → your Direct page is live. No code needed.</p>
               <div className="direct-hero-social-proof">
                 <div className="direct-hero-avatar-stack">
                   {HERO_SOCIAL_PROOF_AVATARS.map((a) => (
                     <span key={a.initials} className="direct-hero-avatar-dot" style={{ background: a.color }}>{a.initials}</span>
                   ))}
                 </div>
-                <p className="direct-hero-social-line">Trusted by <strong>2,400+</strong> creators, advisors, and founders</p>
+                <p className="direct-hero-social-line">Trusted by <strong>2,400+</strong> creators, advisors, and founders · growing every week</p>
               </div>
             </div>
             <div className="direct-hero-mockup" aria-label="Direct inbox preview">
@@ -252,6 +256,7 @@ export default async function DirectClientPage() {
                 <strong className="direct-cost-stat">{c.stat}</strong>
                 <span className="direct-cost-label">{c.label}</span>
                 <p>{c.copy}</p>
+                <span className="direct-cost-source">{c.source}</span>
               </article>
             ))}
           </div>
@@ -334,6 +339,7 @@ export default async function DirectClientPage() {
                 <Link className="button primary direct-hero-button" href="/direct/signup">Protect my inbox — free</Link>
               )}
             </div>
+            <p className="direct-mid-page-cta-expectation">You&apos;ll have your page live in under 2 minutes — no code, no credit card.</p>
           </div>
         </section>
 
@@ -377,6 +383,20 @@ export default async function DirectClientPage() {
               ))}
             </div>
           </details>
+        </section>
+
+        {/* 5b. Post-audience CTA — second conversion bridge */}
+        <section className="direct-post-audience-cta" aria-label="Start protecting your inbox">
+          <p className="direct-post-audience-headline">See it in action, or start building yours.</p>
+          <div className="direct-post-audience-actions">
+            {session ? (
+              <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — free</Link>
+            ) : (
+              <Link className="button primary direct-hero-button" href="/direct/signup">Protect my inbox — free</Link>
+            )}
+            <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">See a live example</Link>
+          </div>
+          <p className="direct-post-audience-note">No credit card · No code · Live in 2 minutes</p>
         </section>
 
         {/* 6b. Trust architecture — "why trust Knokio with privacy" */}
@@ -457,8 +477,8 @@ export default async function DirectClientPage() {
             <h2>Common questions</h2>
           </div>
           <div className="direct-faq-accordion">
-            {FAQ.map((f) => (
-              <details key={f.q} className="direct-faq-item">
+            {FAQ.map((f, i) => (
+              <details key={f.q} className="direct-faq-item" open={i < 3 ? true : undefined}>
                 <summary className="direct-faq-question">{f.q}</summary>
                 <p className="direct-faq-answer">{f.a}</p>
               </details>
@@ -479,6 +499,7 @@ export default async function DirectClientPage() {
             )}
             <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">See a live example</Link>
           </div>
+          <p className="direct-final-cta-expectation">Click → pick categories → your access layer is live. No code needed.</p>
         </section>
       </div>
     </main>
