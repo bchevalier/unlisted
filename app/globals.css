@@ -12507,3 +12507,597 @@ a:hover {
 }
 
 /* === End Pass v2-18 === */
+
+/* === Pass v2-19: Visual impact uplift — stats, benefits, testimonials, spacing, rhythm === */
+
+/* --- 1. Benefit cards: colored left accent borders + elevated stat display --- */
+.direct-proof-card {
+  border-left: 4px solid rgba(14, 165, 163, 0.5) !important;
+  padding: 22px 22px 18px !important;
+  gap: 10px !important;
+  transition: transform 200ms ease, box-shadow 200ms ease !important;
+}
+
+.direct-proof-card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Each card gets a unique accent color */
+.direct-proof-card:nth-child(1) { border-left-color: rgba(14, 165, 163, 0.6) !important; }
+.direct-proof-card:nth-child(2) { border-left-color: rgba(37, 99, 235, 0.5) !important; }
+.direct-proof-card:nth-child(3) { border-left-color: rgba(225, 26, 140, 0.45) !important; }
+
+.direct-proof-title {
+  font-size: 16px !important;
+}
+
+.direct-proof-copy {
+  font-size: 14.5px !important;
+  line-height: 1.52 !important;
+}
+
+.direct-proof-stat {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 8px !important;
+  padding-top: 14px !important;
+  border-top: 1px solid rgba(15, 23, 42, 0.06) !important;
+  margin-top: 6px !important;
+}
+
+.direct-proof-stat strong {
+  font-size: 32px !important;
+  letter-spacing: -0.03em !important;
+  color: rgba(14, 165, 163, 0.9) !important;
+}
+
+.direct-proof-card:nth-child(2) .direct-proof-stat strong {
+  color: rgba(37, 99, 235, 0.85) !important;
+}
+
+.direct-proof-card:nth-child(3) .direct-proof-stat strong {
+  color: rgba(225, 26, 140, 0.8) !important;
+}
+
+.direct-proof-stat span {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: rgba(15, 23, 42, 0.5) !important;
+}
+
+/* --- 2. Testimonial stats strip: 3× visual weight with accent coloring --- */
+.direct-testimonial-stats {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 0 !important;
+  padding: 28px 40px !important;
+  background: linear-gradient(135deg, rgba(14, 165, 163, 0.04) 0%, rgba(37, 99, 235, 0.03) 50%, rgba(225, 26, 140, 0.03) 100%) !important;
+  border: 1px solid rgba(14, 165, 163, 0.1) !important;
+  border-radius: 16px !important;
+  margin-bottom: 16px !important;
+}
+
+.direct-testimonial-stat {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 4px 36px !important;
+}
+
+.direct-testimonial-stat strong {
+  font-size: 48px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 1 !important;
+  color: rgba(15, 23, 42, 0.88) !important;
+}
+
+/* Color each stat differently */
+.direct-testimonial-stat:nth-child(1) strong { color: rgba(14, 165, 163, 0.9) !important; }
+.direct-testimonial-stat:nth-child(3) strong { color: rgba(37, 99, 235, 0.85) !important; }
+.direct-testimonial-stat:nth-child(5) strong { color: rgba(225, 26, 140, 0.8) !important; }
+
+.direct-testimonial-stat span {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: rgba(15, 23, 42, 0.55) !important;
+  text-align: center !important;
+}
+
+.direct-testimonial-stats-divider {
+  width: 1px !important;
+  height: 48px !important;
+  background: rgba(15, 23, 42, 0.08) !important;
+  flex-shrink: 0 !important;
+}
+
+/* --- 3. Testimonial cards: stronger quotes, elevated featured card --- */
+.direct-testimonial-card {
+  padding: 24px !important;
+  border-radius: 18px !important;
+  transition: transform 200ms ease, box-shadow 200ms ease !important;
+}
+
+.direct-testimonial-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08) !important;
+}
+
+.direct-testimonial-quote {
+  font-size: 15.5px !important;
+  line-height: 1.6 !important;
+  color: rgba(15, 23, 42, 0.82) !important;
+}
+
+.direct-testimonial-card-featured .direct-testimonial-quote {
+  font-size: 17.5px !important;
+  line-height: 1.6 !important;
+  font-weight: 500 !important;
+}
+
+/* Result badge: stronger visual treatment */
+.direct-testimonial-result-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 14px !important;
+  border-radius: 999px !important;
+  background: rgba(14, 165, 163, 0.08) !important;
+  border: 1px solid rgba(14, 165, 163, 0.15) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: rgba(13, 101, 101, 0.9) !important;
+  margin-top: 8px !important;
+}
+
+.direct-testimonial-result-badge .direct-testimonial-result-icon {
+  color: rgba(14, 165, 163, 0.8) !important;
+}
+
+/* Category tag: cleaner, smaller */
+.direct-testimonial-category-tag {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 3px 10px !important;
+  border-radius: 999px !important;
+  background: rgba(15, 23, 42, 0.04) !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  color: rgba(15, 23, 42, 0.5) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  margin-bottom: 6px !important;
+}
+
+/* --- 4. Section spacing: tighter rhythm, gradient dividers --- */
+.direct-main-shell {
+  gap: 0 !important;
+}
+
+.direct-main-shell > * {
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+/* Hero keeps top radius */
+.direct-main-shell > .direct-hero-panel {
+  border-radius: var(--iter-panel-radius) var(--iter-panel-radius) 0 0 !important;
+}
+
+/* Footer keeps bottom radius */
+.direct-main-shell > .direct-footer {
+  border-radius: 0 0 var(--iter-panel-radius) var(--iter-panel-radius) !important;
+}
+
+/* Remove double borders between adjacent sections */
+.direct-main-shell > *:not(:first-child) {
+  border-top: none !important;
+}
+
+/* --- 5. Section intro headings: bigger, more authoritative --- */
+.direct-panel-intro h2,
+.direct-steps-intro h2,
+.direct-faq-intro h2 {
+  font-size: clamp(26px, 3.2vw, 36px) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1.2 !important;
+  color: rgba(15, 23, 42, 0.92) !important;
+}
+
+.direct-section-dark h2 {
+  color: rgba(241, 245, 249, 0.95) !important;
+}
+
+/* Section lede text: clearer and more readable */
+.direct-section-lede {
+  font-size: 17px !important;
+  line-height: 1.55 !important;
+  color: rgba(15, 23, 42, 0.6) !important;
+  max-width: 640px !important;
+}
+
+.direct-section-dark .direct-section-lede {
+  color: rgba(203, 213, 225, 0.7) !important;
+}
+
+/* --- 6. Audience section: stronger before/after treatment --- */
+.direct-audience-grid-2col {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.direct-audience-card-expanded {
+  padding: 22px !important;
+  border-radius: 18px !important;
+}
+
+.direct-audience-transform {
+  display: grid !important;
+  gap: 4px !important;
+  margin-top: 10px !important;
+  padding: 14px 16px !important;
+  border-radius: 12px !important;
+  background: rgba(15, 23, 42, 0.025) !important;
+  border: 1px solid rgba(15, 23, 42, 0.05) !important;
+  font-size: 13.5px !important;
+  line-height: 1.45 !important;
+}
+
+.direct-audience-before {
+  color: rgba(220, 38, 38, 0.75) !important;
+  font-weight: 600 !important;
+}
+
+.direct-audience-after {
+  color: rgba(13, 148, 136, 0.85) !important;
+  font-weight: 700 !important;
+}
+
+.direct-audience-x {
+  margin-right: 4px !important;
+  font-weight: 800 !important;
+}
+
+.direct-audience-check {
+  margin-right: 4px !important;
+  font-weight: 800 !important;
+}
+
+.direct-audience-arrow {
+  display: none !important;
+}
+
+/* Featured audience card */
+.direct-audience-card-featured {
+  border-color: rgba(14, 165, 163, 0.2) !important;
+  background: linear-gradient(160deg, rgba(240, 253, 250, 0.5) 0%, rgba(255, 255, 255, 0.98) 100%) !important;
+}
+
+/* --- 7. How-it-works step cards: colored numbers --- */
+.direct-step-number {
+  background: rgba(14, 165, 163, 0.12) !important;
+  color: rgba(13, 148, 136, 0.9) !important;
+  font-weight: 800 !important;
+}
+
+.direct-section-dark .direct-step-number {
+  background: rgba(83, 240, 226, 0.15) !important;
+  color: rgba(83, 240, 226, 0.9) !important;
+}
+
+.direct-section-dark .direct-step-card {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.direct-section-dark .direct-step-card h3 {
+  color: rgba(241, 245, 249, 0.95) !important;
+}
+
+.direct-section-dark .direct-step-card p {
+  color: rgba(203, 213, 225, 0.7) !important;
+}
+
+/* --- 8. Sender mockup: subtle shadow enhancement --- */
+.direct-mockup-chrome-sender {
+  box-shadow:
+    0 20px 48px rgba(15, 23, 42, 0.1),
+    0 8px 20px rgba(15, 23, 42, 0.06),
+    0 0 0 1px rgba(15, 23, 42, 0.04) !important;
+}
+
+/* Sender callouts: subtle colored icons */
+.direct-sender-callout-icon {
+  color: rgba(14, 165, 163, 0.7) !important;
+  flex-shrink: 0 !important;
+}
+
+.direct-sender-callout-title {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: rgba(15, 23, 42, 0.9) !important;
+}
+
+.direct-sender-callout-copy {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  color: rgba(15, 23, 42, 0.6) !important;
+}
+
+/* --- 9. FAQ: subtler, cleaner accordion --- */
+.direct-faq-item-v2 {
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
+  border-radius: 14px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  transition: border-color 200ms ease !important;
+}
+
+.direct-faq-item-v2[open] {
+  border-color: rgba(14, 165, 163, 0.2) !important;
+}
+
+.direct-faq-question-v2 {
+  padding: 18px 22px !important;
+  font-size: 15.5px !important;
+  font-weight: 700 !important;
+  color: rgba(15, 23, 42, 0.88) !important;
+  cursor: pointer !important;
+  transition: color 150ms ease !important;
+}
+
+.direct-faq-question-v2:hover {
+  color: rgba(14, 165, 163, 0.9) !important;
+}
+
+.direct-faq-answer-v2 {
+  padding: 0 22px 18px !important;
+  font-size: 14.5px !important;
+  line-height: 1.6 !important;
+  color: rgba(15, 23, 42, 0.65) !important;
+}
+
+/* --- 10. Pricing: more visual impact on free plan --- */
+.direct-pricing-grid {
+  display: grid !important;
+  grid-template-columns: 1.1fr 0.9fr !important;
+  gap: 16px !important;
+  align-items: start !important;
+}
+
+.direct-pricing-card {
+  border-radius: 20px !important;
+  padding: 28px !important;
+}
+
+.direct-pricing-card-highlighted {
+  border: 2px solid rgba(14, 165, 163, 0.35) !important;
+  box-shadow:
+    0 0 0 4px rgba(14, 165, 163, 0.06),
+    0 16px 40px rgba(14, 165, 163, 0.1) !important;
+}
+
+.direct-pricing-badge {
+  display: inline-flex !important;
+  padding: 4px 14px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, #0d9488 0%, #0ea5a3 100%) !important;
+  color: #fff !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 8px !important;
+}
+
+.direct-pricing-coming-badge {
+  display: inline-flex !important;
+  padding: 4px 14px !important;
+  border-radius: 999px !important;
+  background: rgba(15, 23, 42, 0.06) !important;
+  color: rgba(15, 23, 42, 0.5) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 8px !important;
+}
+
+.direct-pricing-list li {
+  font-size: 14.5px !important;
+  line-height: 1.5 !important;
+  color: rgba(15, 23, 42, 0.72) !important;
+  padding: 4px 0 !important;
+}
+
+/* --- 11. Final CTA section: more dramatic --- */
+.direct-final-cta {
+  text-align: center !important;
+  padding: 64px 32px !important;
+}
+
+.direct-final-cta h2 {
+  font-size: clamp(28px, 3.5vw, 40px) !important;
+  line-height: 1.2 !important;
+}
+
+.direct-final-cta-desc {
+  font-size: 17px !important;
+  color: rgba(203, 213, 225, 0.72) !important;
+  max-width: 560px !important;
+  margin: 0 auto !important;
+}
+
+.direct-final-cta-expectation {
+  font-size: 14px !important;
+  color: rgba(148, 163, 184, 0.6) !important;
+  margin-top: 12px !important;
+}
+
+/* --- 12. Hero social proof row: more prominence --- */
+.direct-hero-social-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-top: 6px !important;
+}
+
+.direct-hero-avatars {
+  display: flex !important;
+}
+
+.direct-hero-avatar-dot {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 999px !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  border: 2px solid #fff !important;
+  margin-left: -6px !important;
+}
+
+.direct-hero-avatar-dot:first-child {
+  margin-left: 0 !important;
+}
+
+.direct-hero-social-text {
+  font-size: 13.5px !important;
+  color: rgba(15, 23, 42, 0.55) !important;
+  font-weight: 500 !important;
+}
+
+.direct-hero-social-text strong {
+  color: rgba(15, 23, 42, 0.8) !important;
+  font-weight: 700 !important;
+}
+
+/* --- 13. Hero bullets: cleaner visual --- */
+.direct-hero-bullets {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 4px 0 !important;
+  display: grid !important;
+  gap: 8px !important;
+}
+
+.direct-hero-bullets li {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  font-size: 14.5px !important;
+  color: rgba(15, 23, 42, 0.74) !important;
+  font-weight: 500 !important;
+}
+
+.direct-hero-bullet-icon {
+  color: rgba(14, 165, 163, 0.7) !important;
+  flex-shrink: 0 !important;
+}
+
+/* --- 14. Comparison section: highlights as pill badges --- */
+.direct-notform-highlights {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  margin-top: 10px !important;
+}
+
+.direct-notform-highlight {
+  display: inline-flex !important;
+  padding: 4px 12px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+.direct-notform-card-faded .direct-notform-highlight {
+  background: rgba(239, 68, 68, 0.08) !important;
+  color: rgba(185, 28, 28, 0.6) !important;
+  border: 1px solid rgba(239, 68, 68, 0.12) !important;
+}
+
+.direct-notform-card-winner .direct-notform-highlight {
+  background: rgba(14, 165, 163, 0.08) !important;
+  color: rgba(13, 101, 101, 0.85) !important;
+  border: 1px solid rgba(14, 165, 163, 0.15) !important;
+}
+
+/* --- 15. Footer: cleaner, more minimal --- */
+.direct-footer {
+  background: #fafcfe !important;
+  border-top: 1px solid rgba(15, 23, 42, 0.06) !important;
+  padding: 28px 32px !important;
+}
+
+.direct-footer-inner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  gap: 16px !important;
+}
+
+.direct-footer-links a {
+  font-size: 14px !important;
+  color: rgba(15, 23, 42, 0.5) !important;
+  font-weight: 500 !important;
+}
+
+.direct-footer-links a:hover {
+  color: rgba(14, 165, 163, 0.8) !important;
+}
+
+.direct-footer-copy {
+  font-size: 13px !important;
+  color: rgba(15, 23, 42, 0.35) !important;
+}
+
+/* --- 16. Mobile adjustments for pass v2-19 --- */
+@media (max-width: 860px) {
+  .direct-testimonial-stat strong {
+    font-size: 38px !important;
+  }
+  .direct-testimonial-stat {
+    padding: 4px 24px !important;
+  }
+  .direct-pricing-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .direct-audience-grid-2col {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .direct-testimonial-stats {
+    flex-direction: column !important;
+    gap: 16px !important;
+    padding: 24px 20px !important;
+  }
+  .direct-testimonial-stats-divider {
+    width: 60px !important;
+    height: 1px !important;
+  }
+  .direct-testimonial-stat strong {
+    font-size: 34px !important;
+  }
+  .direct-proof-strip {
+    grid-template-columns: 1fr !important;
+  }
+  .direct-final-cta {
+    padding: 48px 20px !important;
+  }
+}
+
+/* === End Pass v2-19 === */
