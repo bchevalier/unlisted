@@ -5,6 +5,13 @@ import { getKeeperSessionFromCookies } from '../../lib/keeper-auth';
 import { DirectIcon } from './direct-icons';
 import { LogoutButton } from './logout-button';
 
+const TRUST_SIGNALS = [
+  'No credit card required',
+  'Set up in under 2 minutes',
+  'Free tier is permanent',
+  'Your data stays yours',
+] as const;
+
 const BENEFITS = [
   { icon: 'lock', title: 'Private until you approve', copy: 'Your email, DMs, and private channels stay hidden. Nothing reaches you until you say so.' },
   { icon: 'clipboard', title: 'Every request arrives with context', copy: 'Budget, brief, category, and timeline — collected before a request ever reaches you.' },
@@ -87,12 +94,10 @@ export default async function DirectClientPage() {
             <p className="hero-word">KNOKIO DIRECT</p>
             <h1 className="hero-title direct-hero-title">Stay reachable without losing control of your inbox.</h1>
             <p className="hero-subtitle direct-hero-subtitle">
-              Direct is the access layer between you and the outside world. It turns public contact into structured
-              requests — private until you approve.
+              Direct is the access layer between you and the outside world — it turns public contact into structured requests, private until you approve.
             </p>
             <p className="direct-hero-concrete-line">
-              Brand deals, advisory asks, and business inquiries arrive with context. Spam, cold pitches, and vague
-              asks are stopped at the door.
+              Brand deals, advisory asks, and business inquiries arrive with budget, scope, and brief attached. Spam, cold pitches, and vague asks never make it through.
             </p>
             <div className="lane-action-row direct-hero-actions">
               {session ? (
@@ -117,6 +122,32 @@ export default async function DirectClientPage() {
               <p className="direct-proof-copy">{b.copy}</p>
             </article>
           ))}
+        </section>
+
+        {/* 2a. Trust signals strip */}
+        <div className="direct-trust-strip" aria-label="Trust signals">
+          {TRUST_SIGNALS.map((signal) => (
+            <span key={signal} className="direct-trust-pill">{signal}</span>
+          ))}
+        </div>
+
+        {/* 2b. Not just a contact form — moved up for objection handling */}
+        <section className="lane-panel direct-notform-panel" aria-label="Not just a contact form">
+          <div className="direct-panel-intro">
+            <p className="lane-kicker">Why this isn&apos;t what you think</p>
+            <h2>A contact form drops messages in your inbox. Direct protects it.</h2>
+          </div>
+          <div className="direct-notform-grid">
+            {NOT_A_FORM.map((item) => (
+              <article key={item.title} className={`direct-notform-card ${item.icon === 'shield' ? 'direct-notform-card-direct' : 'direct-notform-card-form'}`}>
+                <div className="direct-notform-head">
+                  <DirectIcon name={item.icon} size={18} className="direct-notform-icon" />
+                  <h3>{item.title}</h3>
+                </div>
+                <p>{item.issue}</p>
+              </article>
+            ))}
+          </div>
         </section>
 
         {/* 3. Who it is for */}
@@ -175,34 +206,15 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 4b. Not just a contact form — addresses the #1 objection */}
-        <section className="lane-panel direct-notform-panel" aria-label="Not just a contact form">
-          <div className="direct-panel-intro">
-            <p className="lane-kicker">Why this isn&apos;t what you think</p>
-            <h2>A contact form drops messages in your inbox. Direct protects it.</h2>
-          </div>
-          <div className="direct-notform-grid">
-            {NOT_A_FORM.map((item) => (
-              <article key={item.title} className={`direct-notform-card ${item.icon === 'shield' ? 'direct-notform-card-direct' : 'direct-notform-card-form'}`}>
-                <div className="direct-notform-head">
-                  <DirectIcon name={item.icon} size={18} className="direct-notform-icon" />
-                  <h3>{item.title}</h3>
-                </div>
-                <p>{item.issue}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* 4c. Mid-page CTA */}
+        {/* 4b. Mid-page CTA */}
         <section className="direct-inline-cta" aria-label="Get started">
           <p>Most people either expose themselves and get overwhelmed — or hide and miss good opportunities.</p>
           <p className="direct-inline-cta-kicker">Direct is the access layer in between. Private until approved.</p>
           <div className="direct-inline-cta-actions">
             {session ? (
-              <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Start your Direct page — free</Link>
+              <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — free</Link>
             ) : (
-              <Link className="button primary direct-hero-button" href="/direct/signup">Start your Direct page — free</Link>
+              <Link className="button primary direct-hero-button" href="/direct/signup">Protect my inbox — free</Link>
             )}
             <Link className="button secondary" href="/direct/inbox?slug=john&fixture=demo">See a live example</Link>
           </div>
@@ -271,6 +283,18 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
+        {/* 6b. Post-scenarios CTA */}
+        <section className="direct-post-scenarios-cta" aria-label="Get started after scenarios">
+          <p className="direct-post-scenarios-lead">Sound familiar? You don&apos;t need another inbox tool — you need an access layer.</p>
+          <div className="direct-inline-cta-actions">
+            {session ? (
+              <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — free</Link>
+            ) : (
+              <Link className="button primary direct-hero-button" href="/direct/signup">Protect my inbox — free</Link>
+            )}
+          </div>
+        </section>
+
         {/* 7. Pricing summary */}
         <section className="lane-panel direct-pricing-panel direct-section-tinted" aria-label="Direct pricing overview">
           <div className="direct-panel-intro">
@@ -288,9 +312,9 @@ export default async function DirectClientPage() {
                 <li>Private until you approve</li>
               </ul>
               {session ? (
-                <Link className="button primary direct-pricing-cta" href="/direct/settings?slug=john&fixture=demo">Get started free</Link>
+                <Link className="button primary direct-pricing-cta" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — free</Link>
               ) : (
-                <Link className="button primary direct-pricing-cta" href="/direct/signup">Get started free</Link>
+                <Link className="button primary direct-pricing-cta" href="/direct/signup">Protect my inbox — free</Link>
               )}
             </article>
             <article className="direct-pricing-card direct-pricing-card-paid">

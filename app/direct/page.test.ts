@@ -57,6 +57,13 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Plans');
     expect(html).toContain('FAQ');
     expect(html).toContain('Your inbox is yours. Keep it that way.');
+    // Pass 16: trust strip + post-scenarios CTA + unified CTA labels
+    expect(html).toContain('Free tier is permanent');
+    expect(html).toContain('Your data stays yours');
+    expect(html).toContain('Sound familiar?');
+    // All CTAs should use unified label
+    const ctaMatches = html.match(/Protect my inbox/g);
+    expect(ctaMatches && ctaMatches.length).toBeGreaterThanOrEqual(4);
   });
 
   it('preserves signed-in states', async () => {

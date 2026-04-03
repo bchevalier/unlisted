@@ -4339,3 +4339,99 @@ a:hover {
 }
 
 /* === End Pass 15 === */
+
+/* === Pass 16: Section reorder, trust strip, CTA unification, post-scenario CTA, pricing emphasis === */
+
+/* --- Trust signal pills strip --- */
+.direct-trust-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.direct-trust-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(14, 165, 163, 0.18);
+  background: rgba(236, 253, 245, 0.5);
+  color: rgba(13, 101, 101, 0.88);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.direct-trust-pill::before {
+  content: '✓';
+  color: rgba(14, 165, 163, 0.8);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* --- Post-scenarios CTA strip --- */
+.direct-post-scenarios-cta {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  text-align: center;
+  padding: 32px 24px;
+  border-radius: var(--iter-panel-radius);
+  border: 1px solid rgba(14, 165, 163, 0.16);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(83, 240, 226, 0.1) 0%, transparent 44%),
+    rgba(248, 252, 251, 0.92);
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.04);
+}
+
+.direct-post-scenarios-lead {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: rgba(15, 23, 42, 0.88);
+  max-width: 520px;
+}
+
+/* --- Pricing: more spacious free card, clearer hierarchy --- */
+.direct-pricing-card {
+  padding: 24px 22px !important;
+}
+
+.direct-pricing-card h3 {
+  font-size: 1.2rem !important;
+  font-weight: 800 !important;
+}
+
+.direct-pricing-card-highlighted {
+  border-width: 2px;
+  border-color: rgba(14, 165, 163, 0.4) !important;
+  box-shadow:
+    0 0 0 1px rgba(14, 165, 163, 0.12),
+    0 12px 28px rgba(14, 165, 163, 0.1) !important;
+}
+
+.direct-pricing-card-highlighted .direct-pricing-price {
+  font-size: 2rem !important;
+}
+
+/* --- Mobile: trust strip wraps --- */
+@media (max-width: 640px) {
+  .direct-trust-strip {
+    gap: 8px;
+  }
+
+  .direct-trust-pill {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .direct-post-scenarios-cta {
+    padding: 24px 18px;
+  }
+}
+
+/* === End Pass 16 === */
