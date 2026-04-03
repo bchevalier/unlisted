@@ -9509,3 +9509,316 @@ a:hover {
 }
 
 /* === End Pass 13/16 === */
+
+/* === Pass 14/16 (cron direct-iter-14): Hero stats bar, hero endorsement, unified conversion break, secondary CTA link, section separators, pricing polish === */
+
+/* --- 1. Hero secondary CTA: text link instead of button to reduce visual competition --- */
+.direct-hero-link-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.7);
+  text-decoration: none;
+  transition: color 0.15s ease;
+  padding: 8px 0;
+}
+
+.direct-hero-link-secondary:hover {
+  color: rgba(83, 240, 226, 0.9);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* --- 2. Hero stats bar: compact outcome metrics visible above the fold --- */
+.direct-hero-stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 12px;
+}
+
+.direct-hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.direct-hero-stat strong {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: rgba(83, 240, 226, 0.95);
+  line-height: 1;
+}
+
+.direct-hero-stat span {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.55);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* --- 3. Hero endorsement: compact quote for above-fold trust --- */
+.direct-hero-endorsement {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  max-width: 500px;
+}
+
+.direct-hero-endorsement-quote {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(226, 232, 240, 0.72);
+  font-style: italic;
+}
+
+.direct-hero-endorsement-attr {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.direct-hero-endorsement-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.direct-hero-endorsement-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.direct-hero-endorsement-role {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(148, 163, 184, 0.6);
+}
+
+/* --- 4. Unified conversion break: stats + CTA merged into one visual unit --- */
+.direct-conversion-break {
+  display: grid;
+  gap: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 2px solid rgba(14, 165, 163, 0.2);
+  box-shadow:
+    0 0 0 1px rgba(14, 165, 163, 0.04),
+    0 16px 40px rgba(14, 165, 163, 0.08);
+}
+
+.direct-conversion-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 32px;
+  padding: 32px 40px;
+  background: linear-gradient(160deg, rgba(240, 253, 250, 0.7) 0%, rgba(255, 255, 255, 0.95) 100%);
+  border-bottom: 1px solid rgba(14, 165, 163, 0.1);
+}
+
+.direct-conversion-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.direct-conversion-stat strong {
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: rgba(13, 148, 136, 0.92);
+  line-height: 1;
+}
+
+.direct-conversion-stat span {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(31, 42, 68, 0.68);
+  max-width: 130px;
+  line-height: 1.3;
+}
+
+.direct-conversion-divider {
+  width: 1px;
+  height: 32px;
+  background: rgba(14, 165, 163, 0.15);
+}
+
+.direct-conversion-cta {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  text-align: center;
+  padding: 36px 28px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(83, 240, 226, 0.08) 0%, transparent 60%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 252, 251, 0.96) 100%);
+}
+
+.direct-conversion-cta h3 {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: rgba(15, 23, 42, 0.92);
+  letter-spacing: -0.02em;
+}
+
+.direct-conversion-cta p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(31, 42, 68, 0.58);
+  font-weight: 500;
+}
+
+/* Hide gradient divider before conversion break */
+.direct-main-shell > .direct-conversion-break::before {
+  display: none !important;
+}
+
+/* --- 5. Section transition separators: subtle top-border between consecutive light sections --- */
+.direct-proof-strip {
+  position: relative;
+}
+
+.direct-proof-strip::before {
+  content: '';
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(14, 165, 163, 0.3), transparent);
+}
+
+/* Separator between audience section and testimonials */
+.direct-testimonials-elevated::before {
+  content: '' !important;
+  display: block !important;
+  width: 60px !important;
+  height: 3px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, transparent, rgba(14, 165, 163, 0.25), transparent) !important;
+  margin: 0 auto 24px !important;
+}
+
+/* --- 6. Pricing: "Coming soon" badge on Pro card --- */
+.direct-pricing-coming-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: rgba(100, 116, 139, 0.8);
+  margin-bottom: 4px;
+}
+
+/* --- 7. Pricing: stronger Free card visual dominance --- */
+.direct-page .direct-pricing-card-free.direct-pricing-card-highlighted {
+  transform: scale(1.02);
+  border: 2.5px solid rgba(14, 165, 163, 0.5) !important;
+  box-shadow:
+    0 0 0 3px rgba(14, 165, 163, 0.08),
+    0 20px 48px rgba(14, 165, 163, 0.14) !important;
+}
+
+.direct-page .direct-pricing-card-paid {
+  opacity: 0.72 !important;
+  transform: scale(0.98);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.direct-page .direct-pricing-card-paid:hover {
+  opacity: 0.9 !important;
+  transform: scale(0.99);
+}
+
+/* --- 8. Mobile adjustments --- */
+@media (max-width: 860px) {
+  .direct-hero-stats-bar {
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  
+  .direct-hero-stat strong {
+    font-size: 18px;
+  }
+  
+  .direct-hero-stat span {
+    font-size: 11px;
+  }
+  
+  .direct-hero-endorsement {
+    max-width: 100%;
+  }
+  
+  .direct-conversion-stats {
+    padding: 24px 20px;
+    gap: 24px;
+  }
+  
+  .direct-conversion-stat strong {
+    font-size: 28px;
+  }
+  
+  .direct-conversion-cta {
+    padding: 28px 20px;
+  }
+  
+  .direct-page .direct-pricing-card-free.direct-pricing-card-highlighted,
+  .direct-page .direct-pricing-card-paid {
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .direct-hero-stats-bar {
+    gap: 14px;
+  }
+  
+  .direct-hero-endorsement {
+    padding: 12px 14px;
+  }
+  
+  .direct-hero-endorsement-quote {
+    font-size: 13px;
+  }
+  
+  .direct-conversion-divider {
+    display: none;
+  }
+  
+  .direct-conversion-stats {
+    flex-direction: column;
+    gap: 18px;
+    align-items: flex-start;
+  }
+}
+
+/* === End Pass 14/16 === */

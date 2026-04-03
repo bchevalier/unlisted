@@ -36,6 +36,20 @@ const HERO_BULLETS = [
   { icon: 'shield', text: 'Spam and vague asks filtered before your inbox' },
 ] as const;
 
+const HERO_STATS = [
+  { value: '96%', label: 'noise filtered' },
+  { value: '2 min', label: 'to set up' },
+  { value: '2,400+', label: 'active doors' },
+] as const;
+
+const HERO_ENDORSEMENT = {
+  quote: 'I replaced my public email with a Direct page — brand deals now arrive with budget and brief attached.',
+  author: 'Mia Chen',
+  role: 'Creator · 82K subscribers',
+  initials: 'MC',
+  color: '#e11a8c',
+} as const;
+
 const BENEFITS = [
   { icon: 'lock', title: 'Private until approved', copy: 'Your email, DMs, and private channels stay hidden behind your access layer. Nothing gets through until you say so.', stat: '100%', statLabel: 'of contacts hidden' },
   { icon: 'clipboard', title: 'Structured from the start', copy: 'Budget, brief, category, and timeline — collected upfront so every request arrives ready for a decision.', stat: '3 min', statLabel: 'avg. review time' },
@@ -140,12 +154,24 @@ export default async function DirectClientPage() {
                 ) : (
                   <Link className="button primary direct-hero-button" href="/direct/signup">Protect my inbox — free</Link>
                 )}
-                <Link className="button secondary direct-hero-button" href="#how-it-works">See how it works</Link>
+                <a className="direct-hero-link-secondary" href="#how-it-works">See how it works ↓</a>
               </div>
               <p className="hero-meta direct-hero-meta">Free forever · No credit card · Live in 2 minutes</p>
-              <div className="direct-hero-social-proof direct-hero-social-proof-simple">
-                <DirectIcon name="users" size={14} className="direct-hero-social-proof-icon" />
-                <p className="direct-hero-social-line">Trusted by <strong>2,400+</strong> creators, advisors, and founders</p>
+              <div className="direct-hero-stats-bar" aria-label="Key metrics">
+                {HERO_STATS.map((s) => (
+                  <div key={s.label} className="direct-hero-stat">
+                    <strong>{s.value}</strong>
+                    <span>{s.label}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="direct-hero-endorsement" aria-label="Featured testimonial">
+                <blockquote className="direct-hero-endorsement-quote">&ldquo;{HERO_ENDORSEMENT.quote}&rdquo;</blockquote>
+                <div className="direct-hero-endorsement-attr">
+                  <span className="direct-hero-endorsement-avatar" style={{ background: HERO_ENDORSEMENT.color }}>{HERO_ENDORSEMENT.initials}</span>
+                  <span className="direct-hero-endorsement-name">{HERO_ENDORSEMENT.author}</span>
+                  <span className="direct-hero-endorsement-role">{HERO_ENDORSEMENT.role}</span>
+                </div>
               </div>
             </div>
             <div className="direct-hero-mockup" aria-label="Direct inbox preview">
@@ -260,34 +286,34 @@ export default async function DirectClientPage() {
           </div>
         </section>
 
-        {/* 4a. Mid-page CTA strip */}
-        <section className="direct-mid-cta-strip" aria-label="Mid-page call to action">
-          <h3>Ready to take control of your inbox?</h3>
-          {session ? (
-            <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — free</Link>
-          ) : (
-            <Link className="button primary direct-hero-button" href="/direct/signup">Protect my inbox — free</Link>
-          )}
-          <p>Free forever · No credit card · Live in 2 minutes</p>
+        {/* 4a. Unified conversion break: social proof + CTA */}
+        <section className="direct-conversion-break" aria-label="Results and call to action">
+          <div className="direct-conversion-stats" aria-label="Outcome metrics">
+            <div className="direct-conversion-stat">
+              <strong>96%</strong>
+              <span>of spam stopped before inbox</span>
+            </div>
+            <span className="direct-conversion-divider" aria-hidden="true" />
+            <div className="direct-conversion-stat">
+              <strong>6 hrs</strong>
+              <span>saved per week on inbox triage</span>
+            </div>
+            <span className="direct-conversion-divider" aria-hidden="true" />
+            <div className="direct-conversion-stat">
+              <strong>2×</strong>
+              <span>close rate on qualified leads</span>
+            </div>
+          </div>
+          <div className="direct-conversion-cta">
+            <h3>Ready to take control of your inbox?</h3>
+            {session ? (
+              <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — free</Link>
+            ) : (
+              <Link className="button primary direct-hero-button" href="/direct/signup">Protect my inbox — free</Link>
+            )}
+            <p>Free forever · No credit card · Live in 2 minutes</p>
+          </div>
         </section>
-
-        {/* 4b. Social proof — outcome metrics strip */}
-        <div className="direct-social-proof-strip" aria-label="Social proof">
-          <div className="direct-social-proof-stat">
-            <strong>96%</strong>
-            <span>of spam stopped before inbox</span>
-          </div>
-          <span className="direct-social-proof-divider" aria-hidden="true" />
-          <div className="direct-social-proof-stat">
-            <strong>6 hrs</strong>
-            <span>saved per week on inbox triage</span>
-          </div>
-          <span className="direct-social-proof-divider" aria-hidden="true" />
-          <div className="direct-social-proof-stat">
-            <strong>2×</strong>
-            <span>close rate on qualified leads</span>
-          </div>
-        </div>
 
         {/* 5. Who it is for */}
         <section className="lane-panel direct-audience-panel direct-section-tinted" aria-label="Who Direct is for">
@@ -385,6 +411,7 @@ export default async function DirectClientPage() {
               <p className="direct-pricing-reassurance">No credit card · Set up in 2 minutes</p>
             </article>
             <article className="direct-pricing-card direct-pricing-card-paid">
+              <div className="direct-pricing-coming-badge">Coming soon</div>
               <h3>Pro</h3>
               <p className="direct-pricing-price">$19<span className="direct-pricing-period"> / month</span></p>
               <p className="direct-pricing-desc">Advanced control for high-volume professionals.</p>

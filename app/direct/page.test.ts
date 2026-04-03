@@ -55,6 +55,11 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Sarah Kim');
     expect(html).toContain('Protect my inbox');
     expect(html).toContain('See how it works');
+    // Hero stats bar (pass 14)
+    expect(html).toContain('noise filtered');
+    expect(html).toContain('active doors');
+    // Hero endorsement (pass 14)
+    expect(html).toContain('I replaced my public email with a Direct page');
     expect(html).toContain('Structured from the start');
     expect(html).toContain('Noise never reaches you');
     expect(html).toContain('Who Direct is for');
@@ -82,10 +87,11 @@ describe('DirectClientPage', () => {
     // Trust strip
     expect(html).toContain('Free tier is permanent');
     expect(html).toContain('Your data stays yours');
-    // Social proof (outcome-focused metrics)
+    // Conversion break (unified stats + CTA — pass 14)
     expect(html).toContain('of spam stopped before inbox');
     expect(html).toContain('saved per week on inbox triage');
     expect(html).toContain('close rate on qualified leads');
+    expect(html).toContain('Ready to take control of your inbox');
     // Cost of inaction section removed in pass 12 for page length
     // CTAs should use varied labels across the page
     const protectMatches = html.match(/Protect my inbox/g);
