@@ -39,13 +39,13 @@ describe('DirectClientPage', () => {
     mock.mockResolvedValue(null as never);
     const html = await render();
 
-    expect(html).toContain('Your inbox is yours.');
-    expect(html).toContain('Private until you approve');
+    expect(html).toContain('People email you.');
+    expect(html).toContain('You decide what gets through.');
+    expect(html).toContain('private until you approve');
     expect(html).toContain('Protect my inbox');
     expect(html).toContain('See a live example');
     expect(html).toContain('Every request arrives structured');
     expect(html).toContain('Noise is stopped automatically');
-    expect(html).toContain('access layer');
     expect(html).toContain('Who Direct is for');
     expect(html).toContain('Small businesses and online services');
     expect(html).toContain('Public figures and founders');
@@ -55,17 +55,16 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Nike Brand Team');
     expect(html).toContain('filtered');
     // Security strip
-    expect(html).toContain('Built for privacy from day one');
+    expect(html).toContain('Private by default. No exceptions.');
+    expect(html).toContain('GDPR compliant');
     expect(html).toContain('Open source maintainers');
     expect(html).toContain('KNOKIO DIRECT');
-    expect(html).toContain('How Direct works');
+    expect(html).toContain('How it works');
     expect(html).toContain('Before &amp; after');
-    expect(html).toContain('See Direct in action');
-    expect(html).toContain('Plans');
+    expect(html).toContain('Try it yourself');
+    expect(html).toContain('Simple pricing');
     expect(html).toContain('FAQ');
-    expect(html).toContain('Your inbox is yours.');
-    expect(html).toContain('Keep it that way.');
-    // Trust strip + post-scenarios CTA + unified CTA labels
+    // Trust strip
     expect(html).toContain('Free tier is permanent');
     expect(html).toContain('Your data stays yours');
     // Social proof
@@ -75,7 +74,7 @@ describe('DirectClientPage', () => {
     // CTAs should use varied labels across the page
     const protectMatches = html.match(/Protect my inbox/g);
     expect(protectMatches && protectMatches.length).toBeGreaterThanOrEqual(2);
-    expect(html).toContain('Create your Direct page');
+    expect(html).toContain('Set up your access layer');
     expect(html).toContain('Set up in 2 minutes');
   });
 
@@ -86,5 +85,7 @@ describe('DirectClientPage', () => {
     expect(html).toContain('j@example.com');
     expect(html).toContain('Protect my inbox');
     expect(html).toContain('See a live example');
+    // Verify GDPR security claim is present
+    expect(html).toContain('GDPR compliant');
   });
 });

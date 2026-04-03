@@ -2277,13 +2277,13 @@ a:hover {
 
 .direct-mockup-chrome {
   width: 100%;
-  max-width: 420px;
+  max-width: 480px;
   border-radius: 16px;
   border: 1px solid rgba(15, 23, 42, 0.12);
   background: #ffffff;
   box-shadow:
-    0 20px 48px rgba(15, 23, 42, 0.1),
-    0 4px 12px rgba(15, 23, 42, 0.04);
+    0 24px 56px rgba(15, 23, 42, 0.12),
+    0 6px 16px rgba(15, 23, 42, 0.05);
   overflow: hidden;
 }
 
@@ -5212,11 +5212,11 @@ a:hover {
 
 /* --- V2 Mockup: larger, more detailed --- */
 .direct-mockup-chrome-v2 {
-  max-width: 460px !important;
+  max-width: 500px !important;
   border-radius: 18px !important;
   box-shadow:
-    0 24px 56px rgba(0, 0, 0, 0.18),
-    0 8px 20px rgba(0, 0, 0, 0.08),
+    0 28px 64px rgba(0, 0, 0, 0.22),
+    0 10px 24px rgba(0, 0, 0, 0.1),
     0 0 0 1px rgba(255, 255, 255, 0.06) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
   background: #0f172a !important;
@@ -5939,3 +5939,121 @@ a:hover {
 }
 
 /* === End Pass 2 v2 (cron iter-02-v2) === */
+
+/* === Pass 2/16 iter-02: benefit stats, testimonial results, pricing polish, CTA urgency === */
+
+/* Benefit card stat line */
+.direct-proof-card-enhanced {
+  gap: 10px;
+}
+
+.direct-proof-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(229, 231, 235, 0.6);
+}
+
+.direct-proof-stat strong {
+  font-size: 20px;
+  letter-spacing: -0.02em;
+  color: rgba(14, 165, 163, 0.92);
+}
+
+.direct-proof-stat span {
+  font-size: 12px;
+  color: rgba(31, 42, 68, 0.6);
+  font-weight: 500;
+}
+
+/* Testimonial result line */
+.direct-testimonial-result {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding-top: 8px;
+  border-top: 1px solid rgba(229, 231, 235, 0.5);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(22, 163, 74, 0.88);
+}
+
+.direct-testimonial-result-icon {
+  flex-shrink: 0;
+  color: rgba(22, 163, 74, 0.8);
+}
+
+/* Mid-page CTA eyebrow and note */
+.direct-inline-cta-eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(14, 165, 163, 0.78);
+}
+
+.direct-inline-cta-headline {
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  color: rgba(15, 23, 42, 0.88) !important;
+  max-width: 580px !important;
+}
+
+.direct-inline-cta-kicker {
+  font-size: 15px !important;
+  color: rgba(31, 42, 68, 0.74) !important;
+}
+
+.direct-inline-cta-note {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(31, 42, 68, 0.54);
+  font-weight: 500;
+}
+
+/* Pricing badge */
+.direct-pricing-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(14, 165, 163, 0.12);
+  color: rgba(14, 165, 163, 0.92);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.direct-pricing-desc {
+  font-size: 14px !important;
+  color: rgba(31, 42, 68, 0.72) !important;
+  line-height: 1.48;
+}
+
+.direct-pricing-reassurance {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(31, 42, 68, 0.54);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Free card highlighted border */
+.direct-pricing-card-highlighted {
+  border-color: rgba(14, 165, 163, 0.32) !important;
+  background: linear-gradient(160deg, rgba(215, 255, 251, 0.22) 0%, rgba(255, 255, 255, 0.92) 100%) !important;
+  box-shadow: 0 12px 28px rgba(14, 165, 163, 0.08) !important;
+}
+
+/* FAQ accordion — 2-column layout for 8 items */
+.direct-faq-accordion {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* === End Pass 2/16 iter-02 === */
