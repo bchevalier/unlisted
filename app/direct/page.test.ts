@@ -45,19 +45,19 @@ describe('DirectClientPage', () => {
     // Hero subtitle references access layer
     expect(html).toContain('access layer');
     expect(html).toContain('one link replaces your public email');
-    // Credibility strip
+    // Credibility inline in hero (pass 15 — moved from standalone strip)
     expect(html).toContain('Trusted by professionals in');
     expect(html).toContain('Content Creation');
-    expect(html).toContain('Venture Capital');
+    expect(html).toContain('VC');
     // Testimonial attribution
     expect(html).toContain('Mia Chen');
     expect(html).toContain('David Okafor');
     expect(html).toContain('Sarah Kim');
     expect(html).toContain('Protect my inbox');
     expect(html).toContain('See how it works');
-    // Hero stats bar (pass 14)
+    // Hero stats bar (pass 14, tweaked pass 15)
     expect(html).toContain('noise filtered');
-    expect(html).toContain('active doors');
+    expect(html).toContain('doors active');
     // Hero endorsement (pass 14)
     expect(html).toContain('I replaced my public email with a Direct page');
     expect(html).toContain('Structured from the start');
@@ -66,8 +66,9 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Small businesses');
     expect(html).toContain('Public figures');
     expect(html).toContain('See more use cases');
-    // "Not a contact form" comparison (key differentiator)
-    expect(html).toContain('Not a contact form');
+    // Comparison section (key differentiator — kicker changed pass 15)
+    expect(html).toContain('The difference');
+    expect(html).toContain('Contact form');
     expect(html).toContain('access layer');
     // Privacy by design — integrated into pricing trust row
     expect(html).toContain('Privacy by design');
@@ -81,21 +82,20 @@ describe('DirectClientPage', () => {
     expect(html).toContain('GDPR compliant');
     expect(html).toContain('Open source maintainers');
     expect(html).toContain('KNOKIO DIRECT');
-    expect(html).toContain('How it works');
-    expect(html).toContain('Simple pricing');
+    expect(html).toContain('Simple by design');
+    expect(html).toContain('No surprises');
     expect(html).toContain('FAQ');
-    // Trust strip
-    expect(html).toContain('Free tier is permanent');
-    expect(html).toContain('Your data stays yours');
-    // Conversion break (unified stats + CTA — pass 14)
+    // Trust strip removed in pass 15 (redundant with hero meta + pricing trust)
+    // Proof stats integrated into testimonials section (pass 15)
     expect(html).toContain('of spam stopped before inbox');
-    expect(html).toContain('saved per week on inbox triage');
+    expect(html).toContain('saved per week on triage');
     expect(html).toContain('close rate on qualified leads');
-    expect(html).toContain('Ready to take control of your inbox');
     // Cost of inaction section removed in pass 12 for page length
-    // CTAs should use varied labels across the page
-    const protectMatches = html.match(/Protect my inbox/g);
-    expect(protectMatches && protectMatches.length).toBeGreaterThanOrEqual(2);
+    // CTAs should use varied labels across the page (pass 15)
+    expect(html).toContain('Protect my inbox');
+    expect(html).toContain('Try it free');
+    expect(html).toContain('Get started');
+    expect(html).toContain('Create your access layer');
     expect(html).toContain('Set up in 2 minutes');
   });
 
