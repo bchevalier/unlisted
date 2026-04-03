@@ -39,33 +39,44 @@ describe('DirectClientPage', () => {
     mock.mockResolvedValue(null as never);
     const html = await render();
 
-    expect(html).toContain('One page. Structured requests.');
+    expect(html).toContain('Stop getting emails you never asked for');
     expect(html).toContain('Private until you approve');
     expect(html).toContain('Protect my inbox');
     expect(html).toContain('See a live example');
-    expect(html).toContain('Every request arrives with context');
-    expect(html).toContain('Noise never reaches you');
+    expect(html).toContain('Every request arrives structured');
+    expect(html).toContain('Noise is stopped automatically');
     expect(html).toContain('access layer');
     expect(html).toContain('Who Direct is for');
-    expect(html).toContain('Online services and small businesses');
-    expect(html).toContain('Public figures');
-    expect(html).toContain('Freelancers and agencies');
+    expect(html).toContain('Small businesses and online services');
+    expect(html).toContain('Public figures and founders');
     expect(html).toContain('See more use cases');
+    // Hero mockup elements
+    expect(html).toContain('knokio.io/u/you');
+    expect(html).toContain('Nike Brand Team');
+    expect(html).toContain('filtered');
+    // Security strip
+    expect(html).toContain('Built for privacy from day one');
     expect(html).toContain('Open source maintainers');
+    expect(html).toContain('The access layer for your inbox');
     expect(html).toContain('How Direct works');
+    expect(html).toContain('Before &amp; after');
     expect(html).toContain('See Direct in action');
     expect(html).toContain('Plans');
     expect(html).toContain('FAQ');
-    expect(html).toContain('Your inbox is yours. Keep it that way.');
+    expect(html).toContain('Your inbox is yours.');
+    expect(html).toContain('Keep it that way.');
     // Trust strip + post-scenarios CTA + unified CTA labels
     expect(html).toContain('Free tier is permanent');
     expect(html).toContain('Your data stays yours');
     // Social proof
-    expect(html).toContain('requests processed');
-    expect(html).toContain('doors created');
-    // All CTAs should use unified label
-    const ctaMatches = html.match(/Protect my inbox/g);
-    expect(ctaMatches && ctaMatches.length).toBeGreaterThanOrEqual(4);
+    expect(html).toContain('requests filtered');
+    expect(html).toContain('Direct pages active');
+    expect(html).toContain('of spam stopped before inbox');
+    // CTAs should use varied labels across the page
+    const protectMatches = html.match(/Protect my inbox/g);
+    expect(protectMatches && protectMatches.length).toBeGreaterThanOrEqual(2);
+    expect(html).toContain('Create your Direct page');
+    expect(html).toContain('Set up in 2 minutes');
   });
 
   it('preserves signed-in states', async () => {
