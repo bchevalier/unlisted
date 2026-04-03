@@ -154,6 +154,10 @@ export function IconX({ size = 20, className }: IconProps) {
   return multi(size, className, ['M18 6L6 18', 'M6 6l12 12']);
 }
 
+export function IconCheck({ size = 20, className }: IconProps) {
+  return d(size, className, 'M20 6L9 17l-5-5');
+}
+
 export function IconGlobe({ size = 20, className }: IconProps) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -186,6 +190,7 @@ export const ICON_MAP: Record<string, (props: IconProps) => React.JSX.Element> =
   zap: IconZap,
   'eye-off': IconEyeOff,
   x: IconX,
+  check: IconCheck,
   globe: IconGlobe,
 };
 

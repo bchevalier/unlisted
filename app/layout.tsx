@@ -5,7 +5,10 @@ import type { ReactNode } from 'react';
 
 export const metadata = {
   title: 'Knokio',
-  description: 'Privacy-first way to be reachable without being exposed.'
+  description: 'Privacy-first way to be reachable without being exposed.',
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 type RootLayoutProps = {

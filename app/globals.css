@@ -894,12 +894,12 @@ a:hover {
 }
 
 .direct-page {
-  gap: 28px;
+  gap: 24px;
 }
 
 .direct-main-shell {
   display: grid;
-  gap: 26px;
+  gap: 22px;
 }
 
 .direct-main-shell > * {
@@ -10883,3 +10883,188 @@ a:hover {
 }
 
 /* === End Pass v2-10 === */
+
+/* === Pass v2-12: Tighten page, comparison verdict, polish === */
+
+/* --- 1. Comparison verdict line --- */
+.direct-notform-verdict {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 10px auto 0;
+  max-width: 680px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: rgba(15, 23, 42, 0.68);
+  text-align: center;
+}
+
+.direct-notform-verdict strong {
+  color: rgba(15, 23, 42, 0.88);
+}
+
+.direct-notform-verdict-icon {
+  flex-shrink: 0;
+  color: rgba(14, 165, 163, 0.72);
+}
+
+/* --- 2. Benefit card stat row: stronger contrast --- */
+.direct-proof-stat strong {
+  font-size: 22px !important;
+  color: rgba(14, 165, 163, 1) !important;
+  font-weight: 800 !important;
+}
+
+/* --- 3. Step cards: subtle left accent --- */
+.direct-step-card-inline {
+  border-left: 3px solid rgba(14, 165, 163, 0.4) !important;
+  padding-left: 20px !important;
+}
+
+.direct-step-number {
+  color: rgba(83, 240, 226, 0.9) !important;
+  font-weight: 900 !important;
+  font-size: 15px !important;
+}
+
+/* --- 4. Testimonial result badges: stronger green --- */
+.direct-testimonial-result-badge {
+  background: rgba(22, 163, 74, 0.08) !important;
+  border: 1px solid rgba(22, 163, 74, 0.18) !important;
+  color: rgba(22, 163, 74, 0.92) !important;
+  font-weight: 700 !important;
+}
+
+/* --- 5. Pricing card trust claims: tighter gap --- */
+.direct-pricing-trust-claims {
+  gap: 18px !important;
+}
+
+/* --- 6. Sender mockup: subtle shadow upgrade --- */
+.direct-mockup-chrome-sender {
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.10), 0 4px 12px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* --- 7. FAQ item hover: subtle visual feedback --- */
+.direct-faq-item-v2:hover {
+  border-color: rgba(14, 165, 163, 0.22) !important;
+}
+
+/* --- 8. Mobile tweaks for verdict --- */
+@media (max-width: 860px) {
+  .direct-notform-verdict {
+    font-size: 13.5px;
+    padding: 0 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .direct-notform-verdict {
+    font-size: 12.5px;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+/* === End Pass v2-12 === */
+
+/* === Pass v2-15: Declutter hero, remove CTA fatigue, fix readability, add footer === */
+
+/* --- 1. Fix hero subtitle <strong> color — teal on white is illegible --- */
+.direct-hero-subtitle strong {
+  color: rgba(15, 23, 42, 0.95) !important;
+  font-weight: 700 !important;
+}
+
+/* --- 2. Remove gradient divider pseudo-elements — they add template-y noise --- */
+.direct-main-shell > *:not(:first-child)::before {
+  display: none !important;
+}
+
+/* --- 3. Hero: tighter with pain line removed, compensate vertical rhythm --- */
+.direct-hero-content {
+  gap: 16px !important;
+}
+
+.direct-hero-layout {
+  padding: 88px 40px 72px !important;
+}
+
+/* --- 4. Footer styles --- */
+.direct-footer {
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.direct-footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding: 24px 8px 28px;
+  border-top: 1px solid rgba(229, 231, 235, 0.6);
+}
+
+.direct-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.direct-footer-logo {
+  border-radius: 4px;
+}
+
+.direct-footer-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.72);
+  letter-spacing: -0.01em;
+}
+
+.direct-footer-links {
+  display: flex;
+  gap: 20px;
+}
+
+.direct-footer-links a {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(15, 23, 42, 0.56);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.direct-footer-links a:hover {
+  color: rgba(15, 23, 42, 0.88);
+}
+
+.direct-footer-copy {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.38);
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .direct-footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 20px 4px 24px;
+  }
+  .direct-footer-links {
+    gap: 14px;
+  }
+}
+
+/* --- 5. Midpage CTA: takes over inline-CTA role, slightly more prominent --- */
+.direct-midpage-cta {
+  padding: 36px 28px !important;
+}
+
+/* === End Pass v2-15 === */

@@ -41,12 +41,10 @@ describe('DirectClientPage', () => {
 
     expect(html).toContain('Stop letting strangers decide');
     expect(html).toContain('what lands in your inbox.');
-    expect(html).toContain('Private until approved.');
-    // Hero pain line (pass v2-10)
-    expect(html).toContain('Spam, cold pitches');
-    expect(html).toContain('drowning the requests that actually matter');
+    expect(html).toContain('Private until you approve.');
+    // Hero pain line removed in pass v2-15 (redundant with headline)
     // Objection-handling microcopy (pass v2-10)
-    expect(html).toContain('Your existing email still works');
+    expect(html).toContain('Your existing email keeps working');
     expect(html).toContain('No contacts lost');
     // Hero subtitle references access layer
     expect(html).toContain('access layer');
@@ -65,11 +63,11 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Sarah Kim');
     expect(html).toContain('Protect my inbox');
     expect(html).toContain('See what senders see');
-    // Hero stats bar (pass 14, tweaked pass 15)
-    expect(html).toContain('noise filtered');
-    expect(html).toContain('doors active');
-    // Hero endorsement (pass 14)
+    // Hero stats bar removed in pass v2-15 (proof stats in testimonials cover this)
+    // Testimonial section still contains early trust quote (was featured, now in testimonials only)
     expect(html).toContain('I replaced my public email with a Direct page');
+    // Comparison verdict (pass v2-12)
+    expect(html).toContain('a different category');
     expect(html).toContain('Structured from the start');
     expect(html).toContain('Noise never reaches you');
     expect(html).toContain('Who Direct is for');
@@ -95,7 +93,7 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Nike Brand Team');
     expect(html).toContain('filtered');
     // Security claims (merged into pricing trust row)
-    expect(html).toContain('GDPR compliant');
+    expect(html).toContain('GDPR');
     expect(html).toContain('Open source maintainers');
     expect(html).toContain('KNOKIO DIRECT');
     expect(html).toContain('Simple by design');
@@ -103,13 +101,12 @@ describe('DirectClientPage', () => {
     expect(html).toContain('FAQ');
     // Trust strip removed in pass 15 (redundant with hero meta + pricing trust)
     // Proof stats integrated into testimonials section (pass 15)
-    expect(html).toContain('of noise filtered before inbox');
-    expect(html).toContain('saved per week on triage');
-    expect(html).toContain('close rate on qualified leads');
+    expect(html).toContain('of noise blocked before inbox');
+    expect(html).toContain('saved on manual triage');
+    expect(html).toContain('close rate on inbound deals');
     // Cost of inaction section removed in pass 12 for page length
-    // CTAs should use varied labels across the page (pass 15)
+    // CTAs — fewer but varied (pass v2-15 removed inline + post-testimonial CTAs)
     expect(html).toContain('Protect my inbox');
-    expect(html).toContain('Try it free');
     expect(html).toContain('Get started');
     expect(html).toContain('Create your access layer');
     expect(html).toContain('Set up in 2 minutes');
@@ -118,8 +115,9 @@ describe('DirectClientPage', () => {
     expect(html).toContain('professionals protecting their inbox');
     // Micro-proof near CTAs (pass v2-09)
     expect(html).toContain('protect their inbox with Direct');
-    // Post-testimonial CTA (pass v2-09)
-    expect(html).toContain('Ready to see the difference?');
+    // Post-testimonial CTA removed in pass v2-15
+    // Footer (pass v2-15)
+    expect(html).toContain('Privacy-first by design');
   });
 
   it('preserves signed-in states', async () => {
@@ -133,6 +131,7 @@ describe('DirectClientPage', () => {
     expect(html).toContain('Send a request');
     expect(html).toContain('Structure before access');
     // Verify GDPR security claim is present
-    expect(html).toContain('GDPR compliant');
+    expect(html).toContain('GDPR');
+    expect(html).toContain('CCPA compliant');
   });
 });
