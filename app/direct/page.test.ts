@@ -51,6 +51,10 @@ describe('DirectClientPage', () => {
     // Hero subtitle references access layer
     expect(html).toContain('access layer');
     expect(html).toContain('One link replaces your public email');
+    // Hero tagline (pass v2-11)
+    expect(html).toContain('Private until approved');
+    // Featured quote — early trust signal (pass v2-11)
+    expect(html).toContain('I replaced my public email with a Direct page');
     // Industry trust bar (pass v2-09 — replaced inline credibility line)
     expect(html).toContain('Trusted across industries');
     expect(html).toContain('Content Creation');
