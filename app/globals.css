@@ -5512,3 +5512,430 @@ a:hover {
 }
 
 /* === End Pass 4 (cron iter-04) === */
+
+/* === Pass 2 v2: Access layer diagram, typography, social proof, section rhythm === */
+
+/* --- Access layer diagram --- */
+.direct-layer-diagram {
+  display: grid;
+  gap: 18px;
+  padding: 32px 28px;
+  border-radius: 20px;
+  border: 1px solid rgba(229, 231, 235, 0.72);
+  background:
+    radial-gradient(circle at 8% 50%, rgba(239, 68, 68, 0.06) 0%, transparent 30%),
+    radial-gradient(circle at 50% 50%, rgba(83, 240, 226, 0.1) 0%, transparent 30%),
+    radial-gradient(circle at 92% 50%, rgba(34, 197, 94, 0.06) 0%, transparent 30%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.88) 100%);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
+  text-align: center;
+}
+
+.direct-layer-kicker {
+  text-align: center;
+  color: rgba(14, 165, 163, 0.88) !important;
+  font-size: 13px !important;
+}
+
+.direct-layer-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.direct-layer-node {
+  display: grid;
+  gap: 6px;
+  padding: 22px 28px;
+  border-radius: 18px;
+  min-width: 220px;
+  text-align: center;
+}
+
+.direct-layer-node-icon {
+  margin: 0 auto 2px;
+}
+
+.direct-layer-node-outside {
+  background: rgba(254, 242, 242, 0.7);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  color: rgba(185, 28, 28, 0.7);
+}
+
+.direct-layer-node-outside .direct-layer-node-label {
+  color: rgba(185, 28, 28, 0.9);
+}
+
+.direct-layer-node-center {
+  background: linear-gradient(160deg, rgba(236, 253, 245, 0.7) 0%, rgba(240, 253, 250, 0.9) 100%);
+  border: 2px solid rgba(14, 165, 163, 0.35);
+  color: rgba(14, 165, 163, 0.8);
+  padding: 22px 26px;
+  box-shadow: 0 8px 24px rgba(14, 165, 163, 0.1);
+  transform: scale(1.06);
+}
+
+.direct-layer-node-center .direct-layer-node-label {
+  color: rgba(13, 120, 113, 0.95);
+  font-size: 16px;
+}
+
+.direct-layer-node-inbox {
+  background: rgba(240, 253, 244, 0.6);
+  border: 1px solid rgba(34, 197, 94, 0.22);
+  color: rgba(21, 128, 61, 0.7);
+}
+
+.direct-layer-node-inbox .direct-layer-node-label {
+  color: rgba(21, 128, 61, 0.9);
+}
+
+.direct-layer-node-label {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.direct-layer-node-detail {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  opacity: 0.82;
+  color: rgba(31, 42, 68, 0.72);
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.direct-layer-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.direct-layer-arrow-line {
+  display: block;
+  width: 52px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.14) 0%, rgba(14, 165, 163, 0.5) 50%, rgba(15, 23, 42, 0.14) 100%);
+  border-radius: 2px;
+  position: relative;
+}
+
+.direct-layer-arrow-line::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: -3px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid rgba(14, 165, 163, 0.5);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+
+.direct-layer-arrow-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(31, 42, 68, 0.46);
+}
+
+/* --- Typography improvements --- */
+
+/* Larger body text on benefit cards */
+.direct-proof-copy {
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+/* Larger hero subtitle with better line-height */
+.direct-hero-subtitle {
+  font-size: 17px !important;
+  line-height: 1.6 !important;
+}
+
+.direct-hero-subtitle strong {
+  color: rgba(14, 165, 163, 0.88);
+  font-weight: 700;
+}
+
+/* Larger hero bullets */
+.direct-hero-bullets li {
+  font-size: 15px !important;
+}
+
+/* Improved section lede text */
+.direct-section-lede {
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba(31, 42, 68, 0.76);
+  max-width: 620px;
+}
+
+/* Step cards — larger body text */
+.direct-step-card p {
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+/* Testimonial quote text */
+.direct-testimonial-quote {
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+/* Testimonial author — more readable */
+.direct-testimonial-author {
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+}
+
+/* FAQ answer text */
+.direct-faq-answer {
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+/* Before/after scenario text */
+.direct-proof-col p {
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+/* Audience card text */
+.direct-audience-card p {
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+/* Not-a-form card text */
+.direct-notform-card p {
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+/* --- Stronger social proof strip --- */
+.direct-social-proof-strip {
+  padding: 28px 32px !important;
+  gap: 32px !important;
+  border-radius: 20px !important;
+  background:
+    radial-gradient(circle at 12% 50%, rgba(83, 240, 226, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 88% 50%, rgba(255, 68, 171, 0.06) 0%, transparent 40%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.85) 100%) !important;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04) !important;
+}
+
+.direct-social-proof-stat strong {
+  font-size: 34px !important;
+  letter-spacing: -0.03em !important;
+  color: rgba(15, 23, 42, 0.95) !important;
+  line-height: 1 !important;
+}
+
+.direct-social-proof-stat {
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  gap: 4px !important;
+}
+
+.direct-social-proof-stat span {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: rgba(31, 42, 68, 0.68) !important;
+  max-width: 140px !important;
+}
+
+.direct-social-proof-divider {
+  height: 42px !important;
+}
+
+/* --- Improved section rhythm: varied vertical spacing --- */
+.direct-main-shell {
+  gap: 28px !important;
+}
+
+/* Extra breathing room before pricing and final CTA */
+.direct-pricing-panel {
+  margin-top: 8px;
+}
+
+.direct-final-cta {
+  margin-top: 8px;
+}
+
+/* --- Post-testimonial CTA styling --- */
+.direct-inline-cta-after-proof {
+  border-color: rgba(14, 165, 163, 0.2) !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(83, 240, 226, 0.08) 0%, transparent 50%),
+    rgba(255, 255, 255, 0.92) !important;
+}
+
+.direct-inline-cta-after-proof .direct-inline-cta-headline {
+  font-size: 17px !important;
+  font-weight: 500;
+  color: rgba(15, 23, 42, 0.82);
+  max-width: 480px;
+}
+
+.direct-inline-cta-after-proof .direct-inline-cta-headline strong {
+  color: rgba(14, 165, 163, 0.92);
+}
+
+/* --- Elevated mid-page CTA improvements --- */
+.direct-inline-cta-elevated {
+  padding: 32px 28px !important;
+}
+
+.direct-inline-cta-elevated .direct-inline-cta-headline {
+  font-size: 17px !important;
+  max-width: 560px;
+}
+
+.direct-inline-cta-elevated .direct-inline-cta-kicker {
+  font-size: 16px !important;
+}
+
+/* --- Security strip v2 improvements --- */
+.direct-security-strip-v2 {
+  padding: 22px 26px !important;
+}
+
+.direct-security-strip-v2 .direct-security-headline {
+  font-size: 15px !important;
+}
+
+.direct-security-strip-v2 .direct-security-copy {
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+}
+
+.direct-security-claims {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.direct-security-claim {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(14, 165, 163, 0.82);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* --- Pricing card improvements --- */
+.direct-pricing-card-highlighted {
+  border-color: rgba(14, 165, 163, 0.3) !important;
+  box-shadow: 0 8px 24px rgba(14, 165, 163, 0.08) !important;
+}
+
+.direct-pricing-price {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: rgba(15, 23, 42, 0.92);
+  letter-spacing: -0.02em;
+}
+
+.direct-pricing-period {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(31, 42, 68, 0.6);
+}
+
+.direct-pricing-cta {
+  margin-top: 4px;
+}
+
+.direct-pricing-waitlist {
+  margin: 0;
+  font-size: 12.5px;
+  color: rgba(31, 42, 68, 0.6);
+  line-height: 1.45;
+}
+
+.direct-pricing-waitlist-btn {
+  margin-top: 4px;
+}
+
+/* --- Mockup v2 refinements --- */
+.direct-mockup-chrome-v2 {
+  max-width: 440px !important;
+  border-radius: 18px !important;
+  box-shadow:
+    0 24px 54px rgba(15, 23, 42, 0.12),
+    0 6px 16px rgba(15, 23, 42, 0.05) !important;
+}
+
+.direct-mockup-body-v2 {
+  padding: 14px 16px 16px !important;
+}
+
+.direct-mockup-header-v2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.direct-mockup-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: rgba(239, 68, 68, 0.1);
+  color: rgba(185, 28, 28, 0.8);
+}
+
+.direct-mockup-row-v2 {
+  padding: 8px 10px !important;
+  border-radius: 8px !important;
+}
+
+.direct-mockup-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.direct-mockup-time {
+  font-size: 11px;
+  color: rgba(31, 42, 68, 0.45);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* --- Mobile responsive for access layer diagram --- */
+@media (max-width: 860px) {
+  .direct-layer-flow {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .direct-layer-arrow {
+    transform: rotate(90deg);
+    padding: 6px 0;
+  }
+
+  .direct-layer-node-center {
+    transform: scale(1.04);
+  }
+}
+
+/* === End Pass 2 v2 (cron iter-02-v2) === */

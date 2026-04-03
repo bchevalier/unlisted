@@ -12,6 +12,12 @@ const TRUST_SIGNALS = [
   'Your data stays yours',
 ] as const;
 
+const ACCESS_LAYER_FLOW = [
+  { id: 'outside', label: 'Outside world', detail: 'Cold emails, DMs, pitches, spam, vague asks', side: 'left' },
+  { id: 'layer', label: 'Knokio Direct', detail: 'Filters · Structures · Enforces limits', side: 'center' },
+  { id: 'inbox', label: 'Your private inbox', detail: 'Only qualified, structured requests', side: 'right' },
+] as const;
+
 const HERO_INBOX_PREVIEW = [
   { status: 'accepted', from: 'Nike Brand Team', category: 'Sponsorship', detail: 'Budget: $12K · Brief attached', time: '2h ago' },
   { status: 'filtered', from: 'Random cold pitch', category: 'Spam', detail: 'Blocked — no budget, no brief', time: '4h ago' },
@@ -27,15 +33,15 @@ const HERO_BULLETS = [
 ] as const;
 
 const BENEFITS = [
-  { icon: 'lock', title: 'Private until you approve', copy: 'Your email, DMs, and private channels stay hidden. Nothing gets through until you say so.' },
+  { icon: 'lock', title: 'Private until you approve', copy: 'Your email, DMs, and private channels stay hidden. Nothing gets through your access layer until you say so.' },
   { icon: 'clipboard', title: 'Every request arrives structured', copy: 'Budget, brief, category, and timeline — collected upfront so you never waste time on incomplete asks.' },
-  { icon: 'shield', title: 'Noise is stopped automatically', copy: 'Volume limits, smart routing, and automation filter spam, cold pitches, and vague outreach before they become your problem.' },
+  { icon: 'shield', title: 'Noise is stopped automatically', copy: 'Volume limits, smart routing, and automation filter spam, cold pitches, and vague outreach before they reach your inbox.' },
 ] as const;
 
 const HOW_IT_WORKS = [
-  { step: '01', title: 'Share one page, not your email', copy: 'Replace scattered contact details with a single public page — your access layer between the outside world and your private channels.' },
-  { step: '02', title: 'Collect the right details upfront', copy: 'Budget, scope, timeline — every request arrives structured before you spend a second on it.' },
-  { step: '03', title: 'Only qualified requests get through', copy: 'Spam, cold pitches, and vague asks are stopped automatically. You only see what deserves your attention.' },
+  { step: '01', title: 'Replace your public email with an access layer', copy: 'One page stands between the outside world and your private channels. Your real email is never exposed.' },
+  { step: '02', title: 'Every request arrives structured', copy: 'Budget, scope, timeline — collected upfront before you spend a second on it. No more vague "quick question" emails.' },
+  { step: '03', title: 'Only qualified requests get through', copy: 'Spam, cold pitches, and incomplete asks are stopped at the access layer. You only see what deserves your attention.' },
 ] as const;
 
 const NOT_A_FORM = [
@@ -110,7 +116,7 @@ export default async function DirectClientPage() {
             <div className="direct-hero-content">
               <p className="hero-word">KNOKIO DIRECT</p>
               <h1 className="hero-title direct-hero-title">Your inbox is yours.<br />Keep it that way.</h1>
-              <p className="direct-hero-subtitle">Replace your public email with one page that filters, structures, and protects every inbound request — private until you approve.</p>
+              <p className="direct-hero-subtitle">Replace your public email with an <strong>access layer</strong> — one page that filters noise, structures every request, and keeps your real inbox private until you approve.</p>
               <ul className="direct-hero-bullets">
                 {HERO_BULLETS.map((b) => (
                   <li key={b.text}>
@@ -174,7 +180,37 @@ export default async function DirectClientPage() {
           ))}
         </section>
 
-        {/* 2a. Trust signals strip */}
+        {/* 2a. Access layer diagram */}
+        <section className="direct-layer-diagram" aria-label="How the access layer works">
+          <p className="lane-kicker direct-layer-kicker">The access layer</p>
+          <div className="direct-layer-flow">
+            <div className="direct-layer-node direct-layer-node-outside">
+              <DirectIcon name="globe" size={20} className="direct-layer-node-icon" />
+              <p className="direct-layer-node-label">Outside world</p>
+              <p className="direct-layer-node-detail">Cold emails, DMs, pitches, spam, vague asks</p>
+            </div>
+            <div className="direct-layer-arrow" aria-hidden="true">
+              <span className="direct-layer-arrow-line" />
+              <span className="direct-layer-arrow-label">unfiltered</span>
+            </div>
+            <div className="direct-layer-node direct-layer-node-center">
+              <DirectIcon name="shield" size={22} className="direct-layer-node-icon" />
+              <p className="direct-layer-node-label">Knokio Direct</p>
+              <p className="direct-layer-node-detail">Filters · Structures · Enforces limits</p>
+            </div>
+            <div className="direct-layer-arrow" aria-hidden="true">
+              <span className="direct-layer-arrow-line" />
+              <span className="direct-layer-arrow-label">qualified only</span>
+            </div>
+            <div className="direct-layer-node direct-layer-node-inbox">
+              <DirectIcon name="inbox" size={20} className="direct-layer-node-icon" />
+              <p className="direct-layer-node-label">Your private inbox</p>
+              <p className="direct-layer-node-detail">Only structured, qualified requests</p>
+            </div>
+          </div>
+        </section>
+
+        {/* 2b. Trust signals strip */}
         <div className="direct-trust-strip" aria-label="Trust signals">
           {TRUST_SIGNALS.map((signal) => (
             <span key={signal} className="direct-trust-pill">{signal}</span>
@@ -184,9 +220,9 @@ export default async function DirectClientPage() {
         {/* 3. How it works — 3-step strip (moved up for early comprehension) */}
         <section className="lane-panel direct-steps-panel direct-section-dark" aria-label="How Direct works">
           <div className="direct-steps-intro">
-            <p className="lane-kicker">How Direct works</p>
+            <p className="lane-kicker">How the access layer works</p>
             <h2>Three steps to a protected inbox</h2>
-            <p className="direct-section-lede">Setting up takes under two minutes. Here&apos;s what happens next.</p>
+            <p className="direct-section-lede">Setting up your access layer takes under two minutes. Here&apos;s what happens next.</p>
           </div>
           <div className="direct-steps-grid">
             {HOW_IT_WORKS.map((s) => (
@@ -234,6 +270,19 @@ export default async function DirectClientPage() {
               </article>
             ))}
           </div>
+        </section>
+
+        {/* 3d. Post-testimonial CTA */}
+        <section className="direct-inline-cta direct-inline-cta-after-proof" aria-label="Get started after proof">
+          <p className="direct-inline-cta-headline">Join <strong>380+</strong> professionals who replaced their public email with an access layer.</p>
+          <div className="direct-inline-cta-actions">
+            {session ? (
+              <Link className="button primary direct-hero-button" href="/direct/settings?slug=john&fixture=demo">Protect my inbox — free</Link>
+            ) : (
+              <Link className="button primary direct-hero-button" href="/direct/signup">Protect my inbox — free</Link>
+            )}
+          </div>
+          <p className="hero-meta direct-hero-meta">No credit card · Free forever · 2 minute setup</p>
         </section>
 
         {/* 4. Not just a contact form — objection handling */}
