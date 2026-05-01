@@ -2,6 +2,10 @@
 
 Purpose: drive Knokio Direct to a solid 8+/10 MVP with explicit implementation chunks suitable for pomodoro automation.
 
+Billing source of truth:
+- `BILLING.md`
+- MVP billing/pricing scope must not drift from that file
+
 ## Rules for the pomodoro scheduler
 - Always pick the next unchecked item.
 - Implement the item.
@@ -98,3 +102,8 @@ Purpose: drive Knokio Direct to a solid 8+/10 MVP with explicit implementation c
 - [x] Add dedicated unit coverage for `features/direct/server/auth.ts` so the core auth orchestration is protected directly, not only through route tests.
 - [x] Add dedicated unit coverage for `features/direct/server/requests.ts` so the core request engine is protected directly, not only through route and page tests.
 - [x] Add dedicated unit coverage for `features/direct/server/admin.ts` and `features/direct/server/admin-session.ts` so the last uncovered admin/authz helpers are no longer untested.
+
+## Chunk 17 — Billing model alignment
+- [ ] Replace legacy tiered billing copy with the single-plan + usage model from `BILLING.md` across product surfaces.
+- [ ] Add handled-inbound usage metering with deduplication and included-usage accounting per `BILLING.md`.
+- [ ] Add pay-to-contact pricing + keeper-net calculation using the `max($0.50, 10%)` rule from `BILLING.md`.

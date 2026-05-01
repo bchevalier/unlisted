@@ -2,6 +2,9 @@
 
 Purpose: final review/signoff checklist for the current Direct MVP 8+/10 pass.
 
+Billing source of truth:
+- `BILLING.md`
+
 ## 1) Refresh the deterministic demo state
 
 Run these before review so every surface starts from the same known state:
@@ -50,9 +53,9 @@ Use the manifest as the source of truth for the exact captured URLs.
 
 ### Settings
 - [ ] Settings explains how Direct protects the inbox.
-- [ ] Billing card makes Paid unlocks visibly billing-authoritative.
-- [ ] Plan guardrails clearly explain what Free protects and what Paid unlocks.
-- [ ] Paid-only controls are disabled or explicitly gated when entitlement is absent.
+- [ ] Billing / pricing copy matches `BILLING.md`.
+- [ ] Billing card and usage surfaces make the handled-inbound model clear.
+- [ ] Pay-to-contact configuration shows both gross requester price and expected keeper net.
 
 ## 4) Trust / abuse / plan checks
 

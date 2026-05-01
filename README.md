@@ -162,10 +162,19 @@ This repository runs a **two-client model**:
 
 Direct and Reach are developed and tested in parallel, with strict isolation guardrails so Reach changes cannot degrade Direct clarity, privacy, or trust.
 
-Knokio Direct currently supports two door plans:
-- **Free door**: capped inbox/reach volume for baseline protection.
-- **Paid door**: uncapped paid reaches, focused on high-intent commercial inbound.
-  - Core paid ICPs: influencer product placement and paid expert/advisory access.
+Knokio Direct is positioned as a premium inbound control product with a **single-plan + usage** billing model.
+
+Current source of truth:
+- `BILLING.md`
+
+Current target commercial model:
+- **Direct**: $5/month
+- **50 handled inbound requests included each month**
+- **All Direct features unlocked**
+- additional handled inbound billed on a declining usage ladder
+- optional **pay-to-contact** categories where the keeper sets the pay-to-contact request cost (minimum $2) and Knokio keeps the greater of $0.50 or 10%
+
+Current implementation still contains older entitlement / Stripe assumptions in places; billing copy and future implementation should converge on `BILLING.md`.
 
 ## MVP status (current)
 
@@ -178,7 +187,7 @@ Knokio Direct MVP foundation is implemented for development:
 - Auth hardening: email verification, password recovery, optional 2FA (TOTP + recovery codes), anti-bot honeypot + auth rate limits
 - Agent signup API (no captcha): `POST /api/direct/auth/agent/signup` with `x-agent-signup-secret`
 - Keeper inbox view: `/direct/inbox?slug=:slug`
-- Keeper settings: `/direct/settings?slug=:slug` (includes manual Free/Paid plan switch)
+- Keeper settings: `/direct/settings?slug=:slug` (current implementation includes manual internal Free/Paid entitlement switch)
 - Accept/decline actions with request events
 - Knocker status route: `/r/:token`
 - Inbound email webhook: `POST /api/direct/email/inbound`

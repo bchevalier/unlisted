@@ -1,6 +1,6 @@
-import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import React from 'react';
 
 vi.mock('next/image', () => ({
   default: (props: Record<string, unknown>) => {
@@ -38,88 +38,72 @@ async function render() {
 }
 
 describe('DirectClientPage', () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-  it('renders a short convince-and-orient landing for signed-out visitors', async () => {
+  it('renders a tighter, concrete landing page for signed-out visitors', async () => {
     mock.mockResolvedValue(null as never);
     const html = await render();
 
     expect(html).toContain('Stop letting strangers decide');
     expect(html).toContain('what lands in your inbox.');
-    expect(html).toContain('Private until you approve.');
-    // Hero pain line removed in pass v2-15 (redundant with headline)
-    // Objection-handling microcopy (pass v2-10)
-    expect(html).toContain('Your existing email keeps working');
-    expect(html).toContain('No contacts lost');
-    // Hero subtitle references access layer
-    expect(html).toContain('access layer');
-    expect(html).toContain('One link replaces your public email');
-    // Hero tagline (pass v2-11)
-    expect(html).toContain('Private until approved');
-    // Featured quote — early trust signal (pass v2-11)
-    expect(html).toContain('I replaced my public email with a Direct page');
-    // Industry trust bar removed in pass v2-17 — generic categories without real logos hurt credibility
-    // Testimonial attribution
-    expect(html).toContain('Mia Chen');
-    expect(html).toContain('David Okafor');
-    expect(html).toContain('Sarah Kim');
-    expect(html).toContain('Protect my inbox');
-    expect(html).toContain('See what senders see');
-    // Hero stats bar removed in pass v2-15 (proof stats in testimonials cover this)
-    // Testimonial section still contains early trust quote (was featured, now in testimonials only)
-    expect(html).toContain('I replaced my public email with a Direct page');
-    // Comparison verdict (pass v2-12)
-    expect(html).toContain('a different category');
-    expect(html).toContain('Structured from the start');
-    expect(html).toContain('Noise never reaches you');
-    expect(html).toContain('Who Direct is for');
-    expect(html).toContain('Small businesses');
-    expect(html).toContain('Public figures');
-    expect(html).toContain('See more use cases');
-    // Sender view section (pass v2-04)
+    expect(html).toContain('Replace your public email with one link.');
+    expect(html).toContain('Your real email stays hidden — always');
+    expect(html).toContain('Budget, scope, and timeline collected upfront');
+    expect(html).toContain('Spam and low-effort asks blocked automatically');
+    expect(html).toContain('Watch interactive demo');
+    expect(html).toContain('href="/direct/demo"');
+
     expect(html).toContain('What people see when they reach you');
     expect(html).toContain('Send a request');
-    expect(html).toContain('Structure before access');
-    expect(html).toContain('Your email stays hidden');
-    expect(html).toContain('Low-effort outreach self-filters');
-    // Comparison section (key differentiator — kicker changed pass 15)
-    expect(html).toContain('The difference');
-    expect(html).toContain('Contact form');
-    expect(html).toContain('access layer');
-    // Privacy by design — integrated into pricing trust row
-    expect(html).toContain('Privacy by design');
-    // Inline before/after on audience cards
-    expect(html).toContain('qualified pitches with budget + brief attached');
-    // Hero mockup elements
-    expect(html).toContain('knokio.io/u/you');
-    expect(html).toContain('Nike Brand Team');
-    expect(html).toContain('filtered');
-    // Security claims (merged into pricing trust row)
-    expect(html).toContain('GDPR');
-    expect(html).toContain('Open source maintainers');
-    expect(html).toContain('KNOKIO DIRECT');
-    expect(html).toContain('Simple by design');
-    expect(html).toContain('No surprises');
-    expect(html).toContain('FAQ');
-    // Trust strip removed in pass 15 (redundant with hero meta + pricing trust)
-    // Proof stats integrated into testimonials section (pass 15)
-    expect(html).toContain('noise blocked before inbox');
-    expect(html).toContain('saved per week on triage');
-    expect(html).toContain('close rate on deals');
-    // Cost of inaction section removed in pass 12 for page length
-    // CTAs — fewer but varied (pass v2-15 removed inline + post-testimonial CTAs)
+    expect(html).toContain('Required context upfront');
+    expect(html).toContain('Private and filtered by default');
+
+    expect(html).not.toContain('More than a contact form');
+    expect(html).not.toContain('Email stays hidden until approval');
+    expect(html).not.toContain('Budget, scope, and timeline required');
+    expect(html).not.toContain('Spam filtered before it reaches you');
+
+    expect(html).toContain('If you receive unsolicited inbound, this is your tool');
+    expect(html).toContain('See more use cases');
+    expect(html).toContain('Founders and public figures');
+    expect(html).toContain('Real estate agents');
+    expect(html).toContain('Healthcare and legal practices');
+    expect(html).toContain('Artists and musicians');
+    expect(html).toContain('✕');
+    expect(html).toContain('✓');
+
+    expect(html).toContain('Simple billing');
+    expect(html).toContain('One plan. One meter.');
+    expect(html).toContain('Pay only for real requests.');
+    expect(html).toContain('$5 / month');
+    expect(html).toContain('50 handled inbound');
+    expect(html).toContain('From $0.05 each');
+    expect(html).toContain('What counts');
+    expect(html).toContain('What does not count');
+    expect(html).toContain('Optional: charge for access');
+    expect(html).toContain('pay-to-contact request cost');
+    expect(html).toContain('All Direct features included');
+    expect(html).toContain('Only handled inbound requests count. Blocked spam, abuse, and retries do not.');
+    expect(html).toContain('Includes up to 1 system auto-reply per handled inbound if needed');
+    expect(html).toContain('max($0.50, 10% of the request cost)');
+    expect(html).not.toContain('Starter');
+    expect(html).not.toContain('Enterprise');
+    expect(html).not.toContain('Free forever. Upgrade only if you outgrow it.');
+
+    expect(html).toContain('Questions before you start');
+    expect(html).toContain('How does billing work?');
+    expect(html).toContain('Your inbox, your rules.');
     expect(html).toContain('Protect my inbox');
-    expect(html).toContain('Get started');
-    expect(html).toContain('Build your access layer');
-    expect(html).toContain('Set up in 2 minutes');
-    // Hero social proof row (pass v2-09)
-    expect(html).toContain('2,400+');
-    expect(html).toContain('professionals protecting their inbox');
-    // Micro-proof near CTAs (pass v2-09)
-    expect(html).toContain('protect their inbox with Direct');
-    // Post-testimonial CTA removed in pass v2-15
-    // Footer (pass v2-15)
-    expect(html).toContain('Privacy-first by design');
+    expect(html).not.toContain('Try Direct');
+    expect(html).not.toContain('Your existing email keeps working');
+
+    // Removed in v3 pass for credibility + page length
+    expect(html).not.toContain('Mia Chen');
+    expect(html).not.toContain('2× close rate');
+    expect(html).not.toContain('96%');
+    expect(html).not.toContain('Privacy by design — your data stays yours. Always.');
   });
 
   it('preserves signed-in states', async () => {
@@ -128,11 +112,10 @@ describe('DirectClientPage', () => {
 
     expect(html).toContain('j@example.com');
     expect(html).toContain('Protect my inbox');
-    expect(html).toContain('See what senders see');
-    // Sender view section (pass v2-04)
+    expect(html).not.toContain('Protect my inbox for free');
+    expect(html).not.toContain('Protect my inbox — free forever');
     expect(html).toContain('Send a request');
-    expect(html).toContain('Structure before access');
-    // Verify GDPR security claim is present
+    expect(html).toContain('How is my data protected?');
     expect(html).toContain('GDPR');
     expect(html).toContain('CCPA compliant');
   });

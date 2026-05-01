@@ -16,7 +16,7 @@ No. Knokio is not a messenger, not a social network, and not an inbox. It's a fi
 Anyone who receives unsolicited inbound and wants to stay reachable without the noise. Typical users include creators, consultants, investors, executives, academics, public figures, and anyone tired of noisy inboxes.
 
 ### Is Knokio free?
-Yes. Knokio offers a free door plan with capped request volume — enough for personal use. A paid plan is available for higher volume and premium categories like product placements and paid advisory access.
+Knokio Direct is not positioned as a “free tool.” It is a premium inbound control product with a low-friction way to start. In the current offer, you can start with a 1 month free trial and no credit card, then upgrade as your inbound volume or category needs grow.
 
 ---
 
@@ -41,7 +41,7 @@ Yes. You can add senders to your door's blocklist. Blocked senders cannot submit
 Yes. You can set weekly caps per category and globally. Once the cap is reached, new requests are held until the next period.
 
 ### What categories of requests are available?
-Default categories include General Inquiry, Collaboration, Media/Press, and Hiring. Paid plans add categories like Product Placement and Advisory/Consulting. You can enable or disable any category in Settings.
+Default categories include General Inquiry, Collaboration, Media/Press, and Hiring. Commercial categories like Product Placement and Advisory/Consulting can also be enabled, including optional pay-to-contact pricing when appropriate. You can enable or disable any category in Settings.
 
 ### Is my email address visible to knockers?
 Only if you choose to reveal it. When you accept a request, the knocker sees whatever contact method you've configured. Your login email is never exposed.
@@ -112,17 +112,28 @@ No. For privacy and clarity, emails with CC or BCC recipients are automatically 
 ## Billing
 
 ### How does Knokio pricing work?
-Knokio Direct offers two plans:
-- **Free:** capped request volume, basic categories
-- **Paid:** unlimited capacity, premium categories (product placement, advisory access)
+Knokio Direct uses a single-plan + usage model:
+- **$5/month**
+- **50 handled inbound requests included each month**
+- **All Direct features unlocked**
+- additional handled inbound billed on a declining usage ladder
+
+The source of truth for billing rules is `BILLING.md`.
 
 Billing is handled securely through Stripe.
 
 ### Can I cancel my paid plan?
-Yes. You can cancel anytime from your Settings page or through the Stripe customer portal. Your door reverts to the free plan at the end of the billing period.
+Yes. You can cancel anytime from your Settings page or through the Stripe customer portal. Your paid access remains active until the end of the billing period, after which your door falls back to the non-paid baseline state configured for your account.
 
 ### Do knockers pay to submit requests?
-On paid doors with paid-reach categories, knockers may be required to pay a fee set by the door owner. This is optional and category-specific.
+They can, if the keeper enables a pay-to-contact category.
+
+In that case:
+- the keeper sets the pay-to-contact request cost
+- the minimum price is **$2**
+- Knokio keeps the greater of **$0.50** or **10%**
+
+See `BILLING.md` for the exact pay-to-contact fee rule.
 
 ---
 
@@ -136,6 +147,11 @@ Not currently. Knokio is web-based and works on mobile browsers.
 
 ### Is there an API?
 Knokio provides API endpoints for agent-based signup and programmatic interaction. See our developer documentation for details.
+
+---
+
+_Last updated: March 2026_
+provides API endpoints for agent-based signup and programmatic interaction. See our developer documentation for details.
 
 ---
 

@@ -147,18 +147,26 @@ Tasks should be checked only when implemented and verified.
 
 ---
 
-## 9. Subscription & Entitlements (Model A)
+## 9. Billing & Monetization
 
-- [x] Define free vs paid plan limits
-- [x] Implement manual free/paid plan switching in Direct settings (pre-Stripe)
-- [x] Configure Stripe products and prices
-- [x] Implement Stripe Checkout flow
-- [x] Handle subscription creation webhook
-- [x] Handle subscription cancellation webhook
-- [x] Sync subscription status to user account
-- [x] Enforce plan-based feature limits
+Source of truth:
+- `BILLING.md`
+
+Legacy completed work:
+- [x] Implement baseline Stripe checkout / webhook / portal plumbing
+- [x] Sync billing status to user account
 - [x] Display billing status in settings
-- [x] Link to Stripe customer portal
+
+Current product-model follow-ups:
+- [ ] Replace legacy tiered billing copy with the single-plan + usage model from `BILLING.md`
+- [ ] Add handled-inbound usage metering (`INBOUND_HANDLED`) with deduplication rules from `BILLING.md`
+- [ ] Add monthly included-usage accounting (50 handled inbound requests)
+- [ ] Add declining overage ladder billing for handled inbound requests
+- [ ] Add configurable monthly usage cap behavior and threshold warnings
+- [ ] Add pay-to-contact billing flow where the keeper sets the gross requester price (minimum $2)
+- [ ] Implement Knokio fee calculation for pay-to-contact as `max($0.50, 10% of gross)`
+- [ ] Show both gross price and expected keeper net in pay-to-contact configuration surfaces
+- [ ] Decide whether paid-contact requests remain keeper-billable handled inbound in implementation (spec default currently says yes)
 
 ---
 
@@ -237,6 +245,14 @@ The following are explicitly out of scope for V1:
 - Reputation or ratings
 - Full team/organization workspace UX
 - AI-based moderation or matching autonomy without human policy controls
+
+Billing / pricing guardrail:
+- billing copy, usage rules, and pay-to-contact fee logic must stay aligned with `BILLING.md`
+
+---
+
+End of roadmap.
+sed moderation or matching autonomy without human policy controls
 
 ---
 

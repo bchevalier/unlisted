@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 /**
  * Wraps children in a container that fades + slides in when scrolled into view.
@@ -18,7 +18,6 @@ export function ScrollReveal({
   threshold?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -39,7 +38,6 @@ export function ScrollReveal({
 
     // Hide it for animation
     el.classList.add('sr-hidden');
-    setMounted(true);
 
     const observer = new IntersectionObserver(
       ([entry]) => {

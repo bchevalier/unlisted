@@ -15,6 +15,7 @@ Knokio Direct is in a reviewer-ready **8+/10 MVP** state for the core Direct loo
 - Direct route-level auth, billing, request lifecycle, keeper-control, and operational webhook coverage now exists
 - auth/recovery pages, auth/control widgets, reusable Direct UI helpers, and most server helpers now have direct tests
 - `npm run test:all` is currently green
+- billing source of truth now lives in `BILLING.md` for future pricing/model alignment work
 
 ## What was closed since the previous audit
 

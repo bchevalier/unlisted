@@ -18,7 +18,7 @@ export function FloatingCTA({ href }: { href: string }) {
   return (
     <div className={`direct-floating-cta${visible ? ' direct-floating-cta-visible' : ''}`} aria-hidden={!visible}>
       <Link className="button primary direct-floating-cta-btn" href={href}>
-        Protect my inbox — free
+        Protect my inbox
       </Link>
     </div>
   );

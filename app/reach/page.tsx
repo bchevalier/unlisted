@@ -8,14 +8,7 @@ export default async function ReachDashboardPage() {
   if (!session) {
     return (
       <main className="lane-page lane-page-reach">
-        <header className="lane-header">
-          <Link href="/" className="lane-back-link">
-            ← Back to Knokio
-          </Link>
-          <span className="lane-chip lane-chip-magenta">Reach lane</span>
-        </header>
-
-        <section className="lane-hero-panel">
+        <section id="reach-overview" className="lane-hero-panel">
           <p className="lane-kicker">Knokio Reach</p>
           <h1>One-hop routing to the right human or AI.</h1>
           <p className="lane-lede">
@@ -39,13 +32,6 @@ export default async function ReachDashboardPage() {
 
   return (
     <main className="lane-page lane-page-reach">
-      <header className="lane-header">
-        <Link href="/" className="lane-back-link">
-          ← Back to Knokio
-        </Link>
-        <span className="lane-chip lane-chip-magenta">Reach lane</span>
-      </header>
-
       <section className="lane-hero-panel">
         <p className="lane-kicker">Reach Dashboard</p>
         <h1>Coordinate faster with policy-bound contracts.</h1>

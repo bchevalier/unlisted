@@ -927,6 +927,28 @@ a:hover {
   color: rgba(15, 23, 42, 0.56);
 }
 
+.reach-layout-shell {
+  display: grid;
+  gap: 20px;
+}
+
+.reach-topbar {
+  margin-bottom: 2px;
+}
+
+.reach-topbar-context {
+  color: rgba(143, 15, 86, 0.7);
+}
+
+.reach-topbar-nav {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.reach-topbar-cta {
+  white-space: nowrap;
+}
+
 .direct-topbar-session {
   display: inline-flex;
   align-items: center;
@@ -1786,10 +1808,111 @@ a:hover {
   color: rgba(15, 23, 42, 0.9);
 }
 
+.direct-pricing-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0 18px;
+}
+
+.direct-pricing-summary-item {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+}
+
+.direct-pricing-summary-item h3,
+.direct-pricing-summary-item p {
+  margin: 0;
+}
+
+.direct-pricing-summary-item h3 {
+  font-size: 1rem;
+  line-height: 1.24;
+  color: rgba(15, 23, 42, 0.96);
+}
+
+.direct-pricing-summary-item p {
+  color: rgba(51, 65, 85, 0.8);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.direct-pricing-summary-label {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.06);
+  color: rgba(51, 65, 85, 0.82) !important;
+  font-size: 11px !important;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.direct-pricing-note {
+  margin: 0 0 14px;
+  color: rgba(71, 85, 105, 0.84);
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+
 .direct-pricing-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
+}
+
+.direct-pricing-addon {
+  margin-top: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(225, 26, 143, 0.18);
+  background: linear-gradient(160deg, rgba(255, 240, 248, 0.38) 0%, rgba(255, 255, 255, 0.86) 100%);
+  overflow: hidden;
+}
+
+.direct-pricing-addon summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  gap: 6px;
+  padding: 16px 18px;
+}
+
+.direct-pricing-addon summary::-webkit-details-marker {
+  display: none;
+}
+
+.direct-pricing-addon-kicker {
+  display: inline-flex;
+  width: fit-content;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(255, 68, 171, 0.12);
+  color: rgba(157, 23, 77, 0.9);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.direct-pricing-addon-title {
+  color: rgba(15, 23, 42, 0.94);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.direct-pricing-addon-body {
+  display: grid;
+  gap: 10px;
+  padding: 0 18px 18px;
 }
 
 .direct-pricing-card {
@@ -3293,6 +3416,7 @@ a:hover {
   .direct-before-after-grid,
   .direct-example-grid,
   .direct-diff-grid,
+  .direct-pricing-summary,
   .direct-pricing-grid,
   .direct-system-preset-row {
     grid-template-columns: 1fr;
@@ -12673,9 +12797,9 @@ a:hover {
   margin-bottom: 6px !important;
 }
 
-/* --- 4. Section spacing: tighter rhythm, gradient dividers --- */
+/* --- 4. Section spacing: restore consistent vertical rhythm --- */
 .direct-main-shell {
-  gap: 0 !important;
+  gap: 24px !important;
 }
 
 .direct-main-shell > * {
@@ -12684,9 +12808,9 @@ a:hover {
   border-right: none !important;
 }
 
-/* Hero keeps top radius */
+/* Hero should read as its own rounded panel */
 .direct-main-shell > .direct-hero-panel {
-  border-radius: var(--iter-panel-radius) var(--iter-panel-radius) 0 0 !important;
+  border-radius: var(--iter-panel-radius) !important;
 }
 
 /* Footer keeps bottom radius */
@@ -13101,3 +13225,1873 @@ a:hover {
 }
 
 /* === End Pass v2-19 === */
+
+/* === Pass v3-desktop-01: restore breathing room around proof strip === */
+@media (min-width: 641px) {
+  .direct-proof-strip {
+    margin-top: 8px !important;
+    margin-bottom: 10px !important;
+  }
+}
+
+/* === Pass v3-desktop-02: more inner breathing room + floating CTA dock === */
+@media (min-width: 641px) {
+  .direct-page .lane-panel {
+    padding: 54px 46px !important;
+  }
+
+  .direct-hero-layout {
+    padding: 98px 52px 82px !important;
+  }
+
+  .direct-proof-card,
+  .direct-step-card,
+  .direct-audience-card-expanded,
+  .direct-audience-card-inline,
+  .direct-pricing-card,
+  .direct-midpage-cta {
+    padding: 30px 28px !important;
+  }
+
+  .direct-sender-mockup-body,
+  .direct-mockup-body-v2 {
+    padding: 30px 28px 26px !important;
+  }
+
+  .direct-sender-callout {
+    padding: 18px 20px !important;
+    border-radius: 16px !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid rgba(15, 23, 42, 0.06) !important;
+  }
+
+  .direct-faq-question-v2 {
+    padding: 22px 26px !important;
+  }
+
+  .direct-faq-answer-v2 {
+    padding: 0 26px 22px !important;
+  }
+
+  .direct-pricing-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 18px !important;
+  }
+
+  .direct-page .direct-pricing-card-free.direct-pricing-card-highlighted {
+    transform: none !important;
+  }
+
+  .direct-page .direct-pricing-card-paid {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .direct-pricing-card-enterprise {
+    border: 1px solid rgba(15, 23, 42, 0.12) !important;
+    background: linear-gradient(160deg, rgba(248, 250, 252, 0.95) 0%, rgba(255, 255, 255, 0.98) 100%) !important;
+  }
+
+  .direct-floating-cta {
+    right: 20px !important;
+    bottom: 18px !important;
+    padding: 10px !important;
+    border-radius: 22px !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    border: 1px solid rgba(229, 231, 235, 0.96) !important;
+    box-shadow:
+      0 18px 44px rgba(15, 23, 42, 0.14),
+      0 6px 18px rgba(15, 23, 42, 0.08) !important;
+    backdrop-filter: blur(18px) saturate(1.1) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.1) !important;
+  }
+
+  .direct-floating-cta-btn {
+    box-shadow:
+      0 10px 24px rgba(245, 158, 11, 0.28),
+      0 0 0 1px rgba(217, 119, 6, 0.12) !important;
+  }
+}
+
+/* === Pass v3-mobile-01: tighter phone gutters + smaller type === */
+@media (max-width: 860px) {
+  .direct-main-shell {
+    gap: 18px !important;
+  }
+
+  .direct-desktop-only-card {
+    display: none !important;
+  }
+
+  .direct-mobile-only-card {
+    display: grid !important;
+  }
+}
+
+@media (min-width: 861px) {
+  .direct-mobile-only-card {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* The real outer waste was the page shell itself */
+  main {
+    max-width: calc(100vw - 8px) !important;
+    padding: 8px 4px 24px !important;
+  }
+
+  .home-topbar {
+    padding: 10px 8px !important;
+  }
+
+  .home-topbar-actions {
+    gap: 8px !important;
+  }
+
+  .topbar-link,
+  .topbar-cta-primary {
+    font-size: 12px !important;
+  }
+
+  .topbar-cta-primary {
+    padding: 7px 12px !important;
+  }
+
+  .direct-page {
+    gap: 12px !important;
+  }
+
+  .direct-main-shell {
+    gap: 14px !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+
+  .direct-page .lane-panel {
+    padding: 20px 8px !important;
+  }
+
+  .direct-hero-layout {
+    padding: 22px 8px 18px !important;
+    gap: 14px !important;
+  }
+
+  .direct-hero-content {
+    justify-items: flex-start !important;
+    text-align: left !important;
+    gap: 12px !important;
+  }
+
+  .direct-hero-actions {
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+  }
+
+  .direct-hero-bullets {
+    gap: 6px !important;
+  }
+
+  .direct-hero-bullets li {
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+
+  .direct-final-cta {
+    padding: 26px 8px !important;
+  }
+
+  .direct-footer {
+    padding: 18px 10px !important;
+  }
+
+  .direct-pricing-card,
+  .direct-audience-card-expanded,
+  .direct-audience-card-inline,
+  .direct-proof-card,
+  .direct-step-card,
+  .direct-faq-item-v2,
+  .direct-midpage-cta {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  /* Explicit mobile type scale: visibly smaller than before */
+  .direct-page .hero-word,
+  .direct-page .lane-kicker,
+  .direct-page .hero-meta,
+  .direct-page .direct-notform-highlight,
+  .direct-page .direct-pricing-badge,
+  .direct-page .direct-pricing-coming-badge,
+  .direct-page .direct-pricing-reassurance,
+  .direct-page .direct-pricing-waitlist,
+  .direct-page .direct-final-cta-expectation,
+  .direct-page .direct-footer-links a,
+  .direct-page .direct-footer-copy,
+  .direct-page .direct-step-number,
+  .direct-page .direct-audience-transform,
+  .direct-page .direct-sender-field-label,
+  .direct-page .direct-sender-field-value,
+  .direct-page .direct-sender-mockup-footer {
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+  }
+
+  .direct-page .direct-hero-title {
+    font-size: 1.68rem !important;
+    line-height: 1.06 !important;
+    letter-spacing: -0.03em !important;
+    max-width: none !important;
+  }
+
+  .direct-page .direct-hero-subtitle,
+  .direct-page .direct-final-cta-desc,
+  .direct-page .direct-section-lede,
+  .direct-page .direct-audience-card p,
+  .direct-page .direct-proof-copy,
+  .direct-page .direct-step-card p,
+  .direct-page .direct-pricing-desc,
+  .direct-page .direct-pricing-list li,
+  .direct-page .direct-faq-answer-v2,
+  .direct-page .direct-sender-mockup-subheading,
+  .direct-page .direct-sender-callout-copy {
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .direct-page .direct-hero-bullets li,
+  .direct-page .direct-proof-title,
+  .direct-page .direct-step-card h3,
+  .direct-page .direct-audience-card h3,
+  .direct-page .direct-faq-question-v2,
+  .direct-page .direct-sender-mockup-heading,
+  .direct-page .direct-sender-callout-title {
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+  }
+
+  .direct-page .direct-panel-intro h2,
+  .direct-page .direct-steps-intro h2,
+  .direct-page .direct-faq-intro h2,
+  .direct-page .direct-final-cta h2 {
+    font-size: 1.34rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .direct-page .direct-pricing-price {
+    font-size: 1.72rem !important;
+  }
+
+  .direct-page .button,
+  .direct-page .topbar-link,
+  .direct-page .topbar-cta-primary {
+    font-size: 12px !important;
+  }
+}
+
+/* === Pass slot9: pricing section now scans as a simple monthly formula === */
+.direct-pricing-equation {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) !important;
+  gap: 12px !important;
+  align-items: stretch !important;
+  margin-top: 14px !important;
+}
+
+.direct-pricing-equation-part {
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  border-radius: 16px !important;
+  padding: 16px 16px 14px !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05) !important;
+}
+
+.direct-pricing-equation-part h3 {
+  margin: 0 !important;
+  font-size: clamp(1.05rem, 2vw, 1.3rem) !important;
+  line-height: 1.2 !important;
+  color: rgba(15, 23, 42, 0.94) !important;
+}
+
+.direct-pricing-equation-part p {
+  margin: 0 !important;
+}
+
+.direct-pricing-equation-part > p:last-child {
+  margin-top: 6px !important;
+  font-size: 13px !important;
+  color: rgba(15, 23, 42, 0.6) !important;
+}
+
+.direct-pricing-equation-operator {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  color: rgba(14, 165, 163, 0.72) !important;
+}
+
+.direct-pricing-meter-explainer {
+  margin-top: 14px !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.direct-pricing-meter-card {
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  border-radius: 14px !important;
+  padding: 14px 16px !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+}
+
+.direct-pricing-meter-card h3 {
+  margin: 0 0 8px !important;
+  font-size: 14px !important;
+  color: rgba(15, 23, 42, 0.85) !important;
+}
+
+.direct-pricing-primary-cta {
+  margin-top: 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+}
+
+@media (max-width: 900px) {
+  .direct-pricing-equation {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .direct-pricing-equation-operator {
+    justify-self: center !important;
+    transform: rotate(90deg) !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+  }
+
+  .direct-pricing-meter-explainer {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* === Direct demo walkthrough route (/direct/demo) === */
+.direct-demo-page {
+  background:
+    radial-gradient(circle at 14% 8%, rgba(16, 185, 129, 0.08) 0%, transparent 33%),
+    radial-gradient(circle at 88% 4%, rgba(34, 211, 238, 0.1) 0%, transparent 36%),
+    linear-gradient(180deg, #f8fbff 0%, #f4f8ff 38%, #f8fafc 100%);
+}
+
+.direct-demo-shell {
+  width: min(1040px, calc(100% - 28px));
+  margin: 94px auto 44px;
+  display: grid;
+  gap: 14px;
+}
+
+.direct-demo-hero h1 {
+  margin: 0;
+  font-size: clamp(1.54rem, 3.6vw, 2.05rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: rgba(15, 23, 42, 0.94);
+}
+
+.direct-demo-subline {
+  margin: 8px 0 0;
+  color: rgba(30, 41, 59, 0.72);
+  max-width: 68ch;
+}
+
+.direct-demo-control-stack {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.direct-demo-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.direct-demo-chip {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  color: rgba(15, 23, 42, 0.84);
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.direct-demo-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(12, 154, 206, 0.42);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+.direct-demo-chip.is-active {
+  border-color: rgba(12, 154, 206, 0.62);
+  background: linear-gradient(120deg, rgba(12, 154, 206, 0.16) 0%, rgba(14, 165, 163, 0.2) 100%);
+  color: rgba(8, 47, 73, 0.92);
+}
+
+.direct-demo-select-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.direct-demo-select-label {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: rgba(30, 41, 59, 0.66);
+}
+
+.direct-demo-select {
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: rgba(255, 255, 255, 0.9);
+  color: rgba(15, 23, 42, 0.9);
+  font: inherit;
+  font-size: 13px;
+  padding: 8px 10px;
+  min-width: 250px;
+}
+
+.direct-demo-preview-toggle {
+  display: inline-flex;
+  width: fit-content;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 3px;
+}
+
+.direct-demo-preview-btn {
+  border: 0;
+  background: transparent;
+  color: rgba(30, 41, 59, 0.72);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.direct-demo-preview-btn.is-active {
+  background: rgba(12, 154, 206, 0.14);
+  color: rgba(8, 47, 73, 0.94);
+}
+
+.direct-demo-current-flow {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: rgba(30, 41, 59, 0.7);
+}
+
+.direct-demo-step-card {
+  display: grid;
+  gap: 14px;
+}
+
+.direct-demo-step-head {
+  display: grid;
+  gap: 6px;
+}
+
+.direct-demo-step-head h2 {
+  margin: 0;
+  font-size: clamp(1.2rem, 2.2vw, 1.45rem);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: rgba(15, 23, 42, 0.94);
+}
+
+.direct-demo-step-head p {
+  margin: 0;
+  color: rgba(30, 41, 59, 0.68);
+}
+
+.direct-demo-step-number {
+  margin: 0;
+  width: fit-content;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.82);
+  color: rgba(248, 250, 252, 0.96);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+}
+
+.direct-demo-step-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.direct-demo-public-preview {
+  border: 1px solid rgba(148, 163, 184, 0.34);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  max-width: 620px;
+  overflow: hidden;
+}
+
+.direct-demo-public-preview.is-mobile {
+  max-width: 340px;
+}
+
+.direct-demo-public-topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(248, 250, 252, 0.92);
+}
+
+.direct-demo-topbar-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.76);
+}
+
+.direct-demo-public-url {
+  margin-left: auto;
+  font-size: 11px;
+  color: rgba(71, 85, 105, 0.86);
+}
+
+.direct-demo-public-body {
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.direct-demo-public-kicker {
+  margin: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(71, 85, 105, 0.78);
+}
+
+.direct-demo-public-body h3 {
+  margin: 0;
+  color: rgba(15, 23, 42, 0.94);
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.direct-demo-public-fields {
+  display: grid;
+  gap: 8px;
+}
+
+.direct-demo-public-field {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(248, 250, 252, 0.7);
+}
+
+.direct-demo-public-field p {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.84);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.direct-demo-public-field span {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(51, 65, 85, 0.74);
+}
+
+.direct-demo-required {
+  display: inline-flex;
+  border-radius: 999px;
+  border: 1px solid rgba(225, 29, 72, 0.3);
+  background: rgba(254, 226, 226, 0.68);
+  color: rgba(127, 29, 29, 0.78);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+}
+
+.direct-demo-callouts {
+  display: grid;
+  align-content: flex-start;
+  gap: 8px;
+}
+
+.direct-demo-callout {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  border-radius: 12px;
+  border: 1px solid rgba(14, 165, 163, 0.28);
+  background: rgba(240, 253, 250, 0.86);
+  padding: 10px;
+}
+
+.direct-demo-callout p {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(15, 23, 42, 0.78);
+}
+
+.direct-demo-callout-icon {
+  color: rgba(13, 148, 136, 0.82);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.direct-demo-submission-card {
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.direct-demo-submission-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.direct-demo-submission-grid p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(15, 23, 42, 0.88);
+}
+
+.direct-demo-label {
+  font-size: 11px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(71, 85, 105, 0.78) !important;
+  font-weight: 700;
+}
+
+.direct-demo-submission-brief {
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+  padding-top: 10px;
+}
+
+.direct-demo-submission-brief p {
+  margin: 0;
+  color: rgba(30, 41, 59, 0.84);
+}
+
+.direct-demo-submit-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.direct-demo-submit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: linear-gradient(140deg, rgba(2, 132, 199, 0.96) 0%, rgba(14, 165, 163, 0.94) 100%);
+  color: rgba(255, 255, 255, 0.98);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 12px;
+}
+
+.direct-demo-submit-status {
+  font-size: 12px;
+  color: rgba(13, 148, 136, 0.9);
+  font-weight: 600;
+}
+
+.direct-demo-pipeline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.direct-demo-pipeline-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 12px;
+  background: rgba(248, 250, 252, 0.82);
+  padding: 11px 12px;
+}
+
+.direct-demo-pipeline-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.9);
+}
+
+.direct-demo-pipeline-detail {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: rgba(51, 65, 85, 0.74);
+}
+
+.direct-demo-check-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.direct-demo-check-pass {
+  background: rgba(220, 252, 231, 0.92);
+  color: rgba(22, 101, 52, 0.9);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.direct-demo-check-review {
+  background: rgba(254, 249, 195, 0.9);
+  color: rgba(146, 64, 14, 0.9);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.direct-demo-check-filtered {
+  background: rgba(254, 226, 226, 0.9);
+  color: rgba(153, 27, 27, 0.9);
+  border: 1px solid rgba(239, 68, 68, 0.34);
+}
+
+.direct-demo-diff-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.direct-demo-diff-card {
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  padding: 12px;
+}
+
+.direct-demo-diff-title {
+  margin: 0 0 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(71, 85, 105, 0.82);
+}
+
+.direct-demo-diff-card ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.direct-demo-diff-before {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.direct-demo-diff-before li {
+  color: rgba(71, 85, 105, 0.88);
+}
+
+.direct-demo-diff-after {
+  background: rgba(236, 253, 245, 0.68);
+  border-color: rgba(16, 185, 129, 0.26);
+}
+
+.direct-demo-diff-after ul {
+  list-style: none;
+  padding: 0;
+}
+
+.direct-demo-diff-after li {
+  display: grid;
+  gap: 3px;
+  padding: 8px 9px;
+  border-radius: 10px;
+  border: 1px solid rgba(16, 185, 129, 0.24);
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.direct-demo-diff-after li span {
+  font-size: 11px;
+  color: rgba(15, 118, 110, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.direct-demo-diff-after li strong {
+  font-size: 13px;
+  color: rgba(15, 23, 42, 0.9);
+}
+
+.direct-demo-outcome-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.direct-demo-outcome-card {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.direct-demo-outcome-status {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.9);
+}
+
+.direct-demo-outcome-detail {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: rgba(51, 65, 85, 0.8);
+}
+
+.direct-demo-outcome-accepted {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(240, 253, 244, 0.85);
+}
+
+.direct-demo-outcome-needs-info {
+  border-color: rgba(245, 158, 11, 0.32);
+  background: rgba(255, 251, 235, 0.88);
+}
+
+.direct-demo-outcome-filtered {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(254, 242, 242, 0.88);
+}
+
+.direct-demo-value-card {
+  background:
+    radial-gradient(circle at 80% 22%, rgba(20, 184, 166, 0.14) 0%, transparent 40%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.95) 0%, rgba(236, 254, 255, 0.76) 100%);
+}
+
+.direct-demo-payoff-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.direct-demo-payoff-list li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(14, 165, 163, 0.24);
+  padding: 9px 10px;
+  color: rgba(15, 23, 42, 0.88);
+}
+
+.direct-demo-payoff-icon {
+  color: rgba(13, 148, 136, 0.86);
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.direct-demo-cta-row {
+  display: grid;
+  gap: 6px;
+}
+
+.direct-demo-cta-row p {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(30, 41, 59, 0.76);
+}
+
+.direct-demo-cta-button {
+  width: fit-content;
+}
+
+@media (min-width: 860px) {
+  .direct-demo-shell {
+    gap: 16px;
+  }
+
+  .direct-demo-step-grid {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr);
+    gap: 12px;
+  }
+
+  .direct-demo-submission-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .direct-demo-diff-grid,
+  .direct-demo-outcome-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .direct-demo-outcome-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .direct-demo-shell {
+    width: min(100%, calc(100% - 16px));
+    margin-top: 82px;
+  }
+
+  .direct-demo-select {
+    min-width: 100%;
+  }
+
+  .direct-demo-preview-toggle {
+    width: 100%;
+  }
+
+  .direct-demo-preview-btn {
+    flex: 1;
+  }
+
+  .direct-demo-submission-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .direct-demo-pipeline-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .direct-demo-check-badge {
+    margin-top: 2px;
+  }
+}
+
+/* === Direct demo pass 2 + pass 3 polish === */
+.direct-demo-journey-nav {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(255, 255, 255, 0.86);
+  padding: 10px 12px;
+}
+
+.direct-demo-journey-nav ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.direct-demo-journey-nav li a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  background: rgba(248, 250, 252, 0.84);
+  color: rgba(15, 23, 42, 0.86);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 10px;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.direct-demo-journey-nav li a:hover {
+  border-color: rgba(12, 154, 206, 0.44);
+  transform: translateY(-1px);
+}
+
+.direct-demo-journey-nav li a span {
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  color: rgba(30, 41, 59, 0.84);
+  min-width: 28px;
+  text-align: center;
+  padding: 2px 6px;
+}
+
+.direct-demo-step-note {
+  margin: -2px 0 0;
+  font-size: 12px;
+  color: rgba(8, 47, 73, 0.84);
+  border: 1px solid rgba(12, 154, 206, 0.24);
+  border-radius: 10px;
+  background: rgba(224, 242, 254, 0.58);
+  padding: 8px 10px;
+}
+
+.direct-demo-submission-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.direct-demo-submission-meta span {
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(248, 250, 252, 0.84);
+  color: rgba(30, 41, 59, 0.82);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+}
+
+@keyframes directDemoRise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes directDemoPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(14, 165, 163, 0.12);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(14, 165, 163, 0.08);
+  }
+}
+
+.direct-demo-pipeline-track {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.direct-demo-track-step {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  opacity: 0;
+  animation: directDemoRise 340ms ease forwards;
+  animation-delay: var(--demo-delay, 0ms);
+}
+
+.direct-demo-track-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  border: 2px solid rgba(148, 163, 184, 0.5);
+  background: rgba(255, 255, 255, 0.94);
+  animation: directDemoPulse 1200ms ease-in-out infinite;
+}
+
+.direct-demo-track-step-pass .direct-demo-track-dot {
+  border-color: rgba(22, 163, 74, 0.5);
+  background: rgba(220, 252, 231, 0.92);
+}
+
+.direct-demo-track-step-review .direct-demo-track-dot {
+  border-color: rgba(217, 119, 6, 0.54);
+  background: rgba(254, 243, 199, 0.9);
+}
+
+.direct-demo-track-step-filtered .direct-demo-track-dot {
+  border-color: rgba(220, 38, 38, 0.55);
+  background: rgba(254, 226, 226, 0.92);
+}
+
+.direct-demo-track-text {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(71, 85, 105, 0.8);
+}
+
+.direct-demo-pipeline-item {
+  position: relative;
+  opacity: 0;
+  animation: directDemoRise 340ms ease forwards;
+  animation-delay: var(--demo-delay, 0ms);
+}
+
+.direct-demo-pipeline-item-pass {
+  border-left: 4px solid rgba(34, 197, 94, 0.44);
+}
+
+.direct-demo-pipeline-item-review {
+  border-left: 4px solid rgba(245, 158, 11, 0.46);
+}
+
+.direct-demo-pipeline-item-filtered {
+  border-left: 4px solid rgba(239, 68, 68, 0.44);
+}
+
+.direct-demo-pipeline-headline-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.direct-demo-pipeline-time {
+  display: inline-flex;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  color: rgba(30, 41, 59, 0.76);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+}
+
+.direct-demo-processing-result {
+  border-radius: 12px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: linear-gradient(140deg, rgba(240, 253, 250, 0.88) 0%, rgba(236, 253, 245, 0.7) 100%);
+  padding: 10px 12px;
+  display: grid;
+  gap: 4px;
+}
+
+.direct-demo-processing-kicker {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(15, 118, 110, 0.82);
+}
+
+.direct-demo-processing-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.direct-demo-processing-copy {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(30, 41, 59, 0.76);
+}
+
+.direct-demo-diff-rail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.direct-demo-diff-pill {
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+}
+
+.direct-demo-diff-pill-before {
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  background: rgba(254, 242, 242, 0.9);
+  color: rgba(153, 27, 27, 0.9);
+}
+
+.direct-demo-diff-pill-after {
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(236, 253, 245, 0.9);
+  color: rgba(6, 95, 70, 0.9);
+}
+
+.direct-demo-diff-arrow {
+  color: rgba(71, 85, 105, 0.74);
+  font-weight: 700;
+}
+
+.direct-demo-diff-before-list {
+  list-style: none;
+  padding-left: 0 !important;
+}
+
+.direct-demo-diff-before-list li {
+  display: flex;
+  gap: 7px;
+  color: rgba(71, 85, 105, 0.88);
+}
+
+.direct-demo-diff-before-list li::before {
+  content: '×';
+  color: rgba(185, 28, 28, 0.84);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.direct-demo-diff-summary {
+  margin: 8px 0 0;
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+  padding-top: 8px;
+  font-size: 12px;
+  color: rgba(71, 85, 105, 0.78);
+}
+
+.direct-demo-diff-summary-success {
+  color: rgba(6, 95, 70, 0.85);
+}
+
+.direct-demo-payoff-highlight {
+  border-radius: 12px;
+  border: 1px solid rgba(20, 184, 166, 0.26);
+  background: rgba(236, 254, 255, 0.74);
+  padding: 11px 12px;
+  display: grid;
+  gap: 3px;
+}
+
+.direct-demo-payoff-kicker {
+  margin: 0;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: rgba(15, 118, 110, 0.84);
+}
+
+.direct-demo-payoff-highlight h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: rgba(15, 23, 42, 0.94);
+}
+
+@media (min-width: 860px) {
+  .direct-demo-journey-nav ol {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .direct-demo-pipeline-track {
+    grid-template-columns: repeat(4, minmax(0, max-content));
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 680px) {
+  .direct-demo-journey-nav ol {
+    grid-template-columns: 1fr;
+  }
+
+  .direct-demo-pipeline-track {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .direct-demo-diff-rail {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+.direct-hero-demo-link {
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .direct-hero-actions {
+    align-items: flex-start;
+  }
+
+  .direct-hero-link-secondary {
+    width: 100%;
+    margin-top: 2px;
+  }
+}
+
+/* === Direct demo rewrite (guided request -> access layer -> 3 doors) === */
+.direct-demo-v3-shell {
+  width: min(1080px, calc(100% - 24px));
+  margin: 94px auto 44px;
+  display: grid;
+  gap: 14px;
+}
+
+.direct-demo-v3-hero h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3.6vw, 2.08rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: rgba(15, 23, 42, 0.94);
+}
+
+.direct-demo-v3-subline {
+  margin: 8px 0 0;
+  color: rgba(30, 41, 59, 0.74);
+  max-width: 72ch;
+}
+
+.direct-demo-v3-control-stack {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.direct-demo-v3-category-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.direct-demo-v3-chip {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  color: rgba(15, 23, 42, 0.84);
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.direct-demo-v3-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(12, 154, 206, 0.42);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+.direct-demo-v3-chip.is-active {
+  border-color: rgba(12, 154, 206, 0.62);
+  background: linear-gradient(120deg, rgba(12, 154, 206, 0.16) 0%, rgba(14, 165, 163, 0.2) 100%);
+  color: rgba(8, 47, 73, 0.92);
+}
+
+.direct-demo-v3-request-picker {
+  display: grid;
+  gap: 8px;
+}
+
+.direct-demo-v3-request-label {
+  margin: 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(71, 85, 105, 0.82);
+  font-weight: 700;
+}
+
+.direct-demo-v3-request-options {
+  display: grid;
+  gap: 8px;
+}
+
+.direct-demo-v3-request-option {
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 12px;
+  background: rgba(248, 250, 252, 0.86);
+  color: rgba(15, 23, 42, 0.88);
+  padding: 10px 11px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 140ms ease, transform 140ms ease, background 140ms ease;
+}
+
+.direct-demo-v3-request-option:hover {
+  transform: translateY(-1px);
+  border-color: rgba(12, 154, 206, 0.42);
+}
+
+.direct-demo-v3-request-option.is-active {
+  border-color: rgba(12, 154, 206, 0.58);
+  background: rgba(224, 242, 254, 0.72);
+}
+
+.direct-demo-v3-request-option-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.direct-demo-v3-route-chip {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(255, 255, 255, 0.92);
+  color: rgba(30, 41, 59, 0.84);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 4px 8px;
+}
+
+.direct-demo-v3-route-chip-inbox {
+  border-color: rgba(34, 197, 94, 0.34);
+  background: rgba(220, 252, 231, 0.9);
+  color: rgba(22, 101, 52, 0.92);
+}
+
+.direct-demo-v3-route-chip-needs-info {
+  border-color: rgba(245, 158, 11, 0.36);
+  background: rgba(254, 249, 195, 0.92);
+  color: rgba(146, 64, 14, 0.92);
+}
+
+.direct-demo-v3-route-chip-paid-access {
+  border-color: rgba(59, 130, 246, 0.38);
+  background: rgba(219, 234, 254, 0.9);
+  color: rgba(30, 64, 175, 0.92);
+}
+
+.direct-demo-v3-process-row {
+  display: grid;
+  gap: 6px;
+}
+
+.direct-demo-v3-process-button {
+  width: fit-content;
+}
+
+.direct-demo-v3-process-row p {
+  margin: 0;
+  color: rgba(30, 41, 59, 0.76);
+  font-size: 13px;
+}
+
+.direct-demo-v3-section {
+  display: grid;
+  gap: 12px;
+}
+
+.direct-demo-v3-section-head {
+  display: grid;
+  gap: 6px;
+}
+
+.direct-demo-v3-section-head h2 {
+  margin: 0;
+  font-size: clamp(1.16rem, 2.1vw, 1.42rem);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: rgba(15, 23, 42, 0.94);
+}
+
+.direct-demo-v3-section-head p {
+  margin: 0;
+  color: rgba(30, 41, 59, 0.7);
+}
+
+.direct-demo-v3-step {
+  margin: 0;
+  width: fit-content;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.82);
+  color: rgba(248, 250, 252, 0.96);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+}
+
+.direct-demo-v3-request-card {
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.direct-demo-v3-request-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.direct-demo-v3-request-meta span {
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(248, 250, 252, 0.84);
+  color: rgba(30, 41, 59, 0.82);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+}
+
+.direct-demo-v3-request-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.direct-demo-v3-request-grid p {
+  margin: 0;
+  color: rgba(15, 23, 42, 0.88);
+}
+
+.direct-demo-v3-label {
+  margin: 0;
+  font-size: 11px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(71, 85, 105, 0.78) !important;
+  font-weight: 700;
+}
+
+.direct-demo-v3-request-summary {
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+  padding-top: 10px;
+}
+
+.direct-demo-v3-request-summary p {
+  margin: 0;
+  color: rgba(30, 41, 59, 0.84);
+}
+
+.direct-demo-v3-flow-rail {
+  display: grid;
+  gap: 10px;
+}
+
+.direct-demo-v3-node {
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(255, 255, 255, 0.88);
+  padding: 11px;
+  display: grid;
+  gap: 8px;
+}
+
+.direct-demo-v3-node h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.direct-demo-v3-node p {
+  margin: 0;
+  color: rgba(30, 41, 59, 0.78);
+}
+
+.direct-demo-v3-node-kicker {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(71, 85, 105, 0.8) !important;
+}
+
+.direct-demo-v3-node-layer {
+  background: linear-gradient(150deg, rgba(240, 249, 255, 0.86) 0%, rgba(236, 254, 255, 0.72) 100%);
+  border-color: rgba(14, 165, 163, 0.34);
+}
+
+.direct-demo-v3-node-layer ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.direct-demo-v3-node-layer li {
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+  border-radius: 10px;
+  border: 1px solid rgba(14, 165, 163, 0.24);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 8px 9px;
+  font-size: 13px;
+  color: rgba(15, 23, 42, 0.86);
+}
+
+.direct-demo-v3-check-icon {
+  color: rgba(13, 148, 136, 0.86);
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.direct-demo-v3-route-reason {
+  border-radius: 10px;
+  border: 1px solid rgba(12, 154, 206, 0.24);
+  background: rgba(224, 242, 254, 0.64);
+  color: rgba(8, 47, 73, 0.9) !important;
+  font-size: 12px;
+  padding: 8px 9px;
+}
+
+.direct-demo-v3-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  line-height: 1;
+  color: rgba(71, 85, 105, 0.72);
+}
+
+.direct-demo-v3-door-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.direct-demo-v3-door {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(255, 255, 255, 0.88);
+  padding: 10px;
+  display: grid;
+  gap: 4px;
+  transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.direct-demo-v3-door-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.direct-demo-v3-door-head p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.9);
+}
+
+.direct-demo-v3-door-icon {
+  color: rgba(51, 65, 85, 0.86);
+}
+
+.direct-demo-v3-door > p {
+  margin: 0;
+  color: rgba(51, 65, 85, 0.78);
+  font-size: 13px;
+}
+
+.direct-demo-v3-door.is-target {
+  border-width: 2px;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+}
+
+.direct-demo-v3-door-inbox.is-target {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(240, 253, 244, 0.88);
+}
+
+.direct-demo-v3-door-needs-info.is-target {
+  border-color: rgba(245, 158, 11, 0.56);
+  background: rgba(255, 251, 235, 0.9);
+}
+
+.direct-demo-v3-door-paid-access.is-target {
+  border-color: rgba(37, 99, 235, 0.56);
+  background: rgba(239, 246, 255, 0.9);
+}
+
+.direct-demo-v3-process-note {
+  margin: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(248, 250, 252, 0.8);
+  color: rgba(30, 41, 59, 0.78);
+  font-size: 13px;
+  padding: 9px 10px;
+}
+
+.direct-demo-v3-outcome-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.direct-demo-v3-outcome-card {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 11px;
+  display: grid;
+  gap: 8px;
+}
+
+.direct-demo-v3-outcome-card h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.direct-demo-v3-outcome-card p {
+  margin: 0;
+  color: rgba(30, 41, 59, 0.78);
+}
+
+.direct-demo-v3-outcome-card ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: rgba(15, 23, 42, 0.86);
+}
+
+.direct-demo-v3-autoreply-card {
+  background: rgba(248, 250, 252, 0.88);
+}
+
+.direct-demo-v3-autoreply-copy {
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 9px;
+  color: rgba(15, 23, 42, 0.88) !important;
+}
+
+.direct-demo-v3-idle-note {
+  margin: 0;
+  border-radius: 10px;
+  border: 1px dashed rgba(148, 163, 184, 0.46);
+  background: rgba(248, 250, 252, 0.76);
+  color: rgba(51, 65, 85, 0.82);
+  font-size: 14px;
+  padding: 10px 11px;
+}
+
+.direct-demo-v3-payoff {
+  background:
+    radial-gradient(circle at 82% 14%, rgba(20, 184, 166, 0.14) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.95) 0%, rgba(236, 254, 255, 0.76) 100%);
+}
+
+.direct-demo-v3-payoff-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.direct-demo-v3-payoff-list li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(14, 165, 163, 0.24);
+  padding: 9px 10px;
+  color: rgba(15, 23, 42, 0.88);
+}
+
+.direct-demo-v3-cta-row {
+  display: grid;
+  gap: 6px;
+}
+
+.direct-demo-v3-cta-row p {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(30, 41, 59, 0.76);
+}
+
+.direct-demo-v3-cta {
+  width: fit-content;
+}
+
+@media (min-width: 860px) {
+  .direct-demo-v3-shell {
+    gap: 16px;
+  }
+
+  .direct-demo-v3-request-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .direct-demo-v3-request-option {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .direct-demo-v3-request-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .direct-demo-v3-flow-rail {
+    grid-template-columns: minmax(0, 0.8fr) auto minmax(0, 1.1fr) auto minmax(0, 0.95fr);
+    align-items: stretch;
+  }
+
+  .direct-demo-v3-door-grid {
+    align-content: stretch;
+  }
+
+  .direct-demo-v3-outcome-grid {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .direct-demo-v3-shell {
+    width: min(100%, calc(100% - 16px));
+    margin-top: 82px;
+  }
+
+  .direct-demo-v3-request-option {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .direct-demo-v3-process-button,
+  .direct-demo-v3-cta {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .direct-demo-v3-request-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .direct-demo-v3-flow-rail {
+    grid-template-columns: 1fr;
+  }
+
+  .direct-demo-v3-arrow {
+    transform: rotate(90deg);
+  }
+}
