@@ -1,0 +1,10 @@
+Name: Maya Chen
+Role: Product Security Lead
+Organization: Northstar Identity Labs
+Location: San Francisco, CA
+Tags: product-security, oauth, abuse-prevention, identity, b2b-saas
+
+Maya advises B2B SaaS teams on OAuth abuse prevention, identity verification,
+account recovery risk, and security review workflows. She is a strong match for
+requests involving product security architecture, inbound trust signals, and
+privacy-preserving access controls.

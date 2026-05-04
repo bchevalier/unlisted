@@ -2863,6 +2863,138 @@ a:hover {
   gap: 10px 14px;
 }
 
+.reach-demo-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.reach-demo-copy {
+  display: grid;
+  gap: 4px;
+  max-width: 760px;
+}
+
+.reach-demo-copy h2 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: 0;
+}
+
+.reach-demo-form {
+  display: grid;
+  gap: 10px;
+}
+
+.reach-demo-form label {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.86);
+}
+
+.reach-demo-form textarea {
+  width: 100%;
+  min-height: 132px;
+  resize: vertical;
+  border: 1px solid rgba(212, 217, 226, 0.95);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font: inherit;
+  color: var(--ink-900);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.reach-demo-form textarea:focus {
+  outline: none;
+  border-color: rgba(14, 165, 163, 0.75);
+  box-shadow: 0 0 0 3px rgba(83, 240, 226, 0.22);
+}
+
+.reach-demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.reach-demo-actions .button {
+  min-width: 104px;
+}
+
+.reach-demo-actions .button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.reach-demo-status {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(31, 42, 68, 0.74);
+}
+
+.reach-demo-status-error {
+  color: #b42318;
+}
+
+.reach-demo-results {
+  display: grid;
+  gap: 12px;
+}
+
+.reach-demo-result {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px 14px;
+  padding: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+}
+
+.reach-demo-result h3 {
+  margin: 0 0 2px;
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+.reach-demo-result p {
+  margin: 0;
+}
+
+.reach-demo-score {
+  align-self: start;
+  border-radius: 999px;
+  padding: 5px 9px;
+  border: 1px solid rgba(14, 165, 163, 0.24);
+  background: rgba(83, 240, 226, 0.18);
+  color: var(--brand-cyan-700);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.reach-demo-content {
+  grid-column: 1 / -1;
+  color: rgba(31, 42, 68, 0.82);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.reach-demo-tags {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.reach-demo-tags span {
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: rgba(15, 23, 42, 0.06);
+  color: rgba(31, 42, 68, 0.78);
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .inbox-links a {
   display: inline-flex;
   padding: 8px 12px;

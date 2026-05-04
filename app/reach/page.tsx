@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getReachSession } from '../../features/reach/server/session';
 import { getContractSummary } from '../../features/reach/server/contracts';
+import { ReachDemoForm } from './reach-demo-form';
 
 export default async function ReachDashboardPage() {
   const session = await getReachSession();
@@ -24,6 +25,7 @@ export default async function ReachDashboardPage() {
             </Link>
           </div>
         </section>
+        <ReachDemoForm />
       </main>
     );
   }
@@ -88,6 +90,8 @@ export default async function ReachDashboardPage() {
           <Link href="/reach/metrics">Pilot metrics</Link>
         </p>
       </section>
+
+      <ReachDemoForm />
     </main>
   );
 }
