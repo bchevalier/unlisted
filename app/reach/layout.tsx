@@ -66,7 +66,7 @@ export default async function ReachLayout({ children }: ReachLayoutProps) {
             <Link className="topbar-link" href="/direct/login?next=/reach">
               Log in
             </Link>
-            <Link className="topbar-link" href="/reach#reach-overview">
+            <Link className="topbar-link" href="/reach#reach-demo">
               Demo
             </Link>
             <Link className="topbar-cta-primary reach-topbar-cta" href="/reach/register">

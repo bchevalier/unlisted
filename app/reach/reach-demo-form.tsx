@@ -68,7 +68,7 @@ export function ReachDemoForm() {
   }
 
   return (
-    <section className="lane-panel reach-demo-panel" aria-labelledby="reach-demo-title">
+    <section id="reach-demo" className="lane-panel reach-demo-panel" aria-labelledby="reach-demo-title">
       <div className="reach-demo-copy">
         <p className="lane-kicker">Reach Demo</p>
         <h2 id="reach-demo-title">Send a request into seeded identities.</h2>
