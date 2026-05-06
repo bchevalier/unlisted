@@ -10,7 +10,9 @@ const EMBEDDING_MODEL =
   process.env.REACH_EMBEDDINGS_OPENAI_MODEL ??
   process.env.EMBEDDINGS_OPENAI_MODEL ??
   'text-embedding-3-small';
-const OPENAI_BASE_URL = (process.env.EMBEDDINGS_OPENAI_BASE_URL ?? 'https://api.openai.com/v1').replace(/\/+$/, '');
+const OPENAI_BASE_URL = (
+  process.env.EMBEDDINGS_OPENAI_BASE_URL ?? 'https://api.openai.com/v1'
+).replace(/\/+$/, '');
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -93,9 +95,26 @@ function serializeVector(vector) {
   return `[${vector.join(',')}]`;
 }
 
-async function ensureStorage() {
+function isPgvectorUnavailable(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  return (
+    message.includes('extension "vector" is not available') ||
+    message.includes('type "vector" does not exist') ||
+    message.includes('operator class "vector_cosine_ops" does not exist')
+  );
+}
+
+async function ensurePgvectorStorage() {
+  const availability = await prisma.$queryRawUnsafe(
+    `SELECT EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'vector') AS available`
+  );
+  if (!availability[0]?.available) {
+    throw new Error('extension "vector" is not available');
+  }
+
   await prisma.$executeRawUnsafe('CREATE EXTENSION IF NOT EXISTS vector');
-  await prisma.$executeRawUnsafe(`
+  await prisma.$executeRawUnsafe(
+    `
 CREATE TABLE IF NOT EXISTS "ReachIdentityEmbedding" (
   "id" TEXT NOT NULL,
   "sourceFile" TEXT NOT NULL,
@@ -116,20 +135,77 @@ CREATE TABLE IF NOT EXISTS "ReachIdentityEmbedding" (
 
   CONSTRAINT "ReachIdentityEmbedding_pkey" PRIMARY KEY ("id")
 )
-`.trim());
-  await prisma.$executeRawUnsafe(`
+`.trim()
+  );
+  await prisma.$executeRawUnsafe(
+    `
 CREATE UNIQUE INDEX IF NOT EXISTS "ReachIdentityEmbedding_source_key"
   ON "ReachIdentityEmbedding"("sourceFile", "sourceId")
-`.trim());
-  await prisma.$executeRawUnsafe(`
+`.trim()
+  );
+  await prisma.$executeRawUnsafe(
+    `
 CREATE INDEX IF NOT EXISTS "ReachIdentityEmbedding_tags_idx"
   ON "ReachIdentityEmbedding" USING gin ("tags")
-`.trim());
-  await prisma.$executeRawUnsafe(`
+`.trim()
+  );
+  await prisma.$executeRawUnsafe(
+    `
 CREATE INDEX IF NOT EXISTS "ReachIdentityEmbedding_embedding_hnsw_idx"
   ON "ReachIdentityEmbedding"
   USING hnsw ("embedding" vector_cosine_ops)
-`.trim());
+`.trim()
+  );
+}
+
+async function ensureArrayStorage() {
+  await prisma.$executeRawUnsafe(
+    `
+CREATE TABLE IF NOT EXISTS "ReachIdentityEmbeddingArray" (
+  "id" TEXT NOT NULL,
+  "sourceFile" TEXT NOT NULL,
+  "sourceId" TEXT NOT NULL,
+  "name" TEXT NOT NULL,
+  "role" TEXT,
+  "organization" TEXT,
+  "location" TEXT,
+  "tags" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
+  "content" TEXT NOT NULL,
+  "metadata" JSONB,
+  "embedding" DOUBLE PRECISION[] NOT NULL,
+  "embeddingProvider" TEXT NOT NULL,
+  "embeddingModel" TEXT NOT NULL,
+  "embeddingDimensions" INTEGER NOT NULL DEFAULT 1536,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT "ReachIdentityEmbeddingArray_pkey" PRIMARY KEY ("id")
+)
+`.trim()
+  );
+  await prisma.$executeRawUnsafe(
+    `
+CREATE UNIQUE INDEX IF NOT EXISTS "ReachIdentityEmbeddingArray_source_key"
+  ON "ReachIdentityEmbeddingArray"("sourceFile", "sourceId")
+`.trim()
+  );
+  await prisma.$executeRawUnsafe(
+    `
+CREATE INDEX IF NOT EXISTS "ReachIdentityEmbeddingArray_tags_idx"
+  ON "ReachIdentityEmbeddingArray" USING gin ("tags")
+`.trim()
+  );
+}
+
+async function ensureStorage() {
+  try {
+    await ensurePgvectorStorage();
+    return 'pgvector';
+  } catch (error) {
+    if (!isPgvectorUnavailable(error)) throw error;
+    await ensureArrayStorage();
+    return 'array';
+  }
 }
 
 async function embedText(content) {
@@ -153,7 +229,10 @@ async function embedText(content) {
 
   const payload = await response.json();
   if (!response.ok) {
-    const message = payload?.error?.message ?? payload?.message ?? `OpenAI embeddings request failed (${response.status})`;
+    const message =
+      payload?.error?.message ??
+      payload?.message ??
+      `OpenAI embeddings request failed (${response.status})`;
     throw new Error(message);
   }
 
@@ -170,13 +249,19 @@ async function embedText(content) {
   };
 }
 
-async function upsertIdentity(identity) {
+async function upsertIdentity(identity, storageMode) {
   const embeddingResult = await embedText(identity.content);
-  const vectorLiteral = serializeVector(embeddingResult.embedding);
+  const embeddingValue =
+    storageMode === 'pgvector'
+      ? serializeVector(embeddingResult.embedding)
+      : embeddingResult.embedding;
+  const tableName =
+    storageMode === 'pgvector' ? '"ReachIdentityEmbedding"' : '"ReachIdentityEmbeddingArray"';
+  const embeddingCast = storageMode === 'pgvector' ? '$11::vector' : '$11::DOUBLE PRECISION[]';
 
   await prisma.$executeRawUnsafe(
     `
-INSERT INTO "ReachIdentityEmbedding" (
+INSERT INTO ${tableName} (
   "id",
   "sourceFile",
   "sourceId",
@@ -192,7 +277,7 @@ INSERT INTO "ReachIdentityEmbedding" (
   "embeddingModel",
   "embeddingDimensions"
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8::TEXT[], $9, $10::JSONB, $11::vector, $12, $13, $14)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8::TEXT[], $9, $10::JSONB, ${embeddingCast}, $12, $13, $14)
 ON CONFLICT ("sourceFile", "sourceId")
 DO UPDATE SET
   "name" = EXCLUDED."name",
@@ -218,10 +303,10 @@ DO UPDATE SET
     identity.tags,
     identity.content,
     JSON.stringify(identity.metadata ?? {}),
-    vectorLiteral,
+    embeddingValue,
     embeddingResult.provider,
     embeddingResult.model,
-    embeddingResult.dimensions,
+    embeddingResult.dimensions
   );
 }
 
@@ -234,8 +319,10 @@ async function main() {
   }
 
   console.log(`Preparing Reach demo identity storage in ${dir}`);
-  await ensureStorage();
-  console.log(`Found ${files.length} identity file${files.length === 1 ? '' : 's'}.`);
+  const storageMode = await ensureStorage();
+  console.log(
+    `Found ${files.length} identity file${files.length === 1 ? '' : 's'}; storage=${storageMode}.`
+  );
 
   let seeded = 0;
   for (const file of files) {
@@ -244,11 +331,14 @@ async function main() {
     const relativeFile = path.relative(process.cwd(), file);
 
     console.log(`Embedding Reach identity: ${parsed.name} (${relativeFile})`);
-    await upsertIdentity({
-      ...parsed,
-      sourceFile: relativeFile,
-      sourceId: path.basename(file, '.txt'),
-    });
+    await upsertIdentity(
+      {
+        ...parsed,
+        sourceFile: relativeFile,
+        sourceId: path.basename(file, '.txt'),
+      },
+      storageMode
+    );
 
     seeded += 1;
     console.log(`Seeded Reach identity: ${parsed.name} (${relativeFile})`);
