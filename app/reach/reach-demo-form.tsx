@@ -36,7 +36,11 @@ export function ReachDemoForm() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = request.trim();
-    if (!trimmed) return;
+    if (!trimmed) {
+      setStatus('error');
+      setMessage('Enter a request first.');
+      return;
+    }
 
     setStatus('loading');
     setMessage('');
@@ -59,7 +63,7 @@ export function ReachDemoForm() {
       setMessage(
         payload.matches.length > 0
           ? `Matched ${payload.matches.length} seeded identity${payload.matches.length === 1 ? '' : 'ies'}.`
-          : 'No seeded identities matched yet.',
+          : 'No seeded identities matched yet.'
       );
     } catch (error) {
       setStatus('error');
@@ -68,13 +72,17 @@ export function ReachDemoForm() {
   }
 
   return (
-    <section id="reach-demo" className="lane-panel reach-demo-panel" aria-labelledby="reach-demo-title">
+    <section
+      id="reach-demo"
+      className="lane-panel reach-demo-panel"
+      aria-labelledby="reach-demo-title"
+    >
       <div className="reach-demo-copy">
         <p className="lane-kicker">Reach Demo</p>
         <h2 id="reach-demo-title">Send a request into seeded identities.</h2>
       </div>
 
-      <form className="reach-demo-form" onSubmit={onSubmit}>
+      <form className="reach-demo-form" onSubmit={onSubmit} noValidate>
         <label htmlFor="reach-demo-request">Request</label>
         <textarea
           id="reach-demo-request"
@@ -91,7 +99,11 @@ export function ReachDemoForm() {
             {status === 'loading' ? 'Sending...' : 'Send'}
           </button>
           {message && (
-            <p className={`reach-demo-status reach-demo-status-${status}`} aria-live="polite">
+            <p
+              className={`reach-demo-status reach-demo-status-${status}`}
+              role={status === 'error' ? 'alert' : undefined}
+              aria-live="polite"
+            >
               {message}
             </p>
           )}
