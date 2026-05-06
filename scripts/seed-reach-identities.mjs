@@ -10,6 +10,7 @@ const EMBEDDING_MODEL =
   process.env.REACH_EMBEDDINGS_OPENAI_MODEL ??
   process.env.EMBEDDINGS_OPENAI_MODEL ??
   'text-embedding-3-small';
+const EMBEDDING_BATCH_SIZE = Number(process.env.REACH_IDENTITY_EMBEDDING_BATCH_SIZE ?? 100);
 const OPENAI_BASE_URL = (
   process.env.EMBEDDINGS_OPENAI_BASE_URL ?? 'https://api.openai.com/v1'
 ).replace(/\/+$/, '');
@@ -31,7 +32,7 @@ function parseList(value) {
     .filter(Boolean);
 }
 
-function parseIdentityFile(raw) {
+function parseIdentityBlock(raw) {
   const lines = raw.split(/\r?\n/);
   const fields = new Map();
   const body = [];
@@ -71,6 +72,19 @@ function parseIdentityFile(raw) {
       sourceFormat: 'local-text',
     },
   };
+}
+
+function parseIdentityFile(raw, file) {
+  const blocks = raw
+    .split(/\n---+\n/g)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
+  if (blocks.length === 0) {
+    throw new Error(`Identity file is empty: ${file}`);
+  }
+
+  return blocks.map(parseIdentityBlock);
 }
 
 async function listIdentityFiles(dir) {
@@ -208,7 +222,7 @@ async function ensureStorage() {
   }
 }
 
-async function embedText(content) {
+async function embedTexts(contents) {
   const apiKey = process.env.OPENAI_API_KEY?.trim();
   if (!apiKey) {
     throw new Error('OPENAI_API_KEY is not configured in .env.local');
@@ -222,7 +236,7 @@ async function embedText(content) {
     },
     body: JSON.stringify({
       model: EMBEDDING_MODEL,
-      input: content,
+      input: contents,
       dimensions: EMBEDDING_DIMENSIONS,
     }),
   });
@@ -236,25 +250,31 @@ async function embedText(content) {
     throw new Error(message);
   }
 
-  const embedding = payload?.data?.[0]?.embedding;
-  if (!Array.isArray(embedding)) {
-    throw new Error('OpenAI returned no embedding vector');
+  const records = payload?.data;
+  if (!Array.isArray(records) || records.length !== contents.length) {
+    throw new Error('OpenAI returned an unexpected embedding response');
+  }
+
+  const embeddings = [...records]
+    .sort((a, b) => Number(a.index ?? 0) - Number(b.index ?? 0))
+    .map((record) => record.embedding);
+
+  for (const embedding of embeddings) {
+    if (!Array.isArray(embedding)) {
+      throw new Error('OpenAI returned no embedding vector');
+    }
   }
 
   return {
     provider: 'openai',
     model: payload.model ?? EMBEDDING_MODEL,
-    dimensions: embedding.length,
-    embedding,
+    dimensions: embeddings[0]?.length ?? 0,
+    embeddings,
   };
 }
 
-async function upsertIdentity(identity, storageMode) {
-  const embeddingResult = await embedText(identity.content);
-  const embeddingValue =
-    storageMode === 'pgvector'
-      ? serializeVector(embeddingResult.embedding)
-      : embeddingResult.embedding;
+async function upsertIdentity(identity, storageMode, embeddingResult, embedding) {
+  const embeddingValue = storageMode === 'pgvector' ? serializeVector(embedding) : embedding;
   const tableName =
     storageMode === 'pgvector' ? '"ReachIdentityEmbedding"' : '"ReachIdentityEmbeddingArray"';
   const embeddingCast = storageMode === 'pgvector' ? '$11::vector' : '$11::DOUBLE PRECISION[]';
@@ -310,6 +330,18 @@ DO UPDATE SET
   );
 }
 
+async function seedIdentityBatch(identities, storageMode) {
+  const embeddingResult = await embedTexts(identities.map((identity) => identity.content));
+
+  for (let index = 0; index < identities.length; index += 1) {
+    const embedding = embeddingResult.embeddings[index];
+    if (!embedding) {
+      throw new Error(`Missing embedding for ${identities[index]?.name ?? `identity ${index}`}`);
+    }
+    await upsertIdentity(identities[index], storageMode, embeddingResult, embedding);
+  }
+}
+
 async function main() {
   const { dir } = parseArgs();
   const files = await listIdentityFiles(dir);
@@ -324,27 +356,39 @@ async function main() {
     `Found ${files.length} identity file${files.length === 1 ? '' : 's'}; storage=${storageMode}.`
   );
 
-  let seeded = 0;
+  const identities = [];
   for (const file of files) {
     const raw = await fs.readFile(file, 'utf8');
-    const parsed = parseIdentityFile(raw);
+    const parsedIdentities = parseIdentityFile(raw, file);
     const relativeFile = path.relative(process.cwd(), file);
 
-    console.log(`Embedding Reach identity: ${parsed.name} (${relativeFile})`);
-    await upsertIdentity(
-      {
+    for (let index = 0; index < parsedIdentities.length; index += 1) {
+      const parsed = parsedIdentities[index];
+      const isSingleIdentityFile = parsedIdentities.length === 1;
+      identities.push({
         ...parsed,
         sourceFile: relativeFile,
-        sourceId: path.basename(file, '.txt'),
-      },
-      storageMode
-    );
-
-    seeded += 1;
-    console.log(`Seeded Reach identity: ${parsed.name} (${relativeFile})`);
+        sourceId: isSingleIdentityFile
+          ? path.basename(file, '.txt')
+          : `${path.basename(file, '.txt')}-${String(index + 1).padStart(4, '0')}`,
+      });
+    }
   }
 
-  console.log(`Seeded ${seeded} Reach demo identity${seeded === 1 ? '' : 'ies'}.`);
+  console.log(`Parsed ${identities.length} Reach demo identities.`);
+
+  let seeded = 0;
+  for (let start = 0; start < identities.length; start += EMBEDDING_BATCH_SIZE) {
+    const batch = identities.slice(start, start + EMBEDDING_BATCH_SIZE);
+    console.log(
+      `Embedding Reach identities ${start + 1}-${start + batch.length} of ${identities.length}`
+    );
+    await seedIdentityBatch(batch, storageMode);
+    seeded += batch.length;
+    console.log(`Seeded ${seeded}/${identities.length} Reach demo identities.`);
+  }
+
+  console.log(`Seeded ${seeded} Reach demo ${seeded === 1 ? 'identity' : 'identities'}.`);
 }
 
 main()
