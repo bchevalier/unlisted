@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import React, { FormEvent, useCallback, useEffect, useState } from 'react';
 
 type BillingStatus = {
   plan: 'FREE' | 'PAID';
@@ -9,6 +9,62 @@ type BillingStatus = {
   currentPeriodEnd: string | null;
   hasStripeCustomer: boolean;
 };
+
+function hasActiveBillingEntitlement(status: string | null | undefined) {
+  return status === 'ACTIVE' || status === 'TRIALING' || status === 'active' || status === 'trialing';
+}
+
+export function BillingAuthorityNotice({
+  plan,
+  billing,
+  loading,
+}: {
+  plan: 'FREE' | 'PAID';
+  billing: BillingStatus | null;
+  loading: boolean;
+}) {
+  if (loading) {
+    return <p>Checking whether billing is active before unlocking Paid…</p>;
+  }
+
+  const status = billing?.stripeSubscriptionStatus ?? null;
+  const hasActiveBilling = hasActiveBillingEntitlement(status);
+  const effectivePlan = billing?.plan ?? plan;
+
+  if (effectivePlan === 'PAID' && hasActiveBilling) {
+    return (
+      <div className="settings-billing-authority" style={{ padding: '12px 16px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, marginTop: 12 }}>
+        <p style={{ margin: 0, fontWeight: 600 }}>Paid is unlocked by active billing.</p>
+        <p style={{ margin: '6px 0 0 0', color: '#166534' }}>
+          This door is currently using Paid because Stripe reports an active or trialing subscription.
+          Paid controls are server-authoritative, not a manual toggle.
+        </p>
+      </div>
+    );
+  }
+
+  if (status) {
+    return (
+      <div className="settings-billing-authority" style={{ padding: '12px 16px', background: '#fffbe6', border: '1px solid #fde68a', borderRadius: 8, marginTop: 12 }}>
+        <p style={{ margin: 0, fontWeight: 600 }}>Billing exists, but Paid is still locked.</p>
+        <p style={{ margin: '6px 0 0 0', color: '#854d0e' }}>
+          Stripe status is <strong>{status.toLowerCase().replaceAll('_', ' ')}</strong>. Until billing becomes active or trialing,
+          this door stays on Free protections and Paid-only controls should be treated as unavailable.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="settings-billing-authority" style={{ padding: '12px 16px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, marginTop: 12 }}>
+      <p style={{ margin: 0, fontWeight: 600 }}>Paid unlocks only after billing is active.</p>
+      <p style={{ margin: '6px 0 0 0', color: '#1d4ed8' }}>
+        Starting checkout does not flip this door to Paid by itself. The server unlocks Paid only after Stripe confirms an
+        active or trialing subscription.
+      </p>
+    </div>
+  );
+}
 
 type SettingsPanelProps = {
   door: {
@@ -62,6 +118,55 @@ async function postJson(url: string, body: unknown) {
   }
 }
 
+export function PlanGuardrailCard({ plan }: { plan: 'FREE' | 'PAID' }) {
+  const isPaid = plan === 'PAID';
+
+  return (
+    <article className="settings-card">
+      <h2>Plan guardrails</h2>
+      <p style={{ fontSize: '0.95em', color: '#666' }}>
+        Free is meant to protect the inbox by default. Paid unlocks more control and capacity,
+        but only after billing is active.
+      </p>
+
+      <div style={{ display: 'grid', gap: 12, marginTop: 12 }}>
+        <div style={{ padding: '12px 16px', border: '1px solid #dbeafe', borderRadius: 8, background: '#eff6ff' }}>
+          <p style={{ margin: 0, fontWeight: 600 }}>What Free protects</p>
+          <ul style={{ margin: '8px 0 0 18px', color: '#1e3a8a' }}>
+            <li>Inbound caps stay on to keep overflow and low-signal volume from turning into inbox clutter.</li>
+            <li>Paid-intent lanes, quote controls, and non-targeted paid Reach stay unavailable until billing is active.</li>
+            <li>Private inbox protection stays intact: the public alias can receive requests without exposing real contact details.</li>
+          </ul>
+        </div>
+
+        <div style={{ padding: '12px 16px', border: '1px solid #dcfce7', borderRadius: 8, background: '#f0fdf4' }}>
+          <p style={{ margin: 0, fontWeight: 600 }}>What Paid unlocks</p>
+          <ul style={{ margin: '8px 0 0 18px', color: '#166534' }}>
+            <li>Door and category caps can open up so serious inbound is not artificially throttled.</li>
+            <li>Paid quote controls and paid-intent filtering become available once billing is active.</li>
+            <li>Optional non-targeted paid Reach can be enabled for verified organizations.</li>
+          </ul>
+        </div>
+      </div>
+
+      <p style={{ fontSize: '0.9em', color: '#666', marginTop: 12 }}>
+        Current MVP guardrail: both Free and Paid remain solo-only, single-door, and privacy-first right now.
+        Paid expands control, not team access.
+      </p>
+
+      {isPaid ? (
+        <p style={{ fontSize: '0.9em', color: '#166534', marginTop: 8 }}>
+          This door is already on Paid, so these paid controls should be available when billing stays active.
+        </p>
+      ) : (
+        <p style={{ fontSize: '0.9em', color: '#1d4ed8', marginTop: 8 }}>
+          This door is on Free, so the inbox-protection defaults remain the active guardrails until billing unlocks Paid.
+        </p>
+      )}
+    </article>
+  );
+}
+
 export function SettingsPanel({ door }: SettingsPanelProps) {
   const isPaid = door.plan === 'PAID';
 
@@ -71,6 +176,7 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
   return (
     <section className="settings-panel">
       <BillingCard doorSlug={door.slug} plan={door.plan} />
+      <PlanGuardrailCard plan={door.plan} />
 
       {!emailProxyEnabled ? (
         <article className="settings-card" style={{ borderLeft: '4px solid #e5a00d', background: '#fffbe6' }}>
@@ -91,11 +197,19 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
             Knockers can email <strong>{activeAlias.alias}@knokio.io</strong> to submit requests
             to this door.
           </p>
+          <p style={{ fontSize: '0.9em', color: '#666' }}>
+            The alias is public-facing. Your real inbox stays hidden unless your workflow explicitly
+            reveals contact later.
+          </p>
         </article>
       ) : null}
 
       <article className="settings-card">
         <h2>Door settings</h2>
+        <p style={{ fontSize: '0.9em', color: '#666' }}>
+          Direct is solo-only in the current MVP. Team access and shared operator workflows are
+          intentionally out of scope for both Free and Paid right now.
+        </p>
         <form
           onSubmit={async (event) => {
             event.preventDefault();
@@ -194,69 +308,75 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
             </label>
           </fieldset>
 
-          {isPaid ? (
-            <fieldset style={{ border: '1px solid #ddd', padding: '12px', margin: '16px 0' }}>
-              <legend>Paid quote</legend>
-              <p style={{ fontSize: '0.9em', color: '#555', margin: '0 0 12px' }}>
-                Set a quote for paid requests. This amount is shown to requesters only after you
-                accept their request and they pass your verification policy.
+          <fieldset style={{ border: '1px solid #ddd', padding: '12px', margin: '16px 0' }}>
+            <legend>Paid quote</legend>
+            <p style={{ fontSize: '0.9em', color: '#555', margin: '0 0 12px' }}>
+              Set a quote for paid requests. This amount is shown to requesters only after you
+              accept their request and they pass your verification policy.
+            </p>
+            {!isPaid ? (
+              <p style={{ fontSize: '0.9em', color: '#1d4ed8', margin: '0 0 12px' }}>
+                Locked on Free. Active billing is required before these controls become editable.
               </p>
+            ) : null}
 
-              <label>
-                Quote amount (USD)
-                <input
-                  name="paidQuoteAmount"
-                  type="number"
-                  min={0}
-                  step="0.01"
-                  defaultValue={
-                    door.settings?.paidQuoteAmountCents != null
-                      ? (door.settings.paidQuoteAmountCents / 100).toFixed(2)
-                      : ''
-                  }
-                  placeholder="e.g. 250.00"
-                />
-              </label>
+            <label>
+              Quote amount (USD)
+              <input
+                name="paidQuoteAmount"
+                type="number"
+                min={0}
+                step="0.01"
+                defaultValue={
+                  door.settings?.paidQuoteAmountCents != null
+                    ? (door.settings.paidQuoteAmountCents / 100).toFixed(2)
+                    : ''
+                }
+                placeholder="e.g. 250.00"
+                disabled={!isPaid}
+              />
+            </label>
 
-              <label>
-                Quote note (optional)
-                <textarea
-                  name="paidQuoteNote"
-                  rows={2}
-                  maxLength={1000}
-                  defaultValue={door.settings?.paidQuoteNote ?? ''}
-                  placeholder="e.g. Rate is per hour, minimum 1h engagement"
-                />
-              </label>
+            <label>
+              Quote note (optional)
+              <textarea
+                name="paidQuoteNote"
+                rows={2}
+                maxLength={1000}
+                defaultValue={door.settings?.paidQuoteNote ?? ''}
+                placeholder="e.g. Rate is per hour, minimum 1h engagement"
+                disabled={!isPaid}
+              />
+            </label>
 
-              <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid #eee' }} />
+            <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid #eee' }} />
 
-              <label>
-                <input
-                  type="checkbox"
-                  name="quoteVisibleToVerifiedOrgsOnly"
-                  defaultChecked={door.settings?.quoteVisibleToVerifiedOrgsOnly ?? false}
-                />{' '}
-                Restrict quote visibility to verified organizations only
-              </label>
-              <p style={{ fontSize: '0.85em', color: '#666', margin: '4px 0 0 24px' }}>
-                Your quote is only ever shown after you accept a request. This controls <em>who</em>{' '}
-                can see it:
-              </p>
-              <ul style={{ fontSize: '0.85em', color: '#666', margin: '4px 0 0 24px', paddingLeft: '16px' }}>
-                <li>
-                  <strong>Enabled:</strong> only requesters with a verified organization (company
-                  email domain matches their stated company website) will see the quote.
-                  Individuals and unverified senders will not.
-                </li>
-                <li>
-                  <strong>Disabled:</strong> any requester who passes basic identity verification
-                  (non-free, non-disposable email domain) can see the quote — including individuals
-                  without an organization.
-                </li>
-              </ul>
-            </fieldset>
-          ) : null}
+            <label>
+              <input
+                type="checkbox"
+                name="quoteVisibleToVerifiedOrgsOnly"
+                defaultChecked={door.settings?.quoteVisibleToVerifiedOrgsOnly ?? false}
+                disabled={!isPaid}
+              />{' '}
+              Restrict quote visibility to verified organizations only
+            </label>
+            <p style={{ fontSize: '0.85em', color: '#666', margin: '4px 0 0 24px' }}>
+              Your quote is only ever shown after you accept a request. This controls <em>who</em>{' '}
+              can see it:
+            </p>
+            <ul style={{ fontSize: '0.85em', color: '#666', margin: '4px 0 0 24px', paddingLeft: '16px' }}>
+              <li>
+                <strong>Enabled:</strong> only requesters with a verified organization (company
+                email domain matches their stated company website) will see the quote.
+                Individuals and unverified senders will not.
+              </li>
+              <li>
+                <strong>Disabled:</strong> any requester who passes basic identity verification
+                (non-free, non-disposable email domain) can see the quote — including individuals
+                without an organization.
+              </li>
+            </ul>
+          </fieldset>
 
           <fieldset style={{ border: '1px solid #ddd', padding: '12px', margin: '16px 0' }}>
             <legend>Reach</legend>
@@ -266,9 +386,15 @@ export function SettingsPanel({ door }: SettingsPanelProps) {
                 type="checkbox"
                 name="openToNonTargetedPaidReach"
                 defaultChecked={door.settings?.openToNonTargetedPaidReach ?? false}
+                disabled={!isPaid}
               />{' '}
               Open to non-targeted paid Reach offers
             </label>
+            {!isPaid ? (
+              <p style={{ fontSize: '0.85em', color: '#1d4ed8', margin: '4px 0 0 24px' }}>
+                This is a paid-only control. Start billing checkout and wait for active billing before enabling it.
+              </p>
+            ) : null}
             <p style={{ fontSize: '0.85em', color: '#666', margin: '4px 0 0 24px' }}>
               Allow verified organizations to discover and contact you through Knokio Reach, even
               if they don&apos;t have your door link. Your quote and identity stay hidden until you
@@ -462,10 +588,12 @@ function BillingCard({ doorSlug, plan }: { doorSlug: string; plan: 'FREE' | 'PAI
             </p>
           ) : null}
 
+          <BillingAuthorityNotice plan={plan} billing={billing} loading={loading} />
+
           <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
             {!isPaid ? (
               <button type="button" onClick={handleUpgrade} disabled={actionLoading}>
-                {actionLoading ? 'Redirecting…' : 'Upgrade to Paid'}
+                {actionLoading ? 'Redirecting…' : 'Start billing checkout'}
               </button>
             ) : null}
 
@@ -475,6 +603,12 @@ function BillingCard({ doorSlug, plan }: { doorSlug: string; plan: 'FREE' | 'PAI
               </button>
             ) : null}
           </div>
+
+          {!isPaid ? (
+            <p style={{ fontSize: '0.9em', color: '#666', marginTop: 8 }}>
+              Checkout starts the billing flow. Paid features unlock only after billing becomes active.
+            </p>
+          ) : null}
         </>
       )}
     </article>

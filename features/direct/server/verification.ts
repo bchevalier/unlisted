@@ -115,6 +115,39 @@ const FREE_EMAIL_DOMAINS: ReadonlySet<string> = new Set([
   'inboxalias.com',
 ]);
 
+const DISPOSABLE_EMAIL_DOMAINS: ReadonlySet<string> = new Set([
+  'guerrillamail.com',
+  'guerrillamail.de',
+  'grr.la',
+  'guerrillamailblock.com',
+  'sharklasers.com',
+  'mailinator.com',
+  'maildrop.cc',
+  'dispostable.com',
+  'yopmail.com',
+  'yopmail.fr',
+  'tempmail.com',
+  'temp-mail.org',
+  'throwaway.email',
+  'getnada.com',
+  'trashmail.com',
+  'trashmail.me',
+  'trashmail.net',
+  'fakeinbox.com',
+  'mailnesia.com',
+  'tempail.com',
+  'mohmal.com',
+  'discard.email',
+  'mintmail.com',
+  'mytemp.email',
+  '10minutemail.com',
+  'minutemail.com',
+  'tempr.email',
+  'burnermail.io',
+  'mailcatch.com',
+  'inboxalias.com',
+]);
+
 // ---------------------------------------------------------------------------
 // Domain parsing helpers
 // ---------------------------------------------------------------------------
@@ -160,6 +193,10 @@ export function getRegistrableDomain(input: string): string | null {
  */
 export function isFreeDomain(domain: string): boolean {
   return FREE_EMAIL_DOMAINS.has(domain.toLowerCase());
+}
+
+export function isDisposableDomain(domain: string): boolean {
+  return DISPOSABLE_EMAIL_DOMAINS.has(domain.toLowerCase());
 }
 
 // ---------------------------------------------------------------------------

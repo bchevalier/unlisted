@@ -1,0 +1,27 @@
+
+> dev
+> node scripts/dev-network.mjs
+
+
+Knokio local dev
+- Local:   http://localhost:3333
+- Network: http://192.168.88.2:3333
+- API:     http://192.168.88.2:3333/api/*
+- APP_URL and NEXTAUTH_URL are overridden for this run so LAN testing stays same-origin.
+
+[next-supervisor 2026-04-28T00:42:16.503Z] starting Next dev on 0.0.0.0:3333 (attempt 1, runtime=node, turbopack=true)
+   ▲ Next.js 15.1.2 (Turbopack)
+   - Local:        http://localhost:3333
+   - Network:      http://0.0.0.0:3333
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Compiled in 395ms
+ ✓ Ready in 2s
+ ○ Compiling /reach ...
+ ✓ Compiled /reach in 2.7s
+ GET /direct/demo 200 in 1540ms
+ GET /reach 200 in 3219ms
+[next-supervisor 2026-04-29T01:03:09.512Z] received SIGTERM, shutting down supervisor
+[?25h
+[next-supervisor 2026-04-29T01:03:09.704Z] Next dev exited (code=0, signal=none)

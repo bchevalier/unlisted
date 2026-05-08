@@ -1,11 +1,14 @@
+import React from 'react';
 import Link from 'next/link';
+import { getDirectDemoRequestFixture, isDirectDemoFixture } from '../../../../features/direct/demo-fixtures';
 import { getRequestDetailForKeeper } from '../../../../features/direct/server/requests';
 import { requireKeeperSession } from '../../../../features/direct/server/session';
+import { getRequestStatusNarrative } from '../outcome-summary';
 import { RequestActions } from '../request-actions';
 
 type RequestDetailPageProps = {
   params: Promise<{ requestId: string }>;
-  searchParams?: Promise<{ slug?: string }>;
+  searchParams?: Promise<{ slug?: string; fixture?: string }>;
 };
 
 /** Human-readable verification status label */
@@ -26,11 +29,16 @@ function formatQuote(amountCents: number, currency: string): string {
 }
 
 export default async function RequestDetailPage({ params, searchParams }: RequestDetailPageProps) {
-  const session = await requireKeeperSession('/direct/inbox');
   const { requestId } = await params;
   const resolvedSearchParams = (await searchParams) ?? {};
+  const useDemoFixture = isDirectDemoFixture(resolvedSearchParams.fixture);
+  const session = useDemoFixture
+    ? { userId: 'direct_demo_fixture', email: 'demo@knokio.example' }
+    : await requireKeeperSession('/direct/inbox');
 
-  const request = await getRequestDetailForKeeper(session.userId, requestId);
+  const request = useDemoFixture
+    ? getDirectDemoRequestFixture(requestId, resolvedSearchParams.slug)
+    : await getRequestDetailForKeeper(session.userId, requestId);
 
   if (!request) {
     return (
@@ -43,6 +51,7 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
   }
 
   const backSlug = resolvedSearchParams.slug ?? request.door.slug;
+  const backHref = `/direct/inbox?slug=${backSlug}${useDemoFixture ? '&fixture=demo' : ''}`;
   const rawStructuredData = request.structuredData as Record<string, unknown> | null;
   const emailMeta = rawStructuredData?._emailMeta as Record<string, string> | undefined;
   // Filter out internal metadata keys for display
@@ -54,14 +63,21 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
   const hasStructuredFields = structuredData && Object.keys(structuredData).length > 0;
 
   const vLabel = verificationLabel(request.requesterVerificationStatus);
+  const statusNarrative = getRequestStatusNarrative(request.status);
 
   return (
     <main>
       <p>
-        <Link href={`/direct/inbox?slug=${backSlug}`}>← Back to inbox</Link>
+        <Link href={backHref}>← Back to inbox</Link>
       </p>
 
       <h1>{request.title ?? '(No title)'}</h1>
+
+      <section className="direct-surface-card" aria-label="Request routing narrative" style={{ padding: '12px 16px', marginBottom: 16 }}>
+        <p className="direct-surface-eyebrow">Routing state</p>
+        <h2 style={{ margin: '0 0 8px 0' }}>{statusNarrative.label}</h2>
+        <p style={{ margin: 0 }}>{statusNarrative.detail}</p>
+      </section>
 
       <table className="detail-meta">
         <tbody>
@@ -204,7 +220,7 @@ export default async function RequestDetailPage({ params, searchParams }: Reques
         </div>
       )}
 
-      <RequestActions requestId={request.id} status={request.status} />
+      <RequestActions requestId={request.id} status={request.status as 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'EXPIRED' | 'AWAITING_COMPLETION'} />
 
       {request.status === 'ACCEPTED' && request.door.settings && (
         <>

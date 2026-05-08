@@ -1,10 +1,18 @@
+import React from 'react';
 import Link from 'next/link';
 import { RequestStatus } from '@prisma/client';
+import {
+  DIRECT_DEMO_SLUG,
+  getDirectDemoInboxFixture,
+  isDirectDemoFixture,
+} from '../../../features/direct/demo-fixtures';
 import {
   listDoorsForKeeper,
   listRequestsByDoorSlugForKeeper
 } from '../../../features/direct/server/requests';
 import { requireKeeperSession } from '../../../features/direct/server/session';
+import { DirectWalkthroughBanner } from '../direct-walkthrough-banner';
+import { OutcomeSummary } from './outcome-summary';
 import { RequestActions } from './request-actions';
 
 type DirectInboxPageProps = {
@@ -12,6 +20,7 @@ type DirectInboxPageProps = {
     slug?: string;
     page?: string;
     status?: string;
+    fixture?: string;
   }>;
 };
 
@@ -29,11 +38,14 @@ function isValidStatus(value: string): value is RequestStatus {
 }
 
 export default async function DirectInboxPage({ searchParams }: DirectInboxPageProps) {
-  const session = await requireKeeperSession('/direct/inbox');
   const resolvedSearchParams = (await searchParams) ?? {};
+  const useDemoFixture = isDirectDemoFixture(resolvedSearchParams.fixture);
+  const session = useDemoFixture
+    ? { userId: 'direct_demo_fixture', email: 'demo@knokio.example' }
+    : await requireKeeperSession('/direct/inbox');
 
-  const doors = await listDoorsForKeeper(session.userId);
-  const defaultSlug = doors[0]?.slug;
+  const doors = useDemoFixture ? [] : await listDoorsForKeeper(session.userId);
+  const defaultSlug = doors[0]?.slug ?? (useDemoFixture ? DIRECT_DEMO_SLUG : undefined);
   const selectedSlug = resolvedSearchParams.slug ?? defaultSlug;
 
   if (!selectedSlug) {
@@ -50,10 +62,16 @@ export default async function DirectInboxPage({ searchParams }: DirectInboxPageP
     ? resolvedSearchParams.status as RequestStatus
     : undefined;
 
-  const door = await listRequestsByDoorSlugForKeeper(session.userId, selectedSlug, {
-    page,
-    status: statusFilter
-  });
+  const door = useDemoFixture
+    ? getDirectDemoInboxFixture({
+        doorSlug: selectedSlug,
+        page,
+        status: statusFilter,
+      })
+    : await listRequestsByDoorSlugForKeeper(session.userId, selectedSlug, {
+        page,
+        status: statusFilter
+      });
 
   if (!door) {
     return (
@@ -65,10 +83,14 @@ export default async function DirectInboxPage({ searchParams }: DirectInboxPageP
   }
 
   const { pagination } = door;
+  const doorLinks = useDemoFixture && !doors.some((item) => item.slug === door.slug)
+    ? [{ slug: door.slug, displayName: `${door.displayName} demo`, plan: door.plan }, ...doors]
+    : doors;
 
   function buildUrl(params: Record<string, string | number | undefined>) {
     const base: Record<string, string> = { slug: selectedSlug };
     if (statusFilter) base.status = statusFilter;
+    if (useDemoFixture) base.fixture = resolvedSearchParams.fixture ?? 'demo';
     for (const [k, v] of Object.entries(params)) {
       if (v !== undefined && v !== '' && v !== 1) {
         base[k] = String(v);
@@ -91,19 +113,26 @@ export default async function DirectInboxPage({ searchParams }: DirectInboxPageP
       </p>
 
       <p className="inbox-links">
-        {doors.map((item) => (
-          <Link key={item.slug} href={`/direct/inbox?slug=${item.slug}`}>
+        {doorLinks.map((item) => (
+          <Link
+            key={item.slug}
+            href={buildUrl({ slug: item.slug, page: 1 })}
+          >
             {item.displayName} ({item.plan})
           </Link>
         ))}
       </p>
 
       <p className="inbox-links">
-        <Link href={`/direct/settings?slug=${door.slug}`}>Settings</Link>
+        <Link href={useDemoFixture ? `/direct/settings?slug=${door.slug}&fixture=demo` : `/direct/settings?slug=${door.slug}`}>
+          Settings
+        </Link>
         <Link href={`/u/${door.slug}`} target="_blank">
           Open public door
         </Link>
       </p>
+
+      <DirectWalkthroughBanner currentStep="inbox" doorSlug={door.slug} useDemoFixture={useDemoFixture} />
 
       {/* Status filter tabs with counts */}
       <nav className="inbox-filters">
@@ -133,12 +162,15 @@ export default async function DirectInboxPage({ searchParams }: DirectInboxPageP
         <p>No requests{statusFilter ? ` with status "${statusFilter.toLowerCase()}"` : ''} yet.</p>
       ) : (
         <>
+          <OutcomeSummary requests={door.requests} />
           <div className="inbox-list">
             {door.requests.map((request) => (
               <article key={request.id} className="inbox-card">
                 <header>
                   <strong>
-                    <Link href={`/direct/inbox/${request.id}?slug=${selectedSlug}`}>
+                    <Link
+                      href={`/direct/inbox/${request.id}?slug=${selectedSlug}${useDemoFixture ? '&fixture=demo' : ''}`}
+                    >
                       {request.title ?? '(No title)'}
                     </Link>
                   </strong>
@@ -153,7 +185,7 @@ export default async function DirectInboxPage({ searchParams }: DirectInboxPageP
                   </p>
                 </header>
                 <p>{request.message.length > 200 ? `${request.message.slice(0, 200)}…` : request.message}</p>
-                <RequestActions requestId={request.id} status={request.status} />
+                <RequestActions requestId={request.id} status={request.status as 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'EXPIRED' | 'AWAITING_COMPLETION'} />
               </article>
             ))}
           </div>

@@ -21,6 +21,7 @@ import {
   sendBatch
 } from '../../../lib/notifications';
 import { verifyTurnstileToken } from '../../../lib/turnstile';
+import { hasPaidEntitlement } from './billing';
 import { computeVerificationStatus } from './verification';
 
 const log = logger('requests');
@@ -1367,7 +1368,7 @@ export async function updateDoorPlanForKeeper(userId: string, input: unknown) {
 
   const door = await db.door.findFirst({
     where: { slug: payload.doorSlug, userId },
-    select: { id: true, plan: true }
+    select: { id: true, plan: true, stripeSubscriptionStatus: true }
   });
 
   if (!door) {
@@ -1376,6 +1377,10 @@ export async function updateDoorPlanForKeeper(userId: string, input: unknown) {
 
   if (door.plan === payload.plan) {
     return { plan: door.plan };
+  }
+
+  if (payload.plan === DoorPlan.PAID && !hasPaidEntitlement(door.stripeSubscriptionStatus)) {
+    throw new DirectValidationError('Active billing is required before switching to Paid', 403);
   }
 
   await db.$transaction(async (tx) => {
@@ -1412,12 +1417,22 @@ export async function updateDoorPlanForKeeper(userId: string, input: unknown) {
     await tx.doorSettings.upsert({
       where: { doorId: door.id },
       update: {
-        weeklyRequestCap: FREE_DEFAULT_WEEKLY_REQUEST_CAP
+        weeklyRequestCap: FREE_DEFAULT_WEEKLY_REQUEST_CAP,
+        paidQuoteAmountCents: null,
+        paidQuoteCurrency: null,
+        paidQuoteNote: null,
+        quoteVisibleToVerifiedOrgsOnly: false,
+        openToNonTargetedPaidReach: false
       },
       create: {
         doorId: door.id,
         autoReplyEnabled: false,
-        weeklyRequestCap: FREE_DEFAULT_WEEKLY_REQUEST_CAP
+        weeklyRequestCap: FREE_DEFAULT_WEEKLY_REQUEST_CAP,
+        paidQuoteAmountCents: null,
+        paidQuoteCurrency: null,
+        paidQuoteNote: null,
+        quoteVisibleToVerifiedOrgsOnly: false,
+        openToNonTargetedPaidReach: false
       }
     });
 
@@ -1447,7 +1462,8 @@ export async function updateDoorSettingsForKeeper(userId: string, input: unknown
     throw new DirectValidationError('Door not found');
   }
 
-  const normalizedWeeklyCap = door.plan === DoorPlan.PAID ? null : payload.weeklyRequestCap;
+  const isPaidDoor = door.plan === DoorPlan.PAID;
+  const normalizedWeeklyCap = isPaidDoor ? null : payload.weeklyRequestCap;
 
   const notificationFields = {
     ...(payload.notifyNewRequest !== undefined && { notifyNewRequest: payload.notifyNewRequest }),
@@ -1455,23 +1471,31 @@ export async function updateDoorSettingsForKeeper(userId: string, input: unknown
   };
 
   // Paid quote fields — only apply when explicitly provided in payload
-  const paidQuoteFields = {
-    ...(payload.paidQuoteAmountCents !== undefined && {
-      paidQuoteAmountCents: payload.paidQuoteAmountCents
-    }),
-    ...(payload.paidQuoteCurrency !== undefined && {
-      paidQuoteCurrency: payload.paidQuoteCurrency ? payload.paidQuoteCurrency : null
-    }),
-    ...(payload.paidQuoteNote !== undefined && {
-      paidQuoteNote: payload.paidQuoteNote ? normalizeOptional(payload.paidQuoteNote) : null
-    }),
-    ...(payload.quoteVisibleToVerifiedOrgsOnly !== undefined && {
-      quoteVisibleToVerifiedOrgsOnly: payload.quoteVisibleToVerifiedOrgsOnly
-    }),
-    ...(payload.openToNonTargetedPaidReach !== undefined && {
-      openToNonTargetedPaidReach: payload.openToNonTargetedPaidReach
-    })
-  };
+  const paidQuoteFields = isPaidDoor
+    ? {
+        ...(payload.paidQuoteAmountCents !== undefined && {
+          paidQuoteAmountCents: payload.paidQuoteAmountCents
+        }),
+        ...(payload.paidQuoteCurrency !== undefined && {
+          paidQuoteCurrency: payload.paidQuoteCurrency ? payload.paidQuoteCurrency : null
+        }),
+        ...(payload.paidQuoteNote !== undefined && {
+          paidQuoteNote: payload.paidQuoteNote ? normalizeOptional(payload.paidQuoteNote) : null
+        }),
+        ...(payload.quoteVisibleToVerifiedOrgsOnly !== undefined && {
+          quoteVisibleToVerifiedOrgsOnly: payload.quoteVisibleToVerifiedOrgsOnly
+        }),
+        ...(payload.openToNonTargetedPaidReach !== undefined && {
+          openToNonTargetedPaidReach: payload.openToNonTargetedPaidReach
+        })
+      }
+    : {
+        paidQuoteAmountCents: null,
+        paidQuoteCurrency: null,
+        paidQuoteNote: null,
+        quoteVisibleToVerifiedOrgsOnly: false,
+        openToNonTargetedPaidReach: false
+      };
 
   return db.doorSettings.upsert({
     where: { doorId: door.id },

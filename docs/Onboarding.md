@@ -10,7 +10,7 @@ This document contains the production onboarding copy for Keeper signup, first-d
 **Create your Knokio door**
 
 ### Sub-headline
-Stay reachable without the inbox chaos. Set up your door in under two minutes.
+Stay reachable without the inbox chaos. Set up your door in under two minutes — no credit card required.
 
 ### Form labels
 - **Name** — How you want to appear to people who knock
@@ -57,20 +57,22 @@ People use this to reach you instead of your personal email. Choose something re
 
 _Field: slug (auto-suggested from name)_
 
-### Step 2 — Choose your plan
+### Step 2 — Understand billing
 
-**Free door**
-- Up to 10 pending requests per week
-- Basic categories (General, Collaboration, Media)
-- Perfect for personal use
+**Direct** — $5/month
+- 50 handled inbound requests included each month
+- All Direct features unlocked
+- Additional handled inbound billed on a declining usage ladder
+- Up to one system auto-reply is included with each handled inbound if needed
 
-**Paid door** — $XX/month
-- Unlimited inbound capacity
-- Paid reach categories (product placements, advisory access)
-- Priority notifications
-- Best for creators, consultants, and public figures
+**Optional pay-to-contact categories**
+- Keeper sets the pay-to-contact request cost
+- Minimum requester price is **$2**
+- Knokio keeps the greater of **$0.50** or **10%**
 
-_CTA: Start with Free / Upgrade to Paid_
+Source of truth: `BILLING.md`
+
+_CTA: Continue to categories_
 
 ### Step 3 — Set your categories
 
@@ -82,8 +84,8 @@ Toggle the categories you'd like enabled. You can customise required fields and 
 - ☐ Collaboration
 - ☐ Media / press
 - ☐ Hiring / recruiting
-- ☐ Product placement _(Paid plan)_
-- ☐ Advisory / consulting _(Paid plan)_
+- ☐ Product placement _(optional pay-to-contact)_
+- ☐ Advisory / consulting _(optional pay-to-contact)_
 
 ### Step 4 — Where should accepted requests go?
 
@@ -182,3 +184,4 @@ People can't knock if there's nothing to knock about. Head to Settings to enable
 3. **Privacy first.** Never suggest that a Keeper's real contact info is visible by default.
 4. **Structured, not conversational.** Requests are one-shot submissions, not threads.
 5. **Control language.** Use "accept/decline" not "reply/ignore". Use "knock" not "message".
+
