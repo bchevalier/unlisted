@@ -19,9 +19,12 @@ function parseArgs() {
   const args = process.argv.slice(2);
   const dirFlagIndex = args.findIndex((arg) => arg === '--dir');
   const dir = dirFlagIndex >= 0 ? args[dirFlagIndex + 1] : undefined;
+  const fileFlagIndex = args.findIndex((arg) => arg === '--file');
+  const file = fileFlagIndex >= 0 ? args[fileFlagIndex + 1] : undefined;
 
   return {
     dir: dir ? path.resolve(process.cwd(), dir) : DEFAULT_IDENTITIES_DIR,
+    file: file ? path.resolve(process.cwd(), file) : null,
   };
 }
 
@@ -36,19 +39,43 @@ function parseIdentityBlock(raw) {
   const lines = raw.split(/\r?\n/);
   const fields = new Map();
   const body = [];
-  let inBody = false;
+  const HEADER_KEYS = new Set(['name', 'role', 'organization', 'location', 'tags']);
+  let inHeader = true;
+  let sawHeader = false;
 
   for (const line of lines) {
-    const separatorIndex = line.indexOf(':');
-    if (!inBody && separatorIndex > 0) {
-      const key = line.slice(0, separatorIndex).trim().toLowerCase();
-      const value = line.slice(separatorIndex + 1).trim();
-      fields.set(key, value);
-      continue;
+    if (inHeader) {
+      const trimmed = line.trim();
+      if (!trimmed) {
+        if (sawHeader) inHeader = false;
+        continue;
+      }
+
+      const separatorIndex = line.indexOf(':');
+      if (separatorIndex > 0) {
+        const key = line.slice(0, separatorIndex).trim().toLowerCase();
+        if (HEADER_KEYS.has(key)) {
+          const value = line.slice(separatorIndex + 1).trim();
+          fields.set(key, value);
+          sawHeader = true;
+          continue;
+        }
+      }
+
+      inHeader = false;
     }
 
-    if (line.trim()) inBody = true;
     body.push(line);
+  }
+
+  if (!fields.has('name')) {
+    const fallbackName = lines
+      .find((line) => line.toLowerCase().startsWith('name:'))
+      ?.slice('name:'.length)
+      .trim();
+    if (fallbackName) {
+      fields.set('name', fallbackName);
+    }
   }
 
   const name = fields.get('name')?.trim();
@@ -87,7 +114,15 @@ function parseIdentityFile(raw, file) {
   return blocks.map(parseIdentityBlock);
 }
 
-async function listIdentityFiles(dir) {
+async function listIdentityFiles(dir, file = null) {
+  if (file) {
+    const stats = await fs.stat(file);
+    if (!stats.isFile() || !file.endsWith('.txt')) {
+      throw new Error(`Identity file must be a .txt file: ${file}`);
+    }
+    return [file];
+  }
+
   const entries = await fs.readdir(dir, { withFileTypes: true });
   return entries
     .filter((entry) => entry.isFile() && entry.name.endsWith('.txt'))
@@ -343,8 +378,8 @@ async function seedIdentityBatch(identities, storageMode) {
 }
 
 async function main() {
-  const { dir } = parseArgs();
-  const files = await listIdentityFiles(dir);
+  const { dir, file } = parseArgs();
+  const files = await listIdentityFiles(dir, file);
 
   if (files.length === 0) {
     throw new Error(`No .txt identity files found in ${dir}`);

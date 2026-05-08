@@ -7,7 +7,10 @@ const host = process.env.HOST ?? process.env.NEXT_HOST ?? '0.0.0.0';
 
 const child = spawn('npx', ['next', 'start', '-H', host, '-p', port], {
   stdio: 'inherit',
-  env: process.env,
+  env: {
+    ...process.env,
+    NODE_ENV: 'production',
+  },
 });
 
 child.on('exit', (code, signal) => {

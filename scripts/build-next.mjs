@@ -15,7 +15,10 @@ console.log(`Using ${useBun ? 'Bun' : 'Node/npm'} to build Next.js`);
 
 const child = spawn(cmd, args, {
   stdio: 'inherit',
-  env: process.env,
+  env: {
+    ...process.env,
+    NODE_ENV: 'production',
+  },
 });
 
 child.on('exit', (code, signal) => {
