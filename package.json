@@ -1,6 +1,7 @@
 {
   "name": "knokio",
   "private": true,
+  "packageManager": "npm@10",
   "scripts": {
     "dev": "node scripts/dev-network.mjs",
     "dev:supervise": "node scripts/dev-network.mjs",
